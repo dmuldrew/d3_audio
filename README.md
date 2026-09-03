@@ -21,7 +21,7 @@ Think of a hospital heart monitor beeping in tempo with a pulse, a car's parking
 
 ## 📑 Table of Contents
 
-- [What is Data Sonification? (A Plain-English Intro)](#-what-is-data-sonification-a-plain-english-intro)
+- [What is Data Sonification?](#-what-is-data-sonification)
 - [Conceptual Model & Architecture](#-conceptual-model--architecture)
 - [Integration with the D3 Ecosystem & Core Principles](#-integration-with-the-d3-ecosystem--core-principles)
 - [Principles of Data Sonification](#-principles-of-data-sonification)
@@ -63,7 +63,7 @@ Think of a hospital heart monitor beeping in tempo with a pulse, a car's parking
 
 ---
 
-## 🎧 What is Data Sonification? (A Plain-English Intro)
+## 🎧 What is Data Sonification?
 
 **Data sonification** is the practice of turning information into sound.
 
