@@ -40,6 +40,7 @@ export function scaleTension() {
       energy: norm,
       detuneCents: detuneRange[0] + norm * (detuneRange[1] - detuneRange[0]),
       filterCutoff: filterEngine(norm),
+      cutoff: filterEngine(norm),
       gain: gainEngine(norm),
       tempoMultiplier: +(tempoRange[0] + norm * (tempoRange[1] - tempoRange[0])).toFixed(2),
       chord: tension.chord(val),
