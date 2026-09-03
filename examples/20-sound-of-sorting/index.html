@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>20. The Sound of Sorting Algorithms | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="../../dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #070c18;
+      --card: #0e172a;
+      --accent: #38bdf8;
+      --gold: #fbbf24;
+      --green: #10b981;
+      --red: #f43f5e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1180px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .canvas-box {
+      width: 100%;
+      height: 480px;
+      background: #030713;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 10px;
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .sort-bar {
+      transition: fill 0.1s, height 0.05s;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.7rem 1.3rem;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+    .btn-sec { background: #334155; color: #fff; }
+    .btn-sec:hover { background: #475569; }
+
+    .control-group { margin-bottom: 1.1rem; }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      background: #060b17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .hud-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      margin-top: 1rem;
+    }
+    .stat-row { display: flex; justify-content: space-between; margin-bottom: 0.35rem; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">20. The Sound of Sorting Algorithms</h1>
+      </div>
+      <div>
+        <span id="sort-status" style="font-family: monospace; font-size: 0.95rem; color: var(--gold); font-weight: 700;">Quicksort (O(n log n))</span>
+      </div>
+    </header>
+
+    <div class="grid-layout">
+      <!-- Array Sorting Canvas -->
+      <div>
+        <div class="panel" style="padding: 0.75rem;">
+          <div class="canvas-box" id="sort-area"></div>
+        </div>
+
+        <!-- Interactive Audio Legend Mount -->
+        <div id="legend-mount" style="margin-top: 1rem;"></div>
+
+        <!-- Explicit Data Transformation Breakdown -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+          <h3 style="font-size: 1rem; color: var(--gold); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>🔢</span> How Memory & Algorithms are Transformed Into Sound
+          </h3>
+          <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.8rem;">
+            Inspired by the classic "Sound of Sorting" and "Radix Sort Redux" demonstrations.
+          </p>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+                <th style="padding: 0.4rem 0;">Algorithm State</th>
+                <th style="padding: 0.4rem 0;">Data Domain</th>
+                <th style="padding: 0.4rem 0;">Audio Output</th>
+                <th style="padding: 0.4rem 0;">Transformation Function & Auditory Logic</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Array Element Value</td>
+                <td>1 to N ($N = 40$)</td>
+                <td>Pitch: C3 ➔ C6</td>
+                <td><code>scalePitch().domain([1, N]).range(['C3','C6'])</code> — Higher array values sound in high registers; sorted arrays produce smooth rising scales.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Memory Array Index</td>
+                <td>Index $0$ to $N-1$</td>
+                <td>Pan: -0.85 ➔ +0.85</td>
+                <td><code>scalePan().domain([0, N-1]).range([-0.85, 0.85])</code> — Memory operations pan left-to-right matching physical array position.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Comparison Event</td>
+                <td>$A[i] > A[j]$ Check</td>
+                <td>Marimba / Pluck Chime</td>
+                <td>Acoustic chime sounding the two elements being compared in rapid succession.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Swap / Write Event</td>
+                <td>$\text{swap}(A[i], A[j])$</td>
+                <td>Percussive Click</td>
+                <td>Acoustic transient click confirming in-place array mutation.</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Complexity Signature</td>
+                <td>$O(n \log n)$ vs $O(n^2)$</td>
+                <td>Acoustic Structure</td>
+                <td>Quicksort and Mergesort produce structured logarithmic arpeggios; Radix Sort sounds bucketed passes; Bubble Sort produces noisy random scatter.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Controls & Algorithm Lab -->
+      <div class="panel">
+        <button id="run-sort-btn" class="btn">▶ Run Sorting Sonifier</button>
+        <button id="shuffle-btn" class="btn btn-sec">🎲 Shuffle Array</button>
+
+        <div class="control-group" style="margin-top: 1rem;">
+          <label>Algorithm Selection</label>
+          <select id="algo-select">
+            <option value="quicksort" selected>Quicksort (O(n log n) Divide & Conquer)</option>
+            <option value="mergesort">Mergesort (O(n log n) Stable Recursive)</option>
+            <option value="radix">Radix Sort LSD (O(n·k) Non-Comparative)</option>
+            <option value="bubble">Bubble Sort (O(n²) Adjacent Swaps)</option>
+            <option value="insertion">Insertion Sort (O(n²) In-Place Insert)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Scale Harmony Mode</label>
+          <select id="scale-select">
+            <option value="pentatonic" selected>Pentatonic Major</option>
+            <option value="chromatic">Chromatic (All 12 Semitones)</option>
+            <option value="dorian">Dorian Mode</option>
+            <option value="blues">Blues Scale</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Step Delay: <span id="delay-val">35</span> ms</label>
+          <input type="range" id="delay-slider" min="10" max="150" value="35">
+        </div>
+
+        <div class="hud-box">
+          <div class="stat-row">
+            <span style="color: var(--muted);">Comparisons:</span>
+            <span id="comp-count" style="font-weight: 800; color: #fff; font-family: monospace;">0</span>
+          </div>
+          <div class="stat-row">
+            <span style="color: var(--muted);">Swaps / Writes:</span>
+            <span id="swap-count" style="font-weight: 800; color: var(--gold); font-family: monospace;">0</span>
+          </div>
+          <div class="stat-row">
+            <span style="color: var(--muted);">Status:</span>
+            <span id="sort-state" style="font-weight: 800; color: var(--green);">Array Ready</span>
+          </div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; font-size: 0.75rem; color: var(--muted); line-height: 1.5; margin-top: 1rem;">
+          • <strong>Algorithmic Ear</strong>: Notice how Quicksort sounds like rapid recursive branching, while Bubble Sort sounds like plodding repetitive steps!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@ import {
   defaultEngine,
   createSynth,
   createSamplePlayer
-} from '/src/index.js';
+} from '../../src/index.js';
 
 const container = document.getElementById('board-area');
 const width = container.clientWidth || 650;

@@ -7,7 +7,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // NASA GISS Annual Global Mean Surface Temperature Anomaly (°C relative to 1951-1980 baseline)
 const climateRecords = [];

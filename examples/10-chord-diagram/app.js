@@ -5,7 +5,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // Bilateral flow matrix between 5 global regions
 const matrix = [

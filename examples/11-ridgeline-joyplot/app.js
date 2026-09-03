@@ -6,7 +6,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // 8 Ridgeline frequency/temporal bands
 const NUM_RIDGES = 8;

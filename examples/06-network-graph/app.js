@@ -6,7 +6,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // Generate network graph data with 3 clusters
 const nodes = [];

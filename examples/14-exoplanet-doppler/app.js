@@ -6,7 +6,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // NASA Exoplanet Systems Database
 const exoplanetSystems = {

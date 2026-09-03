@@ -6,7 +6,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // 5 Energy streams across 24 hourly time steps
 const NUM_HOURS = 24;

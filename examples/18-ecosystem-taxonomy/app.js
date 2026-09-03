@@ -8,7 +8,7 @@ import {
   defaultEngine,
   createSynth,
   createSamplePlayer
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // Ecosystem Taxonomy Datasets
 const biomeData = {

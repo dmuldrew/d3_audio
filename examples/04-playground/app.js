@@ -3,7 +3,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 let currentScale = 'pentatonic';
 let currentRoot = 'C';

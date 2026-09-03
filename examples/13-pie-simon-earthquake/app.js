@@ -7,7 +7,7 @@ import {
   defaultEngine,
   createSynth,
   createSamplePlayer
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // 1. Real Curated USGS Earthquake Dataset (Major Global Fault Zones)
 let earthquakeData = [

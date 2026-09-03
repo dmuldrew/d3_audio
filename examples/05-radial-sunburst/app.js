@@ -7,7 +7,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // Hierarchical cyclical dataset (3 concentric rings: Root categories -> Subcategories -> Tiers)
 const hierarchyData = {

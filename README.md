@@ -181,6 +181,95 @@ Volatile time series, risk anomalies, and system alerts benefit from psychoacous
 
 ---
 
+## ⚖️ Ethical Sonification Guidelines & Preventing Data Misrepresentation
+
+While sonification offers remarkable communicative power, it also introduces unique psychoacoustic and perceptual vulnerabilities. Analysts must design sonifications carefully to avoid unintentionally misleading the listener:
+
+### 1. The "Cherry-Picked Scale" Hazard
+* **The Problem**: Selecting a universally consonant scale like **Pentatonic Major** guarantees that *any* data sequence—even completely random white noise or chaotic market volatility—will sound pleasing, melodic, and calm.
+* **The Risk**: Dangerously masks real system instability, erratic anomalies, or high variance that *should* sound jarring or dissonant.
+* **The Solution**: For volatile or error-prone metrics, pair anomalous values with dissonant harmonic intervals (e.g. tritones via `scaleTension()`) or microtonal detuning rather than forcing all data into euphonic musical scales.
+
+### 2. Cultural Key & Tonal Bias
+* **The Problem**: In Western psychoacoustics, minor chords are culturally conditioned to sound *"sad, dark, or dangerous"*, while major chords sound *"happy, cheerful, or safe"*.
+* **The Risk**: Mapping neutral, non-evaluative categories (e.g. demographic groups, geopolitical regions, or competing product lines) to minor vs. major keys injects implicit emotional bias into the data.
+* **The Solution**: Reserve major/minor shifts strictly for genuine positive/negative delta indicators (e.g. profit vs. loss). For neutral categories, differentiate via distinct acoustic instrument timbres (`pluckSynth` vs `fmSynth`) rather than positive/negative affective tonalities.
+
+### 3. Psychoacoustic Non-Linearity (Fletcher-Munson Curves)
+* **The Problem**: Human hearing is not flat across frequencies. The human ear is dramatically more sensitive to frequencies between $2,000\text{ Hz} - 4,000\text{ Hz}$ than to sub-bass ($60\text{ Hz}$) or high treble ($12,000\text{ Hz}$).
+* **The Risk**: Two data points possessing identical mathematical amplitudes will be perceived with vastly different loudness simply because one is pitched at $3\text{ kHz}$ and the other at $100\text{ Hz}$.
+* **The Solution**: Use ISO 226 equal-loudness weighting or calibrate `scaleGain()` to boost lower and extreme higher frequencies so all registers are perceived with balanced prominence.
+
+### 4. Temporal Masking (Acoustic Blurring)
+* **The Problem**: When events are triggered faster than $\sim 20\text{ notes/second}$ (sub-50ms intervals), the human auditory cortex experiences *temporal masking*—individual note onsets smear into an continuous acoustic drone.
+* **The Risk**: Isolated statistical outliers or brief transient spikes become completely imperceptible to the ear.
+* **The Solution**: Maintain event durations $\ge 60\text{ ms}$ for discrete inspections, or introduce transient percussion clicks (`drums.trigger("blip")`) to pierce through dense rapid streams.
+
+---
+
+## 🚲 Case Study Walkthrough: The Pronto Bike Share Commuter Symphony
+
+Inspired by the award-winning *Pronto Data Challenge* sonification by Daniel Muldrew:
+
+### The Dataset
+* 871 MB of Seattle municipal bike share telemetry, capturing minute-by-minute bicycle availability across 50 urban docking stations throughout 2015.
+
+### The Auditory Blueprint
+1. **Station $\Longleftrightarrow$ Instrument Timbre**: Each urban station category is assigned an acoustic voice:
+   * **Downtown Financial District**: Crystalline FM Bell Synthesizer (desk work hub).
+   * **University District**: Marimba Pluck Synthesizer (student commute hub).
+   * **Waterfront Pier 69**: Bright Brass Lead (leisure and ferry transit).
+   * **Capitol Hill Residential**: Deep Sub-Bass (residential origin).
+2. **Midnight Calibration**: Every station starts at 12:00 AM anchored to **Middle C ($C_4 = \text{MIDI } 60$)**.
+3. **Relative Delta Step**: $\pm 1$ bicycle dock change $= \pm 1$ semitone step:
+   * Net bike checkouts drain the station and lower the pitch ($C_4 \rightarrow B_3 \rightarrow A_3$).
+   * Net bike returns fill the docks and raise the pitch ($C_4 \rightarrow C\#_4 \rightarrow D_4$).
+4. **Time Compression Equation**:
+   $$\text{15-Minute Interval} \Longleftrightarrow \text{1 Music Beat (0.5s)}$$
+   $$\text{1 Hour} \Longleftrightarrow \text{1 Measure (4 beats = 2.0s)}$$
+   $$\text{1 Full Day (24 Hours)} \Longleftrightarrow \text{24 Measures (48.0s total)}$$
+
+### The Commuter Discovery
+Listening to the sonification immediately reveals the rhythmic counterpoint of an urban economy without reading a single spreadsheet:
+* **Weekday (April 1st)**: Sharp 8:00 AM rush where residential docks drain in a low bass plunge while downtown financial docks surge into high treble bells, reversing at 5:30 PM.
+* **Holiday (July 4th)**: Morning rushes are completely silent; instead, a massive slow afternoon wave flows toward the waterfront pier, followed by an evening post-fireworks cascade.
+
+Explore this live in **[Demo 19: Pronto Bike Share Commuter Symphony](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/19-pronto-bike-commuter/index.html)**.
+
+---
+
+## 🧠 Cognitive Channels for Data Encoding
+
+Different auditory attributes engage different neurological processing pathways. Leverage each channel according to its cognitive strength:
+
+| Musical Dimension | Cognitive Channel | Optimal Data Mapping Application |
+|---|---|---|
+| **Time & Rhythm** | Temporal Pacing | Chronological sequence, historical progression, relative speed/urgency. |
+| **Pitch Register** | Vertical Spatialization | High/Low magnitude, altitude, temperature, focal depth, priority. |
+| **Melody & Contour** | Cognitive Memorability | Constructing melodic "earworms" that enable users to identify and remember complex data patterns. |
+| **Tonal Harmony** | Emotional Resonance | System health, volatility tension, policy resolution, equilibrium states. |
+| **Timbre & Texture** | Categorical Discrimination | Unranked qualitative categories, discrete taxonomic groups, multi-source streams. |
+| **Stereo Panning** | Lateral Spatialization | Geographical longitude, physical array memory indices, flow directions. |
+
+---
+
+## 📚 Ecosystem, Prior Art & Academic References
+
+`d3-audio` builds upon pioneering work in the fields of auditory display, sound art, and algorithmic musicology:
+
+* **Pioneering Sonification Projects**:
+  * **Brian Foo** (*Data-Driven DJ*): Landmark sonification mapping median household income inequality along the NYC Subway F-Train line to musical arrangements.
+  * **Dr. Mark Ballora** (Penn State University): Scientific acoustic data sonification of tropical storms, including the physiological and atmospheric parameters of *Hurricane Sandy*.
+  * **Johannes Kreidler** (*Charts Music*): Algorithmic stock market crash melodies mapping 2008 Lehman Brothers, General Motors, and Bank of America declines into acoustic chamber instruments.
+  * **Reveal News & Center for Investigative Reporting**: *The Music of Oklahoma's Earthquakes*, sonifying the dramatic rise of human-induced seismic activity linked to wastewater injection.
+* **Historical Libraries & Tooling**:
+  * `miditime` (Python): Musical data sonification utility for converting numeric sequences into standard MIDI files.
+  * `Tone.js`: Web Audio framework powering modern browser synthesis and timeline scheduling.
+  * `Heartbeat.js` & `Midi.js`: Early web-based MIDI synthesis engines.
+  * **Thomas Levine**: Open-source R package and tutorials for rendering datasets directly into music videos and audio tracks.
+
+---
+
 ## 🌟 Key Features
 
 - **Musical Intelligence & Quantization**: Built-in awareness of Western diatonic modes (Major, Minor, Dorian, Phrygian, Lydian, Mixolydian, Locrian), Pentatonic scales, Blues scales, Symmetrical scales (Whole Tone, Diminished, Chromatic), World scales (Japanese Insen/Hirajoshi, Indian Raga Bhairav, Arabic Double Harmonic), and chords (Maj7, Min7, Dom7). Continuous data snaps cleanly to harmonic scale degrees or glides microtonally.
@@ -264,11 +353,18 @@ You can load `d3-audio` directly from the `dist/` bundle alongside D3 and Tone.j
 
 ---
 
-## 🎮 Interactive Demo Applications
+## 🎮 Interactive Demo Applications & GitHub Pages Hosting
 
-The repository includes four interactive applications demonstrating different sonification and choreography patterns.
+The repository includes **20 interactive applications** demonstrating different sonification and choreography patterns.
 
-To explore all demos, start the local server via Docker:
+### 🌐 Live GitHub Pages Site
+The entire demo gallery and documentation is configured for static hosting on **GitHub Pages**:
+* **Live Demo URL**: `https://<username>.github.io/<repository-name>/`
+* **Automated CI/CD**: A GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) is included to automatically publish the site on every push to `main`.
+* **Zero Configuration**: A `.nojekyll` file is included in the root, and all asset/module references use relative paths to support any repository subpath.
+
+### 🐳 Local Docker Server
+To run locally inside Docker:
 ```bash
 docker compose up
 ```
@@ -295,6 +391,8 @@ Or open [http://localhost:3000](http://localhost:3000) in your browser.
 | **16. Galton Board & Plinko Statistics** | [`/examples/16-galton-board-plinko/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/16-galton-board-plinko/index.html) | Interactive Central Limit Theorem pinball where binomial random drops play acoustic marimba chimes and accumulate into a singing Gaussian bell curve. |
 | **17. Protein & DNA Folding Sonifier** | [`/examples/17-protein-dna-sonifier/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/17-protein-dna-sonifier/index.html) | Macromolecular ribbon folding with 20 amino acid categorical timbres, Kyte-Doolittle hydropathy spatial panning, and interactive audio legend. |
 | **18. Categorical Ecosystem Food Web** | [`/examples/18-ecosystem-taxonomy/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/18-ecosystem-taxonomy/index.html) | Categorical trophic level timbres (Producers, Herbivores, Carnivores, Apex, Decomposers), biome modes, and IUCN conservation risk tension scaling. |
+| **19. Pronto Bike Share Commuter Symphony** | [`/examples/19-pronto-bike-commuter/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/19-pronto-bike-commuter/index.html) | The canonical 24-hour Seattle commuter sonification comparing April 1st weekday rush hours with July 4th holiday leisure waves using delta semitones from Middle C. |
+| **20. The Sound of Sorting Algorithms** | [`/examples/20-sound-of-sorting/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/20-sound-of-sorting/index.html) | Auditory computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort with stereo memory array panning. |
 
 ---
 
@@ -924,8 +1022,30 @@ docker run --rm -v "$PWD":/app -w /app node:20-alpine node test/run-tests.js
   ✓ Drums track holds 3 events
 
 ----------------------------------------
-✔ ALL 82 TESTS PASSED SUCCESSFULLY!
+✔ ALL 90 TESTS PASSED SUCCESSFULLY!
 ```
+
+---
+
+## 🔮 Future Features & Technical Roadmap
+
+Inspired by ongoing development and the garage project proposals in *"Transforming Data Into Music"*:
+
+### 1. Standard MIDI File Export (`Timeline.exportMidi()`)
+* **Rationale**: MIDI is the digital universal sheet music format.
+* **Capability**: Add native client-side export to standard `.mid` files (Type 0 and Type 1) so analysts and musicians can download their data sonification and import it directly into Digital Audio Workstations (DAWs) like Ableton Live, Logic Pro, GarageBand, FL Studio, or notation tools like MuseScore.
+
+### 2. ISO 226 / Fletcher-Munson Equal-Loudness Normalization
+* **Rationale**: Compensate for human auditory non-linearities where mid-treble ($2\text{ kHz} - 4\text{ kHz}$) sounds dramatically louder than sub-bass or high air frequencies.
+* **Capability**: Add `.equalLoudness(true)` to `scalePitch()` and `scaleGain()` to automatically normalize perceived phon/sone loudness across all octave registers.
+
+### 3. Microsoft PowerBI & Observable Custom Visual Plugins
+* **Rationale**: Bridge the gap between developer toolkits and enterprise business intelligence dashboards.
+* **Capability**: Package `d3-audio` as an official PowerBI Custom Visual (via the PowerBI Visuals SDK) and an Observable Plot / Jupyter widget, allowing executives and analysts to add audible KPI thresholds and ambient telemetry to enterprise dashboards.
+
+### 4. Built-in Auditory Icons & Micro-Earcons (`d3Audio.earcon()`)
+* **Rationale**: Headless devices, screen readers, and low-vision notifications require standardized auditory semantics.
+* **Capability**: Pre-packaged, psychoacoustically validated audio icons for instant UI and data state notifications (`earcon("success")`, `earcon("warning")`, `earcon("thresholdBreach")`, `earcon("dataNull")`).
 
 ---
 

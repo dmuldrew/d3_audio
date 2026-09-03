@@ -6,7 +6,7 @@
   <title>d3-audio | Data Sonification & Rhythmic Choreography for D3 and Tone.js</title>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-  <script src="/dist/d3-audio.js"></script>
+  <script src="./dist/d3-audio.js"></script>
   <style>
     :root {
       --bg: #090d16;
@@ -622,6 +622,42 @@
         </div>
         <a href="examples/18-ecosystem-taxonomy/" class="btn">Launch Demo ➔</a>
       </div>
+
+      <!-- Demo 19 -->
+      <div class="demo-card">
+        <div>
+          <div class="card-icon">🚲</div>
+          <h3 class="card-title">19. Pronto Bike Share Commuter Symphony</h3>
+          <p class="card-desc">
+            The canonical 24-hour Seattle commuter sonification comparing April 1st weekday rush hours with July 4th holiday leisure waves.
+          </p>
+          <div class="card-tags">
+            <span class="tag">Pronto Case Study</span>
+            <span class="tag">Delta Semitones</span>
+            <span class="tag">Middle C Baseline</span>
+            <span class="tag">Audio Legend</span>
+          </div>
+        </div>
+        <a href="examples/19-pronto-bike-commuter/" class="btn">Launch Demo ➔</a>
+      </div>
+
+      <!-- Demo 20 -->
+      <div class="demo-card">
+        <div>
+          <div class="card-icon">🔢</div>
+          <h3 class="card-title">20. The Sound of Sorting Algorithms</h3>
+          <p class="card-desc">
+            Auditory and visual computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort.
+          </p>
+          <div class="card-tags">
+            <span class="tag">Sound of Sorting</span>
+            <span class="tag">Radix Sort Redux</span>
+            <span class="tag">O(n log n)</span>
+            <span class="tag">Audio Legend</span>
+          </div>
+        </div>
+        <a href="examples/20-sound-of-sorting/" class="btn">Launch Demo ➔</a>
+      </div>
     </div>
 
     <!-- Quickstart Code Sample -->
@@ -659,7 +695,7 @@
   </div>
 
   <script type="module">
-    import * as d3Audio from '/src/index.js';
+    import * as d3Audio from './src/index.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       const pitch = d3Audio.scalePitch().domain([0, 100]).range(["C4", "D5"]).scale("pentatonic");

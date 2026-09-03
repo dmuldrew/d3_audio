@@ -8,7 +8,7 @@ import {
   defaultEngine,
   createSynth,
   createSamplePlayer
-} from '/src/index.js';
+} from '../../src/index.js';
 
 // Biochemical Amino Acid Reference Tables
 const aminoAcidProperties = {

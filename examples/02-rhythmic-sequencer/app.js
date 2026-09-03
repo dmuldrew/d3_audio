@@ -6,7 +6,7 @@ import {
   defaultEngine,
   createSynth,
   createSamplePlayer
-} from '/src/index.js';
+} from '../../src/index.js';
 
 const NUM_STEPS = 16;
 

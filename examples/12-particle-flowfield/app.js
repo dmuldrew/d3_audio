@@ -6,7 +6,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/src/index.js';
+} from '../../src/index.js';
 
 const container = document.getElementById('flow-area');
 const width = container.clientWidth || 700;
