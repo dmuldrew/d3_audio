@@ -1295,19 +1295,26 @@
         <span>Principles of Data Sonification</span>
       </h2>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
-        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; align-items: stretch;">
+        <!-- Column 1: Mapping Data to Sound -->
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
           <h4 style="color: var(--accent); margin-bottom: 0.5rem;">1. Mapping Data to Sound</h4>
-          <div style="font-family: monospace; font-size: 0.95rem; color: #fff; margin: 0.5rem 0;">
-            Data + Known Mapping = <strong>Meaning</strong><br>
-            Data + Cryptic Mapping = <strong>Noise / Junk</strong>
-          </div>
-          <p style="font-size: 0.82rem; color: var(--text-muted);">
-            Just as an unlabeled visual chart causes confusion, sonification without an explicit audio legend is mere noise. Every `d3-audio` demo provides an interactive `audioLegend()` key so listeners know what each sound signifies.
+          <blockquote style="font-style: italic; color: #fff; font-size: 0.95rem; margin: 0.5rem 0;">
+            Data + Clear Mapping = Meaning · Cryptic Sounds = Noise
+          </blockquote>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            Just as an unlabeled visual chart causes confusion, sound without an explicit key is mere noise. Every honest sonification requires clear perceptual mappings:
           </p>
+          <ul style="font-size: 0.78rem; color: #cbd5e1; list-style: disc; margin-left: 1.2rem; line-height: 1.5; flex-grow: 1;">
+            <li><strong>Explicit Auditory Legends</strong>: Every data dimension must be paired with an interactive <code>audioLegend()</code> key so listeners can preview and audition mappings.</li>
+            <li><strong>Single-Source Mapping</strong>: Bind each acoustic parameter (pitch, gain, pan, filter) to a distinct variable to prevent sensory confusion and cognitive overload.</li>
+            <li><strong>Natural Sonic Affordances</strong>: Leverage intuitive psychoacoustic metaphors (e.g. rising pitch = growing quantity; faster tempo = increasing urgency).</li>
+            <li><strong>Consistent Sonic Vocabulary</strong>: Keep timbre and scale conventions uniform across related charts so listeners do not need to repeatedly re-learn rules.</li>
+          </ul>
         </div>
 
-        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
+        <!-- Column 2: The Golden Rule -->
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
           <h4 style="color: var(--accent2); margin-bottom: 0.5rem;">2. The Golden Rule: Stay Close to the Data!</h4>
           <blockquote style="font-style: italic; color: #fff; font-size: 0.95rem; margin: 0.5rem 0;">
             Stay close to the data... otherwise it's art!
@@ -1315,25 +1322,29 @@
           <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">
             Music takes creative liberties, but sonification is an analytical tool. Every rule of visual chart integrity has a direct auditory counterpart:
           </p>
-          <ul style="font-size: 0.78rem; color: #cbd5e1; list-style: disc; margin-left: 1.2rem; line-height: 1.5;">
-            <li><strong>Truncated Y-Axis ➔ Exaggerated Pitch</strong>: Starting at 90 exaggerates a 1% blip into a huge spike; stretching narrow metrics across multiple octaves creates the same deception.</li>
-            <li><strong>Bubble Size vs. Volume Calibration</strong>: In visual charts, scaling a circle's radius instead of its area makes a 2× increase look 4× bigger. In audio, human hearing perceives volume logarithmically rather than linearly; always calibrate volume with decibels.</li>
-            <li><strong>Visual Chartjunk ➔ Audiojunk</strong>: Gratuitous reverb, echo, and synth flourishes that don't encode data are auditory chartjunk that masks the signal.</li>
-            <li><strong>Reading Axes ➔ The Reconstruction Test</strong>: Just as readers can read numbers off honest charts, listeners should be able to reconstruct the data trend from sound alone.</li>
+          <ul style="font-size: 0.78rem; color: #cbd5e1; list-style: disc; margin-left: 1.2rem; line-height: 1.5; flex-grow: 1;">
+            <li><strong>Truncated Y-Axis ➔ Pitch Distortion</strong>: Stretching a narrow 1% fluctuation across three wild octaves exaggerates data just like a clipped chart axis.</li>
+            <li><strong>Bubble Area ➔ Decibel Calibration</strong>: Human hearing perceives volume logarithmically; always calibrate loudness in decibels (<code>dB</code>) for honest ratios.</li>
+            <li><strong>Visual Chartjunk ➔ Audiojunk</strong>: Gratuitous reverbs, delays, and synth sweeps that don't encode data mask real metrics with decorative noise.</li>
+            <li><strong>The Reconstruction Test</strong>: An honest sonification allows a listener, guided by an audio key, to accurately reconstruct the underlying trend from sound alone.</li>
           </ul>
         </div>
 
-        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
+        <!-- Column 3: Categorical Integrity -->
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column;">
           <h4 style="color: #f59e0b; margin-bottom: 0.5rem;">3. Avoiding False Pitch Hierarchies</h4>
           <blockquote style="font-style: italic; color: #fff; font-size: 0.95rem; margin: 0.5rem 0;">
             Never map unranked categories to higher and lower pitches!
           </blockquote>
           <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-            The human brain inherently hears higher notes as "higher," "better," or "more important." In visual charts, you would never represent unranked categories using an ordered vertical bar chart or a sequential heat map.
+            The human brain instinctively hears higher notes as "higher," "better," or "more important." In visual graphics, unranked classes are never plotted on an ordered axis:
           </p>
-          <p style="font-size: 0.82rem; color: var(--text-muted);">
-            Reserve pitch exclusively for continuous measurements and ordinal rankings. Use distinct <strong>instrument timbres</strong> (e.g. Piano vs. Marimba vs. Guitar) or <strong>stereo pan positions</strong> to sonify unranked qualitative categories.
-          </p>
+          <ul style="font-size: 0.78rem; color: #cbd5e1; list-style: disc; margin-left: 1.2rem; line-height: 1.5; flex-grow: 1;">
+            <li><strong>No Accidental Ranking</strong>: Assigning Category A to low C3 and Category B to high C5 creates an unintended, false hierarchy of importance.</li>
+            <li><strong>Acoustic Instrument Timbres</strong>: Distinguish qualitative groups using distinct instrument families (e.g. Contrabass vs. Marimba vs. Flute).</li>
+            <li><strong>Stereo Spatial Panning</strong>: Spread unranked categories across the stereo field (Left, Center, Right) to express horizontal separation without rank.</li>
+            <li><strong>Percussion & Soundbanks</strong>: Use discrete sample hits (<code>scaleSample()</code>) or modal color rather than vertical pitch ladders for unranked categories.</li>
+          </ul>
         </div>
       </div>
 

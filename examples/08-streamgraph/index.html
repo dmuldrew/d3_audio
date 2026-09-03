@@ -85,6 +85,17 @@
       align-items: center;
       gap: 0.5rem;
       font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.02);
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    }
+    .legend-item:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-1px);
     }
     .legend-color {
       width: 14px;
@@ -119,7 +130,7 @@
 
     <div class="panel">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <span style="font-size: 0.9rem; color: var(--muted);">Move mouse over streamgraph to audition full 5-voice harmonized chords</span>
+        <span style="font-size: 0.9rem; color: var(--muted);">Click a layer to solo its voice · Move cursor or click across streamgraph to audition full 5-voice harmonized chords</span>
         <span id="chord-display" style="font-family: monospace; font-size: 1rem; color: var(--accent); font-weight: 700;">Chord: Ready</span>
       </div>
 
@@ -139,41 +150,47 @@
           <thead>
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
               <th style="padding: 0.4rem 0;">Energy Stream Layer</th>
-              <th style="padding: 0.4rem 0;">Generation Domain</th>
-              <th style="padding: 0.4rem 0;">Harmonic Voice</th>
-              <th style="padding: 0.4rem 0;">Transformation Function & Voicing Rationale</th>
+              <th style="padding: 0.4rem 0;">Acoustic Instrument</th>
+              <th style="padding: 0.4rem 0;">Dynamic Pitch Ascent (GW ➔ Pitch)</th>
+              <th style="padding: 0.4rem 0;">Stereo Pan & Model</th>
+              <th style="padding: 0.4rem 0;">Data Sonification Rationale</th>
             </tr>
           </thead>
           <tbody>
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
               <td style="padding: 0.45rem 0; font-weight: 700; color: #f43f5e;">Fossil Baseline</td>
-              <td>Layer 0 (Base)</td>
-              <td>Bass Root: C2</td>
-              <td>Anchor harmonic foundation; layer thickness drives deep bass presence and weight.</td>
+              <td><span style="font-size: 1rem;">🎻</span> <strong>Contrabass</strong></td>
+              <td><strong style="color: #f8fafc;">C2 ➔ A2</strong> (Pentatonic Root)<br><span style="color: #94a3b8; font-size: 0.7rem;">20 ➔ 60 GW generation</span></td>
+              <td>Center (0.0)<br><span style="color: #f43f5e; font-weight: 600;">Plucked 420Hz Lowpass</span></td>
+              <td>As grid demand spikes, contrabass walks up from deep sub-bass C2 into mid-bass punch.</td>
             </tr>
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
               <td style="padding: 0.45rem 0; font-weight: 700; color: #a855f7;">Nuclear Baseload</td>
-              <td>Layer 1</td>
-              <td>5th Degree: G2</td>
-              <td>Provides structural harmonic 5th; steady output creates constant harmonic bed.</td>
+              <td><span style="font-size: 1rem;">⛪</span> <strong>Pipe Organ</strong></td>
+              <td><strong style="color: #f8fafc;">G2 ➔ D3</strong> (Structural 5th)<br><span style="color: #94a3b8; font-size: 0.7rem;">30 ➔ 42 GW generation</span></td>
+              <td>Mid-Left (-0.35)<br><span style="color: #a855f7; font-weight: 600;">Cathedral AM Pipes</span></td>
+              <td>Steady atomic bed; organ fifths hover steadily with minor thermal adjustments.</td>
             </tr>
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
               <td style="padding: 0.45rem 0; font-weight: 700; color: #38bdf8;">Hydro Electric</td>
-              <td>Layer 2</td>
-              <td>Octave Root: C3</td>
-              <td>Mid-register anchor; seasonal reservoir surges swell the middle chord amplitude.</td>
+              <td><span style="font-size: 1rem;">🪵</span> <strong>Wooden Marimba</strong></td>
+              <td><strong style="color: #f8fafc;">C3 ➔ C4</strong> (Mid Octave)<br><span style="color: #94a3b8; font-size: 0.7rem;">12 ➔ 42 GW generation</span></td>
+              <td>Mid-Right (+0.35)<br><span style="color: #38bdf8; font-weight: 600;">Struck 220ms Rosewood</span></td>
+              <td>Reservoir generation climbs a full octave; snappy wooden mallets dance with water flow.</td>
             </tr>
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
               <td style="padding: 0.45rem 0; font-weight: 700; color: #10b981;">Wind Power</td>
-              <td>Layer 3</td>
-              <td>Major 3rd: E3</td>
-              <td>Determines major consonance; exponential growth after 2010 brightens overall chord harmony.</td>
+              <td><span style="font-size: 1rem;">🪈</span> <strong>Pan Flute</strong></td>
+              <td><strong style="color: #f8fafc;">E3 ➔ E4</strong> (Major 3rd Air)<br><span style="color: #94a3b8; font-size: 0.7rem;">5 ➔ 45 GW generation</span></td>
+              <td>Far Left (-0.70)<br><span style="color: #10b981; font-weight: 600;">Airy 70ms Breath FM</span></td>
+              <td>Wind surges propel the flute higher into treble air with breathy harmonic flutter.</td>
             </tr>
             <tr>
               <td style="padding: 0.45rem 0; font-weight: 700; color: #fbbf24;">Solar Photovoltaic</td>
-              <td>Layer 4 (Top)</td>
-              <td>Treble 9th: D4</td>
-              <td>High soaring melodic shimmer; rapid modern surge brings crystalline top-end air.</td>
+              <td><span style="font-size: 1rem;">🔔</span> <strong>Crystal Glockenspiel</strong></td>
+              <td><strong style="color: #f8fafc;">D3 ➔ D5</strong> (Treble 2-Octave Ascent)<br><span style="color: #94a3b8; font-size: 0.7rem;">0 ➔ 65 GW peak daylight</span></td>
+              <td>Far Right (+0.70)<br><span style="color: #fbbf24; font-weight: 600;">Inharmonic Metallic Bell</span></td>
+              <td>Soars two full octaves from soft morning bells up to brilliant midday noon chimes.</td>
             </tr>
           </tbody>
         </table>
