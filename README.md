@@ -105,7 +105,7 @@ flowchart TD
 
 Inspired by foundational research and practice in data musicology (including Daniel Muldrew's *"Transforming Data Into Music"*):
 
-### 1. The Meaning Equation
+### 1. Mapping Data to Sound
 $$\text{Data} + \text{Known Mapping} = \textbf{Meaning}$$
 $$\text{Data} + \text{Cryptic Mapping} = \textbf{Noise / Junk}$$
 
@@ -128,25 +128,19 @@ Artistic sonification allows arbitrary aesthetic choices. Analytical sonificatio
 
 Choosing the right auditory dimension depends strictly on the statistical data type of your variable:
 
-```
-┌───────────────────────┬───────────────────────────┬───────────────────────────────────────────┐
-│ Data Variable Type    │ Visual Attribute          │ Auditory Attribute (`d3-audio` Scaler)    │
-├───────────────────────┼───────────────────────────┼───────────────────────────────────────────┤
-│ Continuous / Quant    │ Position (X, Y)           │ Sound Frequency / Pitch (`scalePitch`)    │
-│ Continuous / Quant    │ Luminosity / Opacity      │ Sound Loudness (`scaleGain`)              │
-│ Continuous / Quant    │ Color Temperature         │ Timbre / Filter Brightness (`scaleFilter`)│
-│ Continuous / Quant    │ Horizontal Position       │ Stereo Spatial Panning (`scalePan`)       │
-│ Continuous / Quant    │ Width / Size              │ Note Duration (`scaleDuration`)           │
-├───────────────────────┼───────────────────────────┼───────────────────────────────────────────┤
-│ Ordinal (Ranked)      │ Grid Order / Step Rank    │ Diatonic Scale Degrees (`scalePitch`)     │
-│ Ordinal (Ranked)      │ Concentric Octave Tiers   │ Octave Register (C3 ➔ C4 ➔ C5)            │
-│ Ordinal (Ranked)      │ Threat / Severity Level   │ Harmonic Tension (`scaleTension`)         │
-├───────────────────────┼───────────────────────────┼───────────────────────────────────────────┤
-│ Categorical (Classes) │ Color Hue (Red, Blue)     │ Instrument Timbre / Synthesizer Voice     │
-│ Categorical (Classes) │ Visual Texture / Shape    │ Percussion Sample (`scaleSample`)         │
-│ Categorical (Classes) │ Category Clusters         │ Modal Key Center / Scale Mode             │
-└───────────────────────┴───────────────────────────┴───────────────────────────────────────────┘
-```
+| Data Variable Type | Visual Attribute | Auditory Attribute (`d3-audio` Scaler) |
+|---|---|---|
+| **Continuous / Quantitative** | Position (X, Y) | Sound Frequency / Pitch (`scalePitch`) |
+| **Continuous / Quantitative** | Luminosity / Opacity | Sound Loudness (`scaleGain`) |
+| **Continuous / Quantitative** | Color Temperature | Timbre / Filter Brightness (`scaleFilter`) |
+| **Continuous / Quantitative** | Horizontal Position | Stereo Spatial Panning (`scalePan`) |
+| **Continuous / Quantitative** | Width / Size | Note Duration (`scaleDuration`) |
+| **Ordinal (Ranked Hierarchy)** | Grid Order / Step Rank | Diatonic Scale Degrees (`scalePitch`) |
+| **Ordinal (Ranked Hierarchy)** | Concentric Octave Tiers | Octave Register ($C_3 \rightarrow C_4 \rightarrow C_5$) |
+| **Ordinal (Ranked Hierarchy)** | Threat / Severity Level | Harmonic Tension (`scaleTension`) |
+| **Categorical (Unranked Classes)** | Color Hue (Red, Blue) | Instrument Timbre / Synthesizer Voice |
+| **Categorical (Unranked Classes)** | Visual Texture / Shape | Percussion Sample (`scaleSample`) |
+| **Categorical (Unranked Classes)** | Category Clusters | Modal Key Center / Scale Mode |
 
 ### Continuous Data (Quantitative Ranges)
 * **Definition**: Numeric values with infinite smooth gradations (e.g. temperatures, stock prices, velocities, geographical coordinates, chemical hydropathy).
@@ -819,32 +813,194 @@ player.trigger("customKick");
 
 ---
 
-## 💡 Step-by-Step Recipes
+## 🍳 D3 Sonification Cookbook & Practical Recipes
 
-### Recipe: Adding Sound & Rhythmic Wiggles to D3 Hover Interactions
+The following ready-to-use recipes illustrate production-ready patterns for integrating `d3-audio` into real-world data visualization applications.
+
+---
+
+### Recipe 1: Interactive Scrubbing & Pointer Hover on a D3 Line Chart
+Provides continuous auditory feedback as the user scrubs their mouse across time-series coordinates, using smooth microtonal glissando pitch interpolation:
 
 ```javascript
 import * as d3 from "d3";
-import { scalePitch, scaleGain, createSynth, choreography, defaultEngine } from "d3-audio";
+import { scalePitch, scaleGain, createSynth, defaultEngine } from "d3-audio";
 
-const pitch = scalePitch().domain([0, 100]).range(["C4", "G5"]).scale("pentatonic");
-const gain = scaleGain().domain([0, 100]).range([0.4, 0.9]);
-const synth = createSynth({ type: "polySynth" });
+// 1. Configure smooth continuous pitch & gain scalers
+const pitch = scalePitch()
+  .domain([d3.min(data, d => d.price), d3.max(data, d => d.price)])
+  .range(["C3", "C6"])
+  .quantize(false); // Continuous microtonal gliding
 
-const choreo = choreography()
-  .movement("wiggle")
-  .intensity(d => d.value / 25)
-  .duration(0.35);
+const gain = scaleGain()
+  .domain([0, d3.max(data, d => d.volume)])
+  .range([0.2, 0.9]);
 
-d3.selectAll(".data-node")
-  .on("mouseenter click", async function(event, d) {
+// 2. Synthesizer with portamento glide
+const synth = createSynth({ type: "synth", portamento: 0.05, volume: -6 });
+
+// 3. Pointer move listener on SVG chart overlay
+d3.select("#chart-overlay")
+  .on("pointerdown", async () => {
     await defaultEngine.start();
-    const note = pitch(d.value);
-    const vel = gain(d.value);
-    
-    synth.triggerAttackRelease(note, "8n", undefined, vel);
-    d3.select(this).call(choreo);
+    synth.triggerAttack("C4");
+  })
+  .on("pointermove", function(event) {
+    const [mx] = d3.pointer(event);
+    const hoveredDatum = bisectDate(data, xScale.invert(mx));
+    if (!hoveredDatum) return;
+
+    // Smoothly glide frequency and volume to data point
+    const freq = pitch.frequency(hoveredDatum.price);
+    const vel = gain(hoveredDatum.volume);
+    synth.setFrequency(freq, 0.04);
+    synth.setVolume(vel);
+
+    // Update visual tooltip & playhead
+    updateTooltip(hoveredDatum, mx);
+  })
+  .on("pointerup pointerleave", () => {
+    synth.triggerRelease();
   });
+```
+
+---
+
+### Recipe 2: D3 Brush & Zoom Soundscapes
+Provides intuitive acoustic feedback when selecting data intervals using `d3.brush()`, sonifying selection density and bounding box width:
+
+```javascript
+import * as d3 from "d3";
+import { scalePitch, scalePan, scaleFilter, createSynth, defaultEngine } from "d3-audio";
+
+const pan = scalePan().domain([0, width]).range([-0.8, 0.8]);
+const filter = scaleFilter().domain([1, 500]).range([300, 7000]); // Density to brightness
+const brushSynth = createSynth({ type: "fmSynth", volume: -8 });
+
+const brush = d3.brushX()
+  .extent([[0, 0], [width, height]])
+  .on("start", async () => {
+    await defaultEngine.start();
+  })
+  .on("brush", function({ selection }) {
+    if (!selection) return;
+    const [x0, x1] = selection;
+    const center = (x0 + x1) / 2;
+    const count = data.filter(d => xScale(d.date) >= x0 && xScale(d.date) <= x1).length;
+
+    // Pan sound toward center of brush selection, open filter with item density
+    const currentPan = pan(center);
+    const currentCutoff = filter(count);
+    brushSynth.triggerAttackRelease("G3", "16n", undefined, 0.6, {
+      pan: currentPan,
+      filterCutoff: currentCutoff
+    });
+  });
+
+d3.select("#brush-g").call(brush);
+```
+
+---
+
+### Recipe 3: Live Real-Time Streaming & WebSockets Telemetry
+Sonifies continuous streaming telemetry without audio dropouts, clicks, or thread locking:
+
+```javascript
+import { scalePitch, scaleTension, createSynth, defaultEngine } from "d3-audio";
+
+const tension = scaleTension().domain([0, 100]);
+const synth = createSynth({ type: "polySynth", volume: -4 });
+
+// Connect to incoming telemetry WebSocket
+const socket = new WebSocket("wss://telemetry.example.com/live");
+
+socket.onmessage = async (event) => {
+  const metric = JSON.parse(event.data); // e.g. { cpu: 85, latency: 120 }
+  await defaultEngine.start();
+
+  const state = tension(metric.cpu);
+
+  // If server is critical, trigger dissonant tension chord with sharp filter cutoff
+  if (state.isDissonant) {
+    synth.triggerAttackRelease(state.chord, "16n", undefined, state.gain, {
+      filterCutoff: state.filterCutoff
+    });
+  } else {
+    // Normal pulse
+    synth.triggerAttackRelease(state.chord[0], "32n", undefined, 0.4);
+  }
+};
+```
+
+---
+
+### Recipe 4: Accessible Screen-Reader Navigable Chart (a11y)
+Enables blind and visually impaired users to step through data points with keyboard arrows, simultaneously receiving ARIA live announcements and audio cues:
+
+```javascript
+import * as d3 from "d3";
+import { scalePitch, scaleGain, createSynth, defaultEngine } from "d3-audio";
+
+const pitch = scalePitch().domain([0, 1000]).range(["C3", "C6"]).scale("pentatonic");
+const synth = createSynth({ type: "synth", volume: -4 });
+let activeIndex = 0;
+
+function focusPoint(index) {
+  activeIndex = Math.max(0, Math.min(data.length - 1, index));
+  const d = data[activeIndex];
+  const note = pitch(d.value);
+
+  // 1. Play musical earcon
+  synth.triggerAttackRelease(note, "8n");
+
+  // 2. Announce to screen reader via ARIA live region
+  const liveRegion = document.getElementById("sr-live-announce");
+  liveRegion.textContent = `Point ${activeIndex + 1} of ${data.length}: Date ${d.date}, Value ${d.value} units.`;
+
+  // 3. Highlight visual circle
+  d3.selectAll(".data-dot").classed("active-focus", (item, i) => i === activeIndex);
+}
+
+// Keyboard navigation listener
+window.addEventListener("keydown", async (e) => {
+  if (e.key === "ArrowRight") {
+    await defaultEngine.start();
+    focusPoint(activeIndex + 1);
+  } else if (e.key === "ArrowLeft") {
+    await defaultEngine.start();
+    focusPoint(activeIndex - 1);
+  }
+});
+```
+
+---
+
+### Recipe 5: Custom Audio Sample Loading & Web Audio Soundfonts
+Load custom `.wav` or `.mp3` sound assets for domain-specific sonifications (e.g. medical monitors or environmental bird calls):
+
+```javascript
+import { scaleSample, createSamplePlayer, defaultEngine } from "d3-audio";
+
+const player = createSamplePlayer();
+
+// 1. Preload custom audio assets
+await player.loadUrls({
+  heartbeat: "/assets/audio/heartbeat.wav",
+  sonarPing: "/assets/audio/sonar.mp3",
+  geigerClick: "/assets/audio/geiger.wav"
+});
+
+// 2. Map categorical events to custom samples
+const sampleScale = scaleSample()
+  .domain(["normal", "ping", "radiation"])
+  .range(["heartbeat", "sonarPing", "geigerClick"]);
+
+// 3. Trigger playback based on incoming event
+async function onSensorEvent(eventType) {
+  await defaultEngine.start();
+  const sampleKey = sampleScale(eventType);
+  player.trigger(sampleKey, "8n", undefined, 0.9);
+}
 ```
 
 ---
@@ -893,7 +1049,10 @@ d3_audio/
 │   │   ├── scalePan.js
 │   │   ├── scaleFilter.js
 │   │   ├── scaleSample.js
-│   │   └── scaleTempo.js
+│   │   ├── scaleTempo.js
+│   │   └── scaleTension.js        # Multi-dimensional volatility & tension scaler
+│   ├── ui/                        # Interactive audio keys & controls
+│   │   └── audioLegend.js         # Interactive auditionable audio legend
 │   ├── movements/                 # Rhythmic motion presets & choreography engine
 │   │   ├── choreography.js
 │   │   ├── motionEnvelope.js
@@ -905,12 +1064,8 @@ d3_audio/
 │   └── timeline/                  # Tone.js transport & multi-track conductor
 │       ├── timeline.js
 │       └── track.js
-├── examples/                      # Interactive Demo Applications
-│   ├── 01-data-sonification/      # Sonified scatter & bar charts with pitch & panning
-│   ├── 02-rhythmic-sequencer/     # 16-step drum matrix with 3D flips, wiggles & bounces
-│   ├── 03-continuous-stream/      # Live real-time stream with filter sweeps & wave dynamics
-│   └── 04-playground/             # Interactive scale & choreography workbench
-└── test/                          # Unit & integration test suite (82 passing tests)
+├── examples/                      # 20 Interactive Demo Applications (01 through 20)
+└── test/                          # Unit & integration test suite (90 passing tests)
 ```
 
 ---

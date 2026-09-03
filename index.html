@@ -30,7 +30,7 @@
       color: var(--text);
       min-height: 100vh;
       line-height: 1.6;
-      padding-bottom: 5rem;
+      padding-bottom: 6rem;
     }
 
     /* Sticky Navigation */
@@ -38,17 +38,19 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(7, 11, 20, 0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(7, 11, 20, 0.9);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--card-border);
-      padding: 0.85rem 1.5rem;
+      padding: 0.75rem 1.5rem;
     }
     .nav-container {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
     }
     .nav-brand {
       display: flex;
@@ -62,13 +64,14 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1.1rem;
       list-style: none;
+      flex-wrap: wrap;
     }
     .nav-links a {
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.86rem;
       font-weight: 600;
       transition: color 0.15s;
     }
@@ -79,10 +82,10 @@
       gap: 0.4rem;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--card-border);
-      padding: 0.4rem 0.85rem;
+      padding: 0.35rem 0.8rem;
       border-radius: 9999px;
       color: #fff !important;
-      font-size: 0.85rem !important;
+      font-size: 0.82rem !important;
       transition: all 0.2s;
     }
     .nav-github-btn:hover {
@@ -92,7 +95,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
       padding: 0 1.25rem;
     }
@@ -100,7 +103,7 @@
     /* Hero Section */
     header {
       text-align: center;
-      padding: 3.5rem 1rem 2rem 1rem;
+      padding: 3rem 1rem 1.5rem 1rem;
     }
 
     .badge {
@@ -113,7 +116,7 @@
       font-size: 0.85rem;
       font-weight: 600;
       letter-spacing: 0.05em;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
       text-transform: uppercase;
     }
 
@@ -123,28 +126,61 @@
       background: linear-gradient(135deg, #ffffff 25%, #38bdf8 65%, #ec4899 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       letter-spacing: -0.03em;
     }
 
     p.subtitle {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       color: var(--text-muted);
-      max-width: 820px;
-      margin: 0 auto 2rem auto;
+      max-width: 840px;
+      margin: 0 auto 1.75rem auto;
     }
 
+    /* Audio Banner & Integrated Oscilloscope */
     .audio-banner {
-      background: linear-gradient(90deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      background: linear-gradient(90deg, rgba(56,189,248,0.12), rgba(236,72,153,0.12));
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 1.1rem 1.75rem;
-      max-width: 680px;
+      padding: 1.25rem 1.5rem;
+      max-width: 720px;
       margin: 0 auto 2.5rem auto;
+      backdrop-filter: blur(10px);
+    }
+    .audio-banner-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      backdrop-filter: blur(8px);
+      gap: 1rem;
+      margin-bottom: 0.85rem;
+    }
+
+    /* Global Oscilloscope Canvas */
+    .oscilloscope-box {
+      width: 100%;
+      height: 64px;
+      background: rgba(4, 8, 20, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .oscilloscope-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .oscilloscope-label {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      font-size: 0.68rem;
+      font-family: monospace;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+      opacity: 0.85;
     }
 
     .btn {
@@ -154,21 +190,19 @@
       background: var(--accent);
       color: #040813;
       border: none;
-      padding: 0.7rem 1.4rem;
+      padding: 0.65rem 1.3rem;
       border-radius: 8px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 700;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
     .btn:hover {
       background: #7dd3fc;
       transform: translateY(-2px);
       box-shadow: 0 4px 20px var(--accent-glow);
     }
-
     .btn-secondary {
       background: rgba(255,255,255,0.08);
       color: #fff;
@@ -178,6 +212,18 @@
       background: rgba(255,255,255,0.15);
       border-color: var(--accent);
     }
+    .btn-sm {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.8rem;
+    }
+    .btn-danger {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-success {
+      background: var(--green);
+      color: #040813;
+    }
 
     /* Section Cards */
     .section-card {
@@ -185,13 +231,13 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 2rem;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2.75rem;
       backdrop-filter: blur(12px);
     }
     .section-title {
       font-size: 1.6rem;
       font-weight: 800;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
       gap: 0.6rem;
@@ -262,10 +308,10 @@
       box-shadow: 0 0 30px #fff, 0 0 50px var(--accent-glow) !important;
     }
 
-    /* Interactive Scalers Workbench */
+    /* Scalers Workbench */
     .scaler-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
       gap: 1.5rem;
       margin-top: 1rem;
     }
@@ -307,7 +353,7 @@
       color: var(--text-muted);
       font-weight: 600;
     }
-    .control-row select, .control-row input[type="range"] {
+    .control-row select, .control-row input[type="range"], .control-row input[type="text"] {
       background: #090d16;
       border: 1px solid var(--card-border);
       color: #fff;
@@ -315,13 +361,11 @@
       border-radius: 6px;
       font-size: 0.85rem;
     }
-    .control-row input[type="range"] {
-      width: 140px;
-    }
+    .control-row input[type="range"] { width: 135px; }
 
     .output-badge {
       font-family: monospace;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--gold);
       background: rgba(251, 191, 36, 0.1);
       padding: 0.2rem 0.5rem;
@@ -349,7 +393,6 @@
       color: #030712;
     }
 
-    /* Drum Pad Bank */
     .pad-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -373,11 +416,9 @@
       color: var(--accent2);
       transform: translateY(-1px);
     }
-    .drum-pad:active {
-      transform: scale(0.95);
-    }
+    .drum-pad:active { transform: scale(0.95); }
 
-    /* Choreography Live Tester */
+    /* Choreography Tester */
     .choreography-box {
       display: flex;
       flex-direction: column;
@@ -390,8 +431,8 @@
       perspective: 800px;
     }
     .choreo-target {
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
       border-radius: 20px;
       background: linear-gradient(135deg, #38bdf8, #ec4899);
       display: flex;
@@ -416,7 +457,7 @@
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.12);
       color: #f8fafc;
-      padding: 0.45rem 0.85rem;
+      padding: 0.4rem 0.8rem;
       border-radius: 6px;
       font-size: 0.8rem;
       font-weight: 700;
@@ -429,6 +470,178 @@
       color: var(--accent);
     }
 
+    /* A/B Ethical Comparison Widget */
+    .ab-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 768px) {
+      .ab-grid { grid-template-columns: 1fr; }
+    }
+    .ab-card {
+      border-radius: 14px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ab-card.trap {
+      background: rgba(244, 63, 94, 0.06);
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+    .ab-card.ethical {
+      background: rgba(16, 185, 129, 0.06);
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+    .ab-card h4 {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ab-chart-container {
+      background: rgba(4, 7, 18, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0;
+      position: relative;
+    }
+
+    /* CSV Sandbox Dropzone */
+    .sandbox-dropzone {
+      border: 2px dashed rgba(56, 189, 248, 0.35);
+      border-radius: 14px;
+      padding: 1.75rem 1.5rem;
+      text-align: center;
+      background: rgba(56, 189, 248, 0.03);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 1.25rem;
+    }
+    .sandbox-dropzone:hover, .sandbox-dropzone.dragover {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+    }
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.75rem;
+    }
+    .preset-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e2e8f0;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* API Search & Cheat Sheet */
+    .api-search-input {
+      width: 100%;
+      background: rgba(4, 7, 18, 0.9);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      margin-bottom: 1.25rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .api-search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .api-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+    .api-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+    .api-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .api-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+    .api-name {
+      font-family: monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .api-category {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .api-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+      line-height: 1.5;
+    }
+    .api-snippet {
+      background: #030611;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 0.65rem 0.85rem;
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      position: relative;
+      margin-bottom: 0.75rem;
+      white-space: pre-wrap;
+    }
+    .btn-copy {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #94a3b8;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      align-self: flex-start;
+      transition: all 0.15s;
+    }
+    .btn-copy:hover {
+      color: #fff;
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.15);
+    }
+
     /* Demo Gallery Grid */
     .grid-demos {
       display: grid;
@@ -436,7 +649,6 @@
       gap: 1.5rem;
       margin-bottom: 3rem;
     }
-
     .demo-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -450,7 +662,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .demo-card::before {
       content: '';
       position: absolute;
@@ -459,43 +670,16 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-
     .demo-card:hover {
       transform: translateY(-4px);
       border-color: rgba(56, 189, 248, 0.4);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
     }
-
-    .demo-card:hover::before {
-      opacity: 1;
-    }
-
-    .card-icon {
-      font-size: 2rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .card-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 0.5rem;
-    }
-
-    .card-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 1rem;
-    }
-
-    .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-bottom: 1.25rem;
-    }
-
+    .demo-card:hover::before { opacity: 1; }
+    .card-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .card-title { font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
+    .card-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.25rem; }
     .tag {
       font-size: 0.7rem;
       padding: 0.2rem 0.5rem;
@@ -510,15 +694,15 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin-bottom: 1.75rem;
+      margin-bottom: 1.5rem;
     }
     .chip {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: var(--text-muted);
-      padding: 0.45rem 1rem;
+      padding: 0.4rem 0.95rem;
       border-radius: 9999px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
@@ -547,7 +731,6 @@
       line-height: 1.6;
       margin: 1rem 0;
     }
-
     .hl-kw { color: #f472b6; }
     .hl-fn { color: #38bdf8; }
     .hl-str { color: #a7f3d0; }
@@ -597,12 +780,15 @@
       </a>
       <ul class="nav-links">
         <li><a href="#demos">20 Demos</a></li>
-        <li><a href="#scalers-lab">Interactive Scalers</a></li>
-        <li><a href="#principles">Sonification Principles</a></li>
+        <li><a href="#scalers-lab">Scalers Lab</a></li>
+        <li><a href="#csv-sandbox">Drop & Sonify CSV</a></li>
+        <li><a href="#ab-test">Ethical A/B Test</a></li>
+        <li><a href="#api-cheatsheet">API Cheat Sheet</a></li>
+        <li><a href="#principles">Principles</a></li>
         <li><a href="#quickstart">Quickstart</a></li>
         <li>
           <a href="https://github.com/dmuldrew/d3_audio" target="_blank" class="nav-github-btn">
-            <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+            <svg height="15" width="15" viewBox="0 0 16 16" fill="currentColor">
               <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
             </svg>
             <span>GitHub Repo</span>
@@ -621,12 +807,20 @@
         Transform data into synchronized sound and rhythmic visual choreography. Map data to musical pitches, frequencies, drum samples, and screen movements like wiggles, 3D flips, pulses, and bounces.
       </p>
 
+      <!-- Web Audio Banner with Integrated Live Oscilloscope -->
       <div class="audio-banner">
-        <div style="text-align: left;">
-          <strong style="font-size: 1.05rem;">Web Audio Context</strong>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Click to enable live in-browser audio synthesis</p>
+        <div class="audio-banner-top">
+          <div style="text-align: left;">
+            <strong style="font-size: 1.05rem;">Web Audio Context & Oscilloscope</strong>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Click to enable live audio synthesis and visual spectrum tracking</p>
+          </div>
+          <button id="enable-audio-btn" class="btn">🔊 Enable Audio</button>
         </div>
-        <button id="enable-audio-btn" class="btn">🔊 Enable Audio</button>
+
+        <div class="oscilloscope-box">
+          <span class="oscilloscope-label">LIVE AUDIO OSCILLOSCOPE (RMS / WAVEFORM)</span>
+          <canvas id="global-oscilloscope" class="oscilloscope-canvas"></canvas>
+        </div>
       </div>
     </header>
 
@@ -723,7 +917,7 @@
           <div>
             <h4>
               <span>scaleTension()</span>
-              <span id="tension-out" class="output-badge">0.0 (Consonant)</span>
+              <span id="tension-out" class="output-badge">0.00 (consonant)</span>
             </h4>
             <p>Coordinates risk & volatility into chord harmony (Major ➔ Tritone), filter cutoff, and tempo.</p>
           </div>
@@ -734,7 +928,7 @@
             </div>
             <div class="control-row">
               <label>Harmonic Chord:</label>
-              <span id="chord-out" style="font-size: 0.8rem; font-family: monospace; color: var(--accent);">C Major Triad</span>
+              <span id="chord-out" style="font-size: 0.8rem; font-family: monospace; color: var(--accent);">C3-G3-C4-E4 | 400 Hz</span>
             </div>
             <button id="btn-test-tension" class="btn-audition">🔊 Audition Tension Chord</button>
           </div>
@@ -745,7 +939,7 @@
           <div>
             <h4>
               <span>scalePan() & scaleFilter()</span>
-              <span id="pan-out" class="output-badge">Center | 2500 Hz</span>
+              <span id="pan-out" class="output-badge">Center (0) | 2500 Hz</span>
             </h4>
             <p>Maps spatial X coordinates to stereo panning and continuous metrics to filter cutoffs.</p>
           </div>
@@ -807,7 +1001,81 @@
       </div>
     </section>
 
-    <!-- SECTION 2: Principles of Data Sonification -->
+    <!-- SECTION 2: Instant "Drop & Sonify" CSV Sandbox -->
+    <section class="section-card" id="csv-sandbox">
+      <h2 class="section-title">
+        <span>📂</span>
+        <span>Instant "Drop & Sonify" CSV Sandbox</span>
+      </h2>
+      <p class="section-desc">
+        Load your own dataset or audition pre-packaged real-world telemetry. Map any numeric or categorical column to Pitch, Volume, Pan, or Scale Modes, and hear your data come alive in real time.
+      </p>
+
+      <div class="sandbox-dropzone" id="csv-dropzone">
+        <p style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">
+          Drag & Drop any .CSV file here, or click to browse
+        </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          All processing is 100% clientside inside your browser. No data ever leaves your computer.
+        </p>
+        <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display: none;">
+
+        <div class="preset-chips">
+          <span style="font-size: 0.78rem; color: var(--text-muted); align-self: center;">Or load a preset:</span>
+          <button class="preset-btn" data-preset="sp500">📈 S&P 500 Market Volatility</button>
+          <button class="preset-btn" data-preset="earthquake">🌍 USGS Earthquake Swarm</button>
+          <button class="preset-btn" data-preset="climate">🌡️ NASA Climate Anomaly</button>
+          <button class="preset-btn" data-preset="ecg">💓 ECG Arrhythmia Rhythm</button>
+        </div>
+      </div>
+
+      <!-- Sandbox Controls & Preview Chart -->
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Pitch Column</label>
+            <select id="csv-pitch-col" style="width: 100%; margin-top: 0.25rem; background: #090d16; border: 1px solid var(--card-border); color: #fff; padding: 0.4rem; border-radius: 6px;"></select>
+          </div>
+          <div>
+            <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Volume / Gain Column</label>
+            <select id="csv-gain-col" style="width: 100%; margin-top: 0.25rem; background: #090d16; border: 1px solid var(--card-border); color: #fff; padding: 0.4rem; border-radius: 6px;"></select>
+          </div>
+          <div>
+            <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Stereo Pan Column</label>
+            <select id="csv-pan-col" style="width: 100%; margin-top: 0.25rem; background: #090d16; border: 1px solid var(--card-border); color: #fff; padding: 0.4rem; border-radius: 6px;"></select>
+          </div>
+          <div>
+            <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Musical Scale Mode</label>
+            <select id="csv-scale-mode" style="width: 100%; margin-top: 0.25rem; background: #090d16; border: 1px solid var(--card-border); color: #fff; padding: 0.4rem; border-radius: 6px;">
+              <option value="pentatonic" selected>Pentatonic Major</option>
+              <option value="blues">Blues Scale</option>
+              <option value="dorian">Dorian Mode</option>
+              <option value="hirajoshi">Japanese Hirajoshi</option>
+              <option value="chromatic">Chromatic (Exact Pitch)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- SVG Preview Line Chart -->
+        <div style="background: rgba(4,7,18,0.85); border: 1px solid var(--card-border); border-radius: 8px; padding: 0.75rem; position: relative;">
+          <svg id="csv-chart-svg" width="100%" height="160" style="overflow: visible;"></svg>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div style="display: flex; gap: 0.75rem;">
+            <button id="csv-play-btn" class="btn btn-success">▶ Sonify Dataset</button>
+            <button id="csv-stop-btn" class="btn btn-secondary">⏹ Stop</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem;">
+            <label style="color: var(--text-muted); font-weight: 600;">Playback Tempo:</label>
+            <input type="range" id="csv-tempo-slider" min="60" max="240" value="120" style="width: 120px;">
+            <span id="csv-tempo-val" class="output-badge">120 BPM</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Principles of Data Sonification & A/B Ethical Comparison -->
     <section class="section-card" id="principles">
       <h2 class="section-title">
         <span>📜</span>
@@ -819,7 +1087,7 @@
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
         <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
-          <h4 style="color: var(--accent); margin-bottom: 0.5rem;">1. The Meaning Equation</h4>
+          <h4 style="color: var(--accent); margin-bottom: 0.5rem;">1. Mapping Data to Sound</h4>
           <div style="font-family: monospace; font-size: 0.95rem; color: #fff; margin: 0.5rem 0;">
             Data + Known Mapping = <strong>Meaning</strong><br>
             Data + Cryptic Mapping = <strong>Noise / Junk</strong>
@@ -873,21 +1141,70 @@
         </tbody>
       </table>
 
-      <!-- Ethical Guidelines -->
-      <div style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem;">
-        <h4 style="color: var(--red); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
-          <span>⚠️</span> Ethical Sonification & Preventing Data Misrepresentation
-        </h4>
-        <ul style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-left: 1.25rem;">
-          <li><strong>The Cherry-Picked Scale Hazard</strong>: Never force chaotic or anomalous data into Pentatonic scales that falsely make severe volatility sound calm and melodic. Use `scaleTension()` with dissonant tritones.</li>
-          <li><strong>Cultural Key & Tonal Bias</strong>: Minor chords convey "sad / bad" in Western conditioning. Avoid mapping neutral demographic or product categories to minor keys.</li>
-          <li><strong>Psychoacoustic Non-Linearity (Fletcher-Munson)</strong>: The human ear is far more sensitive at 3 kHz than at 60 Hz. Use loudness weighting so low and high notes are perceived with balanced prominence.</li>
-          <li><strong>Temporal Masking</strong>: Keep event pacing $\ge 60\text{ ms}$ so rapid events don't blur into an unresolvable acoustic smear.</li>
-        </ul>
+      <!-- SECTION: A/B Ethical Comparison Widget -->
+      <div id="ab-test" style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.75rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚖️</span>
+          <span>A/B Sound Test: Ethical Sonification vs. The "Cherry-Picked Scale" Trap</span>
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Audition the exact same financial crash dataset (a 68% sudden portfolio collapse) using two opposing musical approaches:
+        </p>
+
+        <!-- Synchronized Crisis Sparkline Chart -->
+        <div class="ab-chart-container">
+          <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+            <span>Simulated Flash Crash Telemetry (Day 1 ➔ Day 30)</span>
+            <span id="ab-playhead-status" style="font-family: monospace; color: var(--accent);">Ready to audition</span>
+          </div>
+          <svg id="ab-sparkline" width="100%" height="110" style="overflow: visible;"></svg>
+        </div>
+
+        <div class="ab-grid">
+          <!-- Card A: The Misleading Trap -->
+          <div class="ab-card trap">
+            <div>
+              <h4 style="color: var(--red);">
+                <span>🚫</span>
+                <span>Track A: The "Cherry-Picked" Trap</span>
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.85rem;">
+                Maps the market crash to a cheerful <strong>Major Pentatonic Scale</strong> on a bell synthesizer at a constant, relaxed 100 BPM.
+              </p>
+              <div style="background: rgba(0,0,0,0.35); border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.8rem; margin-bottom: 1rem;">
+                <strong style="color: #fff;">Listener Perception:</strong>
+                <p style="color: #fca5a5; margin-top: 0.2rem;">Sounds like a calm, tranquil zen-spa melody. The severe crash is masked completely!</p>
+              </div>
+            </div>
+            <button id="btn-play-trap" class="btn btn-danger" style="width: 100%; justify-content: center;">
+              ▶ Play Track A (Pentatonic Trap)
+            </button>
+          </div>
+
+          <!-- Card B: The Ethical Reality -->
+          <div class="ab-card ethical">
+            <div>
+              <h4 style="color: var(--green);">
+                <span>✓</span>
+                <span>Track B: Ethical Reality (`scaleTension`)</span>
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.85rem;">
+                Uses <strong>`scaleTension()`</strong>: consonant Major chords morph into a harsh <strong>Dissonant Tritone</strong>, filter cutoff opens to 8 kHz, and tempo accelerates by 1.8×.
+              </p>
+              <div style="background: rgba(0,0,0,0.35); border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.8rem; margin-bottom: 1rem;">
+                <strong style="color: #fff;">Listener Perception:</strong>
+                <p style="color: #86efac; margin-top: 0.2rem;">Viscerally communicates crisis, rising risk, and impending danger directly to the gut.</p>
+              </div>
+            </div>
+            <button id="btn-play-ethical" class="btn btn-success" style="width: 100%; justify-content: center;">
+              ▶ Play Track B (Ethical Tension)
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- SECTION 3: 20 Interactive Demo Applications -->
+    <!-- SECTION 4: 20 Interactive Demo Applications -->
     <section class="section-card" id="demos">
       <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
         <div>
@@ -1254,7 +1571,239 @@
       </div>
     </section>
 
-    <!-- SECTION 4: Quickstart & Integration -->
+    <!-- SECTION 5: Searchable API Quick-Reference & Cheat Sheet -->
+    <section class="section-card" id="api-cheatsheet">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <h2 class="section-title">
+            <span>📚</span>
+            <span>Searchable API Quick-Reference & Cheat Sheet</span>
+          </h2>
+          <p class="section-desc" style="margin-bottom: 0;">
+            Filter and search across all `d3-audio` constructors, scalers, and choreography methods. Click "Copy Snippet" to grab production-ready code.
+          </p>
+        </div>
+        <div class="filter-chips" id="api-filter-chips">
+          <button class="chip active" data-api-cat="all">All (13)</button>
+          <button class="chip" data-api-cat="scalers">Scalers</button>
+          <button class="chip" data-api-cat="movements">Choreography</button>
+          <button class="chip" data-api-cat="audio">Audio & Synths</button>
+          <button class="chip" data-api-cat="timeline">Timeline</button>
+          <button class="chip" data-api-cat="ui">UI & Legends</button>
+        </div>
+      </div>
+
+      <input type="text" id="api-search-input" class="api-search-input" placeholder="🔍 Search methods, parameters, presets... (e.g. scaleTension, wiggle, gain, pan, chord)">
+
+      <div class="api-grid" id="api-cards-grid">
+        <!-- scalePitch -->
+        <div class="api-card" data-cat="scalers" data-name="scalePitch">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scalePitch()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps quantitative domain values to quantized musical pitch note strings (e.g. "C4", "G#5") or continuous Hz frequencies.</p>
+            <div class="api-snippet">const pitch = scalePitch()
+  .domain([0, 100])
+  .range(["C3", "C6"])
+  .scale("pentatonic")
+  .root("C");</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleGain -->
+        <div class="api-card" data-cat="scalers" data-name="scaleGain">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleGain()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps quantitative metrics to audio amplitude velocity [0.0, 1.0] or decibel gain [-60dB, 0dB] with linear or exponential curves.</p>
+            <div class="api-snippet">const gain = scaleGain()
+  .domain([0, 1000])
+  .range([0.2, 0.9])
+  .curve("exponential");</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scalePan -->
+        <div class="api-card" data-cat="scalers" data-name="scalePan">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scalePan()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps horizontal spatial positions (e.g. SVG X coordinates, longitude) to stereo panning [-1.0 Left, +1.0 Right].</p>
+            <div class="api-snippet">const pan = scalePan()
+  .domain([0, 800])
+  .range([-0.9, 0.9]);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleFilter -->
+        <div class="api-card" data-cat="scalers" data-name="scaleFilter">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleFilter()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps continuous telemetry to lowpass or highpass filter cutoff frequencies in Hertz (e.g. 200 Hz muffled to 8000 Hz bright).</p>
+            <div class="api-snippet">const filter = scaleFilter()
+  .domain([0, 100])
+  .range([400, 8000]);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleTension -->
+        <div class="api-card" data-cat="scalers" data-name="scaleTension">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleTension()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Multi-dimensional volatility scaler coordinating risk into chord harmony (Major to Tritone), filter cutoff, and tempo multipliers.</p>
+            <div class="api-snippet">const tension = scaleTension().domain([0, 100]);
+const { chord, filterCutoff, tempoMultiplier } = tension(85);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleDuration -->
+        <div class="api-card" data-cat="scalers" data-name="scaleDuration">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleDuration()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps data magnitude to musical note durations (e.g. '16n', '8n', '4n', '1m') or absolute gate lengths in seconds.</p>
+            <div class="api-snippet">const dur = scaleDuration()
+  .domain([0, 50])
+  .range([0.1, 1.2]);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleSample -->
+        <div class="api-card" data-cat="scalers" data-name="scaleSample">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleSample()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps discrete categorical classes to percussion drum samples ('kick', 'snare', 'hihat', 'clap', 'bell', 'blip') or custom WAV/MP3s.</p>
+            <div class="api-snippet">const sample = scaleSample()
+  .domain(["login", "error", "success"])
+  .range(["blip", "snare", "bell"]);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- choreography -->
+        <div class="api-card" data-cat="movements" data-name="choreography">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">choreography()</span>
+              <span class="api-category">Choreography</span>
+            </div>
+            <p class="api-desc">Applies frame-synchronized kinetic screen animations ('wiggle', 'flip', 'pulse', 'bounce', 'shake', 'ripple', 'glow', 'squash') to SVG/DOM selections.</p>
+            <div class="api-snippet">const choreo = choreography()
+  .movement("wiggle")
+  .intensity(1.5)
+  .duration(0.4);
+d3.select(element).call(choreo);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- audioLegend -->
+        <div class="api-card" data-cat="ui" data-name="audioLegend">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">audioLegend()</span>
+              <span class="api-category">UI & Legends</span>
+            </div>
+            <p class="api-desc">Mounts an accessible interactive audio key onto any D3 container with interactive 🔊 audition buttons for pitch, volume, pan, and tension.</p>
+            <div class="api-snippet">const legend = audioLegend()
+  .title("Chart Audio Key")
+  .pitch(pitchScale, "Metric Value")
+  .pan(panScale, "X Position");
+d3.select("#legend-mount").call(legend);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- timeline -->
+        <div class="api-card" data-cat="timeline" data-name="timeline">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">timeline()</span>
+              <span class="api-category">Timeline</span>
+            </div>
+            <p class="api-desc">Conductor coordinating multi-track Tone.js scheduling, loop repetition, BPM control, and synchronized element choreography.</p>
+            <div class="api-snippet">const tl = timeline({ bpm: 120, loop: true })
+  .data(dataset)
+  .time((d, i) => i * 0.25)
+  .pitch(d => pitch(d.val))
+  .movement(d => ({ movement: "pulse", element: d.node }));
+await tl.play();</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- createSynth -->
+        <div class="api-card" data-cat="audio" data-name="createSynth">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">createSynth()</span>
+              <span class="api-category">Audio & Synths</span>
+            </div>
+            <p class="api-desc">Factory instantiating production-ready Tone.js synthesizers ('polySynth', 'fmSynth', 'amSynth', 'membraneSynth', 'pluckSynth') with built-in filters & pan.</p>
+            <div class="api-snippet">const synth = createSynth({
+  type: "polySynth",
+  volume: -4,
+  pan: 0.0
+});</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- createSamplePlayer -->
+        <div class="api-card" data-cat="audio" data-name="createSamplePlayer">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">createSamplePlayer()</span>
+              <span class="api-category">Audio & Synths</span>
+            </div>
+            <p class="api-desc">Synthesizer & sampler playing zero-asset offline percussion drum models or loading external WAV/MP3 asset URLs into memory buffers.</p>
+            <div class="api-snippet">const player = createSamplePlayer();
+player.trigger("kick", "8n");
+await player.loadUrls({ click: "/click.wav" });</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- defaultEngine -->
+        <div class="api-card" data-cat="audio" data-name="defaultEngine">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">defaultEngine</span>
+              <span class="api-category">Audio & Synths</span>
+            </div>
+            <p class="api-desc">Singleton Web Audio manager that safely resumes the browser audio context on user gestures and provides master gain & limiter protection.</p>
+            <div class="api-snippet">await defaultEngine.start();
+console.log("Audio Context state:", defaultEngine.state);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: Quickstart & Integration -->
     <section class="section-card" id="quickstart">
       <h2 class="section-title">
         <span>🚀</span>
@@ -1344,7 +1893,106 @@
         return fmSynth;
       }
 
-      // 1. Enable Audio Banner
+      // ==========================================
+      // 1. GLOBAL AUDIO OSCILLOSCOPE / ANALYSER
+      // ==========================================
+      const oscCanvas = document.getElementById('global-oscilloscope');
+      let oscCtx = null;
+      let analyser = null;
+      let animId = null;
+
+      function initOscilloscope() {
+        if (!oscCanvas) return;
+        oscCtx = oscCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = oscCanvas.getBoundingClientRect();
+        oscCanvas.width = rect.width * dpr;
+        oscCanvas.height = rect.height * dpr;
+        oscCtx.scale(dpr, dpr);
+
+        try {
+          if (window.Tone && Tone.context) {
+            const rawCtx = Tone.context.rawContext || Tone.context;
+            analyser = rawCtx.createAnalyser();
+            analyser.fftSize = 256;
+            Tone.Destination.connect(analyser);
+          }
+        } catch (e) {
+          console.warn("Analyser connection notice:", e);
+        }
+
+        renderOscilloscope();
+      }
+
+      function renderOscilloscope() {
+        if (!oscCtx || !oscCanvas) return;
+        const rect = oscCanvas.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        oscCtx.fillStyle = 'rgba(4, 8, 20, 0.4)';
+        oscCtx.fillRect(0, 0, w, h);
+
+        if (analyser) {
+          const bufferLength = analyser.frequencyBinCount;
+          const dataArray = new Uint8Array(bufferLength);
+          analyser.getByteTimeDomainData(dataArray);
+
+          // Check if active sound is playing
+          let isSilent = true;
+          for (let i = 0; i < bufferLength; i++) {
+            if (Math.abs(dataArray[i] - 128) > 3) {
+              isSilent = false;
+              break;
+            }
+          }
+
+          oscCtx.lineWidth = isSilent ? 1.5 : 2.5;
+          oscCtx.strokeStyle = isSilent ? 'rgba(56, 189, 248, 0.4)' : '#38bdf8';
+          oscCtx.shadowBlur = isSilent ? 0 : 12;
+          oscCtx.shadowColor = '#38bdf8';
+
+          oscCtx.beginPath();
+          const sliceWidth = w / bufferLength;
+          let x = 0;
+
+          for (let i = 0; i < bufferLength; i++) {
+            const v = dataArray[i] / 128.0;
+            const y = (v * h) / 2;
+
+            if (i === 0) oscCtx.moveTo(x, y);
+            else oscCtx.lineTo(x, y);
+
+            x += sliceWidth;
+          }
+
+          oscCtx.stroke();
+        } else {
+          // Idle baseline before audio unlocked
+          oscCtx.lineWidth = 1.5;
+          oscCtx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+          oscCtx.beginPath();
+          oscCtx.moveTo(0, h / 2);
+          oscCtx.lineTo(w, h / 2);
+          oscCtx.stroke();
+        }
+
+        animId = requestAnimationFrame(renderOscilloscope);
+      }
+
+      window.addEventListener('resize', () => {
+        if (oscCanvas && oscCtx) {
+          const dpr = window.devicePixelRatio || 1;
+          const rect = oscCanvas.getBoundingClientRect();
+          oscCanvas.width = rect.width * dpr;
+          oscCanvas.height = rect.height * dpr;
+          oscCtx.scale(dpr, dpr);
+        }
+      });
+
+      initOscilloscope();
+
+      // Enable Audio Banner Button
       const enableBtn = document.getElementById('enable-audio-btn');
       enableBtn.addEventListener('click', async () => {
         try {
@@ -1353,12 +2001,15 @@
           s.triggerAttackRelease("C4", "8n");
           enableBtn.innerText = "✓ Audio Active 🔊";
           enableBtn.style.background = "#10b981";
+          if (!analyser) initOscilloscope();
         } catch (err) {
           console.error("Audio activation error:", err);
         }
       });
 
-      // 2. Hero Interactive Preview Nodes
+      // ==========================================
+      // 2. HERO INTERACTIVE PREVIEW NODES
+      // ==========================================
       const pitchHero = d3Audio.scalePitch().domain([0, 100]).range(["C4", "C5"]).scale("pentatonic");
       const nodes = document.querySelectorAll('.sound-node');
 
@@ -1371,20 +2022,10 @@
         node.classList.add('active-flash');
         setTimeout(() => node.classList.remove('active-flash'), 300);
 
-        // Animate the outer container
-        d3Audio.choreography()
-          .movement(move)
-          .intensity(1.3)
-          .duration(0.45)(node);
-
-        // Animate the inner icon inside the box
+        d3Audio.choreography().movement(move).intensity(1.3).duration(0.45)(node);
         if (icon) {
-          d3Audio.choreography()
-            .movement(move)
-            .intensity(2.0)
-            .duration(0.45)(icon);
+          d3Audio.choreography().movement(move).intensity(2.0).duration(0.45)(icon);
         }
-
         return note;
       }
 
@@ -1401,7 +2042,6 @@
         });
       });
 
-      // Hero Play Sequence
       const playSeqBtn = document.getElementById('play-sequence-btn');
       let isPlayingSeq = false;
       playSeqBtn.addEventListener('click', async () => {
@@ -1429,7 +2069,9 @@
         }
       });
 
-      // 3. Interactive Workbench: scalePitch()
+      // ==========================================
+      // 3. SCALERS WORKBENCH INTERACTION
+      // ==========================================
       const pitchScale = d3Audio.scalePitch().domain([0, 100]).range(["C3", "C6"]).scale("pentatonic");
       const pitchSlider = document.getElementById('pitch-slider');
       const scaleSelect = document.getElementById('scale-mode-select');
@@ -1454,7 +2096,7 @@
         s.triggerAttackRelease(note, "8n");
       });
 
-      // 4. Interactive Workbench: scaleTension()
+      // scaleTension
       const tensionScale = d3Audio.scaleTension().domain([0, 100]);
       const tensionSlider = document.getElementById('tension-slider');
       const tensionOut = document.getElementById('tension-out');
@@ -1475,7 +2117,7 @@
         p.triggerAttackRelease(res.chord, "4n", undefined, 0.7);
       });
 
-      // 5. Interactive Workbench: scalePan & scaleFilter
+      // scalePan & scaleFilter
       const panSlider = document.getElementById('pan-slider');
       const filterSlider = document.getElementById('filter-slider');
       const panOut = document.getElementById('pan-out');
@@ -1495,7 +2137,7 @@
         fm.triggerAttackRelease("G4", "8n", undefined, 0.8, { pan, filterCutoff: cutoff });
       });
 
-      // 6. Interactive Workbench: Drum Pads
+      // Drum Pads
       document.querySelectorAll('.drum-pad').forEach(pad => {
         pad.addEventListener('click', async () => {
           await d3Audio.defaultEngine.start();
@@ -1504,7 +2146,7 @@
         });
       });
 
-      // 7. Interactive Choreography Tester
+      // Choreography Tester
       const choreoTarget = document.getElementById('choreo-box');
       document.querySelectorAll('.btn-choreo').forEach(btn => {
         btn.addEventListener('click', async () => {
@@ -1515,8 +2157,442 @@
         });
       });
 
-      // 8. Demo Category Filtering
-      const chips = document.querySelectorAll('.chip');
+      // ==========================================
+      // 4. INSTANT "DROP & SONIFY" CSV SANDBOX
+      // ==========================================
+      const sampleDatasets = {
+        sp500: [
+          { time: "Day 1", value: 450, volume: 20, delta: 0.1 },
+          { time: "Day 2", value: 452, volume: 22, delta: 0.2 },
+          { time: "Day 3", value: 448, volume: 25, delta: -0.4 },
+          { time: "Day 4", value: 455, volume: 30, delta: 0.7 },
+          { time: "Day 5", value: 462, volume: 38, delta: 1.2 },
+          { time: "Day 6", value: 459, volume: 32, delta: -0.3 },
+          { time: "Day 7", value: 468, volume: 45, delta: 1.5 },
+          { time: "Day 8", value: 442, volume: 60, delta: -2.6 },
+          { time: "Day 9", value: 430, volume: 75, delta: -3.2 },
+          { time: "Day 10", value: 418, volume: 92, delta: -4.1 },
+          { time: "Day 11", value: 405, volume: 110, delta: -5.0 },
+          { time: "Day 12", value: 425, volume: 80, delta: 2.1 }
+        ],
+        earthquake: [
+          { depth: 10, mag: 2.1, dist: -0.8 },
+          { depth: 14, mag: 2.4, dist: -0.5 },
+          { depth: 12, mag: 2.2, dist: -0.2 },
+          { depth: 25, mag: 3.5, dist: 0.1 },
+          { depth: 32, mag: 4.8, dist: 0.4 },
+          { depth: 45, mag: 5.6, dist: 0.7 },
+          { depth: 28, mag: 3.8, dist: 0.3 },
+          { depth: 18, mag: 2.9, dist: -0.1 },
+          { depth: 12, mag: 2.0, dist: -0.4 }
+        ],
+        climate: [
+          { year: 1980, temp: 0.22, co2: 338, anomaly: 0.1 },
+          { year: 1985, temp: 0.30, co2: 346, anomaly: 0.2 },
+          { year: 1990, temp: 0.45, co2: 354, anomaly: 0.35 },
+          { year: 1995, temp: 0.52, co2: 360, anomaly: 0.48 },
+          { year: 2000, temp: 0.61, co2: 369, anomaly: 0.6 },
+          { year: 2005, temp: 0.74, co2: 379, anomaly: 0.75 },
+          { year: 2010, temp: 0.88, co2: 389, anomaly: 0.9 },
+          { year: 2015, temp: 1.05, co2: 400, anomaly: 1.1 },
+          { year: 2020, temp: 1.25, co2: 414, anomaly: 1.35 },
+          { year: 2026, temp: 1.48, co2: 425, anomaly: 1.6 }
+        ],
+        ecg: [
+          { beat: 1, bpm: 72, interval: 0.83, qrs: 90 },
+          { beat: 2, bpm: 74, interval: 0.81, qrs: 92 },
+          { beat: 3, bpm: 71, interval: 0.84, qrs: 89 },
+          { beat: 4, bpm: 110, interval: 0.54, qrs: 130 },
+          { beat: 5, bpm: 135, interval: 0.44, qrs: 155 },
+          { beat: 6, bpm: 128, interval: 0.47, qrs: 140 },
+          { beat: 7, bpm: 82, interval: 0.73, qrs: 105 },
+          { beat: 8, bpm: 75, interval: 0.80, qrs: 94 }
+        ]
+      };
+
+      let currentCsvData = sampleDatasets.sp500;
+      let isCsvPlaying = false;
+      let csvPlaybackId = null;
+
+      const pitchColSel = document.getElementById('csv-pitch-col');
+      const gainColSel = document.getElementById('csv-gain-col');
+      const panColSel = document.getElementById('csv-pan-col');
+      const scaleModeSel = document.getElementById('csv-scale-mode');
+      const tempoSlider = document.getElementById('csv-tempo-slider');
+      const tempoVal = document.getElementById('csv-tempo-val');
+      const chartSvg = d3.select('#csv-chart-svg');
+
+      tempoSlider.addEventListener('input', () => {
+        tempoVal.innerText = `${tempoSlider.value} BPM`;
+      });
+
+      function loadDatasetIntoSandbox(data) {
+        currentCsvData = data;
+        if (!data || !data.length) return;
+
+        const keys = Object.keys(data[0]);
+        pitchColSel.innerHTML = '';
+        gainColSel.innerHTML = '<option value="">-- None --</option>';
+        panColSel.innerHTML = '<option value="">-- None --</option>';
+
+        keys.forEach((k, i) => {
+          const opt1 = new Option(k, k);
+          const opt2 = new Option(k, k);
+          const opt3 = new Option(k, k);
+          pitchColSel.add(opt1);
+          gainColSel.add(opt2);
+          panColSel.add(opt3);
+        });
+
+        // Set sensible defaults
+        pitchColSel.selectedIndex = Math.min(1, keys.length - 1);
+        if (keys.length > 2) gainColSel.selectedIndex = 2;
+        if (keys.length > 3) panColSel.selectedIndex = 3;
+
+        renderSandboxChart();
+      }
+
+      function renderSandboxChart() {
+        chartSvg.selectAll('*').remove();
+        if (!currentCsvData || !currentCsvData.length) return;
+
+        const pKey = pitchColSel.value;
+        const rect = chartSvg.node().getBoundingClientRect();
+        const width = rect.width || 600;
+        const height = 140;
+        const margin = { top: 15, right: 20, bottom: 25, left: 35 };
+
+        const values = currentCsvData.map(d => +d[pKey] || 0);
+        const x = d3.scaleLinear().domain([0, currentCsvData.length - 1]).range([margin.left, width - margin.right]);
+        const y = d3.scaleLinear().domain([d3.min(values) * 0.95, d3.max(values) * 1.05]).range([height - margin.bottom, margin.top]);
+
+        const line = d3.line().x((d, i) => x(i)).y(d => y(+d[pKey] || 0)).curve(d3.curveMonotoneX);
+
+        chartSvg.append('path')
+          .datum(currentCsvData)
+          .attr('fill', 'none')
+          .attr('stroke', '#38bdf8')
+          .attr('stroke-width', 2.5)
+          .attr('d', line);
+
+        chartSvg.selectAll('.data-pt')
+          .data(currentCsvData)
+          .enter()
+          .append('circle')
+          .attr('class', 'data-pt')
+          .attr('cx', (d, i) => x(i))
+          .attr('cy', d => y(+d[pKey] || 0))
+          .attr('r', 4.5)
+          .attr('fill', '#ec4899')
+          .attr('stroke', '#fff')
+          .attr('stroke-width', 1.5);
+
+        // Playhead indicator
+        chartSvg.append('line')
+          .attr('id', 'csv-playhead')
+          .attr('x1', x(0))
+          .attr('x2', x(0))
+          .attr('y1', margin.top)
+          .attr('y2', height - margin.bottom)
+          .attr('stroke', '#fbbf24')
+          .attr('stroke-width', 2.5)
+          .attr('stroke-dasharray', '4 3')
+          .style('opacity', 0);
+      }
+
+      pitchColSel.addEventListener('change', renderSandboxChart);
+
+      // Preset Buttons
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-preset');
+          if (sampleDatasets[p]) loadDatasetIntoSandbox(sampleDatasets[p]);
+        });
+      });
+
+      // Drag & Drop File Loader
+      const dropzone = document.getElementById('csv-dropzone');
+      const fileInput = document.getElementById('csv-file-input');
+      dropzone.addEventListener('click', () => fileInput.click());
+
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) parseCsvFile(e.dataTransfer.files[0]);
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) parseCsvFile(e.target.files[0]);
+      });
+
+      function parseCsvFile(file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const parsed = d3.csvParse(evt.target.result);
+            loadDatasetIntoSandbox(parsed);
+          } catch (err) {
+            alert("Error parsing CSV: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // Initial Preset
+      loadDatasetIntoSandbox(sampleDatasets.sp500);
+
+      // Play / Stop CSV Sandbox
+      const csvPlayBtn = document.getElementById('csv-play-btn');
+      const csvStopBtn = document.getElementById('csv-stop-btn');
+
+      csvPlayBtn.addEventListener('click', async () => {
+        if (isCsvPlaying) return;
+        await d3Audio.defaultEngine.start();
+        const s = await getSynth();
+        isCsvPlaying = true;
+        csvPlayBtn.innerText = "Playing...";
+
+        const pKey = pitchColSel.value;
+        const gKey = gainColSel.value;
+        const panKey = panColSel.value;
+        const mode = scaleModeSel.value;
+        const bpm = +tempoSlider.value;
+        const intervalMs = (60 / bpm) * 500; // 8th notes
+
+        const pVals = currentCsvData.map(d => +d[pKey] || 0);
+        const pitch = d3Audio.scalePitch()
+          .domain([d3.min(pVals), d3.max(pVals)])
+          .range(["C3", "C6"])
+          .scale(mode);
+
+        const gVals = gKey ? currentCsvData.map(d => +d[gKey] || 0) : [0, 1];
+        const gain = d3Audio.scaleGain()
+          .domain([d3.min(gVals), d3.max(gVals)])
+          .range([0.3, 0.95]);
+
+        const panVals = panKey ? currentCsvData.map(d => +d[panKey] || 0) : [-1, 1];
+        const pan = d3Audio.scalePan()
+          .domain([d3.min(panVals), d3.max(panVals)])
+          .range([-0.8, 0.8]);
+
+        const playhead = d3.select('#csv-playhead');
+        playhead.style('opacity', 1);
+
+        const rect = chartSvg.node().getBoundingClientRect();
+        const width = rect.width || 600;
+        const x = d3.scaleLinear().domain([0, currentCsvData.length - 1]).range([35, width - 20]);
+
+        for (let i = 0; i < currentCsvData.length; i++) {
+          if (!isCsvPlaying) break;
+          const d = currentCsvData[i];
+          const note = pitch(+d[pKey] || 0);
+          const vel = gKey ? gain(+d[gKey] || 0) : 0.7;
+          const panVal = panKey ? pan(+d[panKey] || 0) : 0;
+
+          s.triggerAttackRelease(note, "8n", undefined, vel);
+          playhead.attr('x1', x(i)).attr('x2', x(i));
+
+          await new Promise(r => setTimeout(r, intervalMs));
+        }
+
+        isCsvPlaying = false;
+        csvPlayBtn.innerText = "▶ Sonify Dataset";
+        playhead.style('opacity', 0);
+      });
+
+      csvStopBtn.addEventListener('click', () => {
+        isCsvPlaying = false;
+        csvPlayBtn.innerText = "▶ Sonify Dataset";
+        d3.select('#csv-playhead').style('opacity', 0);
+      });
+
+      // ==========================================
+      // 5. A/B ETHICAL SONIFICATION COMPARISON
+      // ==========================================
+      const crisisData = [
+        100, 99, 101, 102, 98, 97, 100, 96, 94, 95, 91, 88, 82, 75, 68, 62, 54, 46, 40, 35, 33, 31, 32
+      ];
+
+      const sparkSvg = d3.select('#ab-sparkline');
+      function renderAbSparkline() {
+        sparkSvg.selectAll('*').remove();
+        const rect = sparkSvg.node().getBoundingClientRect();
+        const w = rect.width || 550;
+        const h = 100;
+        const margin = { top: 10, right: 15, bottom: 20, left: 30 };
+
+        const x = d3.scaleLinear().domain([0, crisisData.length - 1]).range([margin.left, w - margin.right]);
+        const y = d3.scaleLinear().domain([25, 110]).range([h - margin.bottom, margin.top]);
+
+        const line = d3.line().x((d, i) => x(i)).y(d => y(d)).curve(d3.curveMonotoneX);
+
+        // Crash gradient fill
+        sparkSvg.append('path')
+          .datum(crisisData)
+          .attr('fill', 'none')
+          .attr('stroke', '#f43f5e')
+          .attr('stroke-width', 2.5)
+          .attr('d', line);
+
+        sparkSvg.selectAll('.ab-pt')
+          .data(crisisData)
+          .enter()
+          .append('circle')
+          .attr('cx', (d, i) => x(i))
+          .attr('cy', d => y(d))
+          .attr('r', 3.5)
+          .attr('fill', '#f43f5e');
+
+        sparkSvg.append('line')
+          .attr('id', 'ab-playhead')
+          .attr('x1', x(0))
+          .attr('x2', x(0))
+          .attr('y1', margin.top)
+          .attr('y2', h - margin.bottom)
+          .attr('stroke', '#38bdf8')
+          .attr('stroke-width', 2.5)
+          .style('opacity', 0);
+      }
+
+      renderAbSparkline();
+
+      let isAbPlaying = false;
+      const abStatus = document.getElementById('ab-playhead-status');
+      const btnPlayTrap = document.getElementById('btn-play-trap');
+      const btnPlayEthical = document.getElementById('btn-play-ethical');
+
+      // Track A: Pentatonic Trap
+      btnPlayTrap.addEventListener('click', async () => {
+        if (isAbPlaying) return;
+        await d3Audio.defaultEngine.start();
+        const s = await getSynth();
+        isAbPlaying = true;
+        btnPlayTrap.innerText = "Playing Pentatonic Trap...";
+        abStatus.innerText = "Playing: Major Pentatonic (Deceptive Peace)";
+        abStatus.style.color = "var(--red)";
+
+        const pitch = d3Audio.scalePitch().domain([30, 105]).range(["C4", "C5"]).scale("pentatonic");
+        const playhead = d3.select('#ab-playhead').style('opacity', 1);
+
+        const rect = sparkSvg.node().getBoundingClientRect();
+        const w = rect.width || 550;
+        const x = d3.scaleLinear().domain([0, crisisData.length - 1]).range([30, w - 15]);
+
+        for (let i = 0; i < crisisData.length; i++) {
+          if (!isAbPlaying) break;
+          const val = crisisData[i];
+          const note = pitch(val);
+          s.triggerAttackRelease(note, "8n", undefined, 0.6);
+          playhead.attr('x1', x(i)).attr('x2', x(i));
+          await new Promise(r => setTimeout(r, 220)); // Constant tranquil tempo
+        }
+
+        isAbPlaying = false;
+        btnPlayTrap.innerText = "▶ Play Track A (Pentatonic Trap)";
+        abStatus.innerText = "Audition complete";
+        playhead.style('opacity', 0);
+      });
+
+      // Track B: Ethical Reality (scaleTension)
+      btnPlayEthical.addEventListener('click', async () => {
+        if (isAbPlaying) return;
+        await d3Audio.defaultEngine.start();
+        const poly = await getPoly();
+        isAbPlaying = true;
+        btnPlayEthical.innerText = "Playing Ethical Tension...";
+        abStatus.innerText = "Playing: scaleTension (Dissonant Tritone & Alert)";
+        abStatus.style.color = "var(--green)";
+
+        // Map inverted value: 100 is calm, 30 is catastrophic risk (100)
+        const tension = d3Audio.scaleTension().domain([105, 30]);
+        const playhead = d3.select('#ab-playhead').style('opacity', 1);
+
+        const rect = sparkSvg.node().getBoundingClientRect();
+        const w = rect.width || 550;
+        const x = d3.scaleLinear().domain([0, crisisData.length - 1]).range([30, w - 15]);
+
+        for (let i = 0; i < crisisData.length; i++) {
+          if (!isAbPlaying) break;
+          const val = crisisData[i];
+          const tState = tension(val);
+
+          poly.triggerAttackRelease(tState.chord, "8n", undefined, tState.gain, {
+            filterCutoff: tState.filterCutoff
+          });
+
+          playhead.attr('x1', x(i)).attr('x2', x(i));
+          // Accelerate tempo as crisis deepens
+          const delay = 240 / tState.tempoMultiplier;
+          await new Promise(r => setTimeout(r, delay));
+        }
+
+        isAbPlaying = false;
+        btnPlayEthical.innerText = "▶ Play Track B (Ethical Tension)";
+        abStatus.innerText = "Audition complete";
+        playhead.style('opacity', 0);
+      });
+
+      // ==========================================
+      // 6. SEARCHABLE API CHEAT SHEET
+      // ==========================================
+      const apiInput = document.getElementById('api-search-input');
+      const apiChips = document.querySelectorAll('#api-filter-chips .chip');
+      const apiCards = document.querySelectorAll('.api-card');
+
+      function filterApiCards() {
+        const query = (apiInput.value || '').toLowerCase().trim();
+        const activeChip = document.querySelector('#api-filter-chips .chip.active');
+        const cat = activeChip ? activeChip.getAttribute('data-api-cat') : 'all';
+
+        apiCards.forEach(card => {
+          const cardCat = card.getAttribute('data-cat');
+          const cardText = card.innerText.toLowerCase();
+          const matchesCat = (cat === 'all' || cardCat === cat);
+          const matchesQuery = !query || cardText.includes(query);
+
+          if (matchesCat && matchesQuery) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      apiInput.addEventListener('input', filterApiCards);
+
+      apiChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          apiChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          filterApiCards();
+        });
+      });
+
+      // Copy Snippet Buttons
+      document.querySelectorAll('.btn-copy').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const snippet = btn.closest('.api-card').querySelector('.api-snippet').innerText;
+          navigator.clipboard.writeText(snippet).then(() => {
+            const orig = btn.innerText;
+            btn.innerText = "✓ Copied!";
+            btn.style.color = "var(--green)";
+            setTimeout(() => {
+              btn.innerText = orig;
+              btn.style.color = "";
+            }, 1800);
+          });
+        });
+      });
+
+      // ==========================================
+      // 7. DEMO CATEGORY FILTERING
+      // ==========================================
+      const chips = document.querySelectorAll('#filter-chips .chip');
       const demoCards = document.querySelectorAll('.demo-card');
 
       chips.forEach(chip => {
