@@ -108,7 +108,7 @@ const pitchScale = scalePitch()
   .root("C");
 
 const filterScale = scaleFilter()
-  .domain([280, 1020])
+  .domain([280, 1080])
   .range([350, 9500]); // Muffled baseline -> Piercing wide-open CO2 brightness
 
 const synthTone = createSynth({ type: "fmSynth", harmonicity: 2.0, volume: -3 });
@@ -117,7 +117,7 @@ const synthTone = createSynth({ type: "fmSynth", harmonicity: 2.0, volume: -3 })
 const legend = audioLegend()
   .title("Climate Spiral & Projections Sonification Key")
   .pitch(pitchScale, "Temperature Anomaly (-0.5°C Pre-Industrial Calm ➔ +5.0°C Runaway Alarm)")
-  .filter(filterScale, "Atmospheric CO₂ (280 ppm Baseline ➔ 1,020 ppm SSP5-8.5 Disruption)");
+  .filter(filterScale, "Atmospheric CO₂ (280 ppm Baseline ➔ 1,080 ppm SSP5-8.5 Disruption)");
 
 d3.select("#legend-mount").call(legend);
 
