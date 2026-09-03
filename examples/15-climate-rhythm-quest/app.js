@@ -171,11 +171,9 @@ function renderSpiralUpTo(yearIdx) {
       .datum(histPoints)
       .attr('class', 'spiral-ring')
       .attr('d', line)
-      .attr('stroke', d => {
-        const last = histPoints[histPoints.length - 1];
-        return last ? colorScale(last.netA) : '#38bdf8';
-      })
-      .attr('stroke-width', 2.5);
+      .attr('stroke', '#facc15')
+      .attr('stroke-width', 2.2)
+      .attr('opacity', 0.85);
   }
 
   if (projPoints.length > 1) {
@@ -196,6 +194,21 @@ function renderSpiralUpTo(yearIdx) {
       .attr('stroke-dasharray', '5 3')
       .attr('stroke-width', 3)
       .attr('filter', 'drop-shadow(0 0 6px rgba(255,255,255,0.4))');
+  }
+
+  // Active glowing yellow trail directly following the rotating needle tip
+  if (points.length > 1) {
+    const activeTrail = points.slice(-Math.min(points.length, 14));
+    spiralGroup.append('path')
+      .datum(activeTrail)
+      .attr('class', 'needle-trail')
+      .attr('d', line)
+      .attr('fill', 'none')
+      .attr('stroke', '#fef08a')
+      .attr('stroke-width', 3.5)
+      .attr('stroke-linecap', 'round')
+      .attr('opacity', 0.95)
+      .attr('filter', 'drop-shadow(0 0 8px rgba(250, 204, 21, 0.85))');
   }
 
   const lastPt = points[points.length - 1];
