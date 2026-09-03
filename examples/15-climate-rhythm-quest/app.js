@@ -187,36 +187,60 @@ function renderSpiralUpTo(yearIdx) {
       .attr('opacity', 0.85);
   }
 
-  // Gradual illuminated active trailing head blending smoothly into the spiral
-  if (points.length > 2) {
-    const tailLen = Math.min(points.length - 1, 24);
-    const tailPoints = points.slice(-tailLen - 1);
+  // Gradual illuminated active trailing head using continuous Catmull-Rom splines
+  if (points.length >= 3) {
     const trailGroup = spiralGroup.append('g').attr('class', 'needle-trail-group');
 
-    for (let j = 0; j < tailPoints.length - 1; j++) {
-      const t = (j + 1) / (tailPoints.length - 1); // 0 at tail start, 1 at needle tip
-      const seg = [tailPoints[j], tailPoints[j + 1]];
-      
-      // Smooth progressive ease for color and width bloom towards the tip
-      const easeT = Math.pow(t, 1.8);
-      const segColor = d3.interpolateRgb('#facc15', '#fffbeb')(easeT);
-      const segWidth = 2.2 + easeT * 1.3; // Starts at 2.2px (seamless match with base spiral), peaks at 3.5px
-      const segOpacity = 0.85 + easeT * 0.15;
-
-      const p = trailGroup.append('path')
-        .datum(seg)
+    // Layer 1: Long soft base warmth (up to 24 points, continuous cubic spline)
+    if (points.length >= 4) {
+      trailGroup.append('path')
+        .datum(points.slice(-Math.min(points.length, 24)))
+        .attr('class', 'needle-trail')
         .attr('d', line)
         .attr('fill', 'none')
-        .attr('stroke', segColor)
-        .attr('stroke-width', segWidth)
+        .attr('stroke', '#facc15')
+        .attr('stroke-width', 2.5)
         .attr('stroke-linecap', 'round')
-        .attr('opacity', segOpacity);
-
-      if (t > 0.65) {
-        const glowStrength = (t - 0.65) / 0.35;
-        p.attr('filter', `drop-shadow(0 0 ${glowStrength * 7}px rgba(250, 204, 21, ${glowStrength * 0.8}))`);
-      }
+        .attr('opacity', 0.4);
     }
+
+    // Layer 2: Mid-range illumination (up to 15 points, continuous cubic spline)
+    if (points.length >= 4) {
+      trailGroup.append('path')
+        .datum(points.slice(-Math.min(points.length, 15)))
+        .attr('class', 'needle-trail')
+        .attr('d', line)
+        .attr('fill', 'none')
+        .attr('stroke', '#fde047')
+        .attr('stroke-width', 2.9)
+        .attr('stroke-linecap', 'round')
+        .attr('opacity', 0.65);
+    }
+
+    // Layer 3: Near-needle bright tail (up to 8 points, continuous cubic spline)
+    if (points.length >= 3) {
+      trailGroup.append('path')
+        .datum(points.slice(-Math.min(points.length, 8)))
+        .attr('class', 'needle-trail')
+        .attr('d', line)
+        .attr('fill', 'none')
+        .attr('stroke', '#fef08a')
+        .attr('stroke-width', 3.3)
+        .attr('stroke-linecap', 'round')
+        .attr('opacity', 0.85);
+    }
+
+    // Layer 4: Leading tip luminous bloom (last 4 points, continuous cubic spline)
+    trailGroup.append('path')
+      .datum(points.slice(-Math.min(points.length, 4)))
+      .attr('class', 'needle-trail')
+      .attr('d', line)
+      .attr('fill', 'none')
+      .attr('stroke', '#fffbeb')
+      .attr('stroke-width', 3.7)
+      .attr('stroke-linecap', 'round')
+      .attr('opacity', 1.0)
+      .attr('filter', 'drop-shadow(0 0 6px rgba(250, 204, 21, 0.85))');
   }
 
   const lastPt = points[points.length - 1];
