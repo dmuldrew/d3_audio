@@ -9,13 +9,16 @@
   <script src="./dist/d3-audio.js"></script>
   <style>
     :root {
-      --bg: #090d16;
-      --card-bg: rgba(18, 26, 43, 0.75);
-      --card-border: rgba(56, 189, 248, 0.15);
+      --bg: #070b14;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(56, 189, 248, 0.16);
       --accent: #38bdf8;
       --accent-glow: rgba(56, 189, 248, 0.35);
       --accent2: #ec4899;
       --accent3: #8b5cf6;
+      --gold: #fbbf24;
+      --green: #10b981;
+      --red: #f43f5e;
       --text: #f8fafc;
       --text-muted: #94a3b8;
     }
@@ -23,21 +26,81 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: radial-gradient(circle at 50% 0%, #172554 0%, var(--bg) 70%);
+      background: radial-gradient(circle at 50% 0%, #172554 0%, var(--bg) 60%);
       color: var(--text);
       min-height: 100vh;
       line-height: 1.6;
-      padding: 0 1rem 4rem 1rem;
+      padding-bottom: 5rem;
+    }
+
+    /* Sticky Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 11, 20, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.85rem 1.5rem;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #fff;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-github-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      color: #fff !important;
+      font-size: 0.85rem !important;
+      transition: all 0.2s;
+    }
+    .nav-github-btn:hover {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: var(--accent);
+      transform: translateY(-1px);
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
+      padding: 0 1.25rem;
     }
 
+    /* Hero Section */
     header {
       text-align: center;
-      padding: 4rem 1rem 2.5rem 1rem;
+      padding: 3.5rem 1rem 2rem 1rem;
     }
 
     .badge {
@@ -55,9 +118,9 @@
     }
 
     h1 {
-      font-size: 3.2rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #ec4899 100%);
+      font-size: 3.4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff 25%, #38bdf8 65%, #ec4899 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 1rem;
@@ -67,17 +130,17 @@
     p.subtitle {
       font-size: 1.25rem;
       color: var(--text-muted);
-      max-width: 750px;
+      max-width: 820px;
       margin: 0 auto 2rem auto;
     }
 
     .audio-banner {
       background: linear-gradient(90deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 1rem 1.5rem;
-      max-width: 600px;
-      margin: 0 auto 3rem auto;
+      border-radius: 14px;
+      padding: 1.1rem 1.75rem;
+      max-width: 680px;
+      margin: 0 auto 2.5rem auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -94,7 +157,7 @@
       padding: 0.7rem 1.4rem;
       border-radius: 8px;
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -106,18 +169,256 @@
       box-shadow: 0 4px 20px var(--accent-glow);
     }
 
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: var(--accent);
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      backdrop-filter: blur(12px);
+    }
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    /* Interactive Preview Nodes */
+    .hero-interactive {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 3rem;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+    .preview-nodes {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .sound-node {
+      width: 86px;
+      height: 86px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 2px solid var(--accent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+    .sound-node:hover {
+      background: rgba(56, 189, 248, 0.15);
+      transform: scale(1.08);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    /* Interactive Scalers Workbench */
+    .scaler-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .scaler-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .scaler-box h4 {
+      font-size: 1.05rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .scaler-box p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    .scaler-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+    .control-row label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .control-row select, .control-row input[type="range"] {
+      background: #090d16;
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    .control-row input[type="range"] {
+      width: 140px;
+    }
+
+    .output-badge {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: var(--gold);
+      background: rgba(251, 191, 36, 0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .btn-audition {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.15s;
+    }
+    .btn-audition:hover {
+      background: var(--accent);
+      color: #030712;
+    }
+
+    /* Drum Pad Bank */
+    .pad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .drum-pad {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      padding: 0.65rem 0.2rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .drum-pad:hover {
+      background: rgba(236, 72, 153, 0.2);
+      border-color: var(--accent2);
+      color: var(--accent2);
+      transform: translateY(-1px);
+    }
+    .drum-pad:active {
+      transform: scale(0.95);
+    }
+
+    /* Choreography Live Tester */
+    .choreography-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+    .choreo-target {
+      width: 100px;
+      height: 100px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #38bdf8, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.3);
+      cursor: pointer;
+    }
+    .choreo-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .btn-choreo {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #f8fafc;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-choreo:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Demo Gallery Grid */
     .grid-demos {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
-      margin-bottom: 4rem;
+      margin-bottom: 3rem;
     }
 
     .demo-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 1.75rem;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -137,7 +438,7 @@
     }
 
     .demo-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-4px);
       border-color: rgba(56, 189, 248, 0.4);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
     }
@@ -147,105 +448,149 @@
     }
 
     .card-icon {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
     }
 
     .card-title {
-      font-size: 1.35rem;
+      font-size: 1.15rem;
       font-weight: 700;
+      color: #ffffff;
       margin-bottom: 0.5rem;
-      color: #fff;
     }
 
     .card-desc {
+      font-size: 0.85rem;
       color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.5rem;
-      flex-grow: 1;
+      line-height: 1.5;
+      margin-bottom: 1rem;
     }
 
     .card-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-bottom: 1.5rem;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
     }
 
     .tag {
-      background: rgba(255, 255, 255, 0.06);
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      color: #cbd5e1;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
     }
 
-    /* Live Interactive Sandbox Widget in Hero */
-    .hero-interactive {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 4rem;
-      text-align: center;
-    }
-
-    .hero-interactive h3 {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-    }
-
-    .preview-nodes {
+    /* Filter Chips */
+    .filter-chips {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1.5rem;
-      margin: 2rem 0;
-      min-height: 120px;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
     }
-
-    .sound-node {
-      width: 70px;
-      height: 70px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #1e293b, #334155);
-      border: 2px solid var(--accent);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      font-weight: 700;
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 0.45rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
-      user-select: none;
-      transition: background 0.2s;
+      transition: all 0.2s;
+    }
+    .chip:hover {
+      background: rgba(56, 189, 248, 0.15);
+      color: #fff;
+    }
+    .chip.active {
+      background: var(--accent);
+      color: #040813;
+      border-color: var(--accent);
+      font-weight: 700;
     }
 
-    .sound-node:hover {
-      background: linear-gradient(135deg, #334155, #475569);
-    }
-
+    /* Code Box */
     .code-box {
       background: #040711;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 1.5rem;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.9rem;
-      color: #e2e8f0;
+      font-size: 0.85rem;
+      color: #cbd5e1;
       overflow-x: auto;
-      text-align: left;
-      margin: 2rem 0;
+      line-height: 1.6;
+      margin: 1rem 0;
     }
 
     .hl-kw { color: #f472b6; }
     .hl-fn { color: #38bdf8; }
     .hl-str { color: #a7f3d0; }
     .hl-cm { color: #64748b; font-style: italic; }
+
+    /* Tables */
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 1.25rem 0;
+    }
+    .doc-table th {
+      padding: 0.75rem 0.5rem;
+      text-align: left;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+      color: #fff;
+      font-weight: 700;
+    }
+    .doc-table td {
+      padding: 0.7rem 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 3rem 1rem 1rem 1rem;
+      margin-top: 4rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+
+  <!-- Sticky Navbar with GitHub Link -->
+  <nav>
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <span>🎵</span>
+        <span>d3-audio</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#demos">20 Demos</a></li>
+        <li><a href="#scalers-lab">Interactive Scalers</a></li>
+        <li><a href="#principles">Sonification Principles</a></li>
+        <li><a href="#quickstart">Quickstart</a></li>
+        <li>
+          <a href="https://github.com/dmuldrew/d3_audio" target="_blank" class="nav-github-btn">
+            <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+            </svg>
+            <span>GitHub Repo</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
   <div class="container">
+    <!-- Hero Header -->
     <header>
       <div class="badge">D3.js + Tone.js Sonification Engine</div>
       <h1>d3-audio</h1>
@@ -254,19 +599,19 @@
       </p>
 
       <div class="audio-banner">
-        <div>
-          <strong>Web Audio Ready</strong>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Click to enable audio context</p>
+        <div style="text-align: left;">
+          <strong style="font-size: 1.05rem;">Web Audio Context</strong>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Click to enable live in-browser audio synthesis</p>
         </div>
         <button id="enable-audio-btn" class="btn">🔊 Enable Audio</button>
       </div>
     </header>
 
-    <!-- Interactive Hero Preview -->
+    <!-- Interactive Hero Preview Nodes -->
     <section class="hero-interactive">
-      <h3>Interactive Live Preview: Click any node to trigger Sound + Choreography</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-        Mapped with <code>d3Audio.scalePitch()</code>, <code>scaleGain()</code>, and rhythmic movement presets.
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.4rem;">Interactive Live Preview</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Click any node to trigger synchronized audio synthesis + D3 kinetic choreography:
       </p>
 
       <div class="preview-nodes" id="hero-nodes">
@@ -276,439 +621,701 @@
         </div>
         <div class="sound-node" data-val="30" data-move="flip" style="border-color: #ec4899;">
           <span>Flip</span>
-          <span style="font-size: 0.7rem; color: #ec4899;">E4 (Pent)</span>
+          <span style="font-size: 0.7rem; color: #ec4899;">D4 (Pent)</span>
         </div>
-        <div class="sound-node" data-val="50" data-move="pulse" style="border-color: #a855f7;">
+        <div class="sound-node" data-val="50" data-move="pulse" style="border-color: #8b5cf6;">
           <span>Pulse</span>
-          <span style="font-size: 0.7rem; color: #a855f7;">G4 (Pent)</span>
+          <span style="font-size: 0.7rem; color: #8b5cf6;">E4 (Pent)</span>
         </div>
         <div class="sound-node" data-val="70" data-move="bounce" style="border-color: #10b981;">
           <span>Bounce</span>
-          <span style="font-size: 0.7rem; color: #10b981;">A4 (Pent)</span>
+          <span style="font-size: 0.7rem; color: #10b981;">G4 (Pent)</span>
         </div>
         <div class="sound-node" data-val="90" data-move="shake" style="border-color: #f59e0b;">
           <span>Shake</span>
-          <span style="font-size: 0.7rem; color: #f59e0b;">C5 (Pent)</span>
+          <span style="font-size: 0.7rem; color: #f59e0b;">A4 (Pent)</span>
         </div>
-        <div class="sound-node" data-val="100" data-move="ripple" style="border-color: #06b6d4;">
+        <div class="sound-node" data-val="100" data-move="ripple" style="border-color: #f43f5e;">
           <span>Ripple</span>
-          <span style="font-size: 0.7rem; color: #06b6d4;">D5 (Pent)</span>
+          <span style="font-size: 0.7rem; color: #f43f5e;">C5 (Pent)</span>
         </div>
       </div>
-      <button id="play-sequence-btn" class="btn" style="margin-top: 1rem;">▶ Play Sequence</button>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.25rem;">
+        <button id="play-sequence-btn" class="btn">▶ Play Sequence</button>
+        <a href="https://github.com/dmuldrew/d3_audio" target="_blank" class="btn btn-secondary">
+          <span>⭐ Star on GitHub</span>
+        </a>
+      </div>
     </section>
 
-    <!-- Demo Applications Grid -->
-    <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem;">Interactive Applications & Examples</h2>
-    <div class="grid-demos">
-      <!-- Demo 1 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">📊</div>
-          <h3 class="card-title">01. Data Sonification & Visual Chart</h3>
-          <p class="card-desc">
-            Sonified scatterplot and bar chart. Maps numerical data to pitch, volume, stereo panning, and rhythmic highlights as the transport sweeps through time.
-          </p>
-          <div class="card-tags">
-            <span class="tag">scalePitch</span>
-            <span class="tag">scalePan</span>
-            <span class="tag">Timeline</span>
-            <span class="tag">D3 Charts</span>
+    <!-- SECTION 1: Interactive Audio Scalers Workbench -->
+    <section class="section-card" id="scalers-lab">
+      <h2 class="section-title">
+        <span>🎛️</span>
+        <span>Interactive Scalers Workbench</span>
+      </h2>
+      <p class="section-desc">
+        `d3-audio` brings D3's familiar scaler paradigm to the auditory domain. Test the live scalers below to audition how data domains are mapped to pitch, harmonic tension, spatial panning, filters, and drum soundbanks.
+      </p>
+
+      <div class="scaler-grid">
+        <!-- 1. scalePitch -->
+        <div class="scaler-box">
+          <div>
+            <h4>
+              <span>scalePitch()</span>
+              <span id="pitch-out" class="output-badge">C4 (261.6 Hz)</span>
+            </h4>
+            <p>Maps quantitative or categorical domains to musical pitches quantized to scales or modes.</p>
+          </div>
+          <div class="scaler-controls">
+            <div class="control-row">
+              <label>Input Value (0–100):</label>
+              <input type="range" id="pitch-slider" min="0" max="100" value="0">
+            </div>
+            <div class="control-row">
+              <label>Scale Mode:</label>
+              <select id="scale-mode-select">
+                <option value="pentatonic" selected>Pentatonic Major</option>
+                <option value="blues">Blues Scale</option>
+                <option value="dorian">Dorian Mode</option>
+                <option value="hirajoshi">Japanese Hirajoshi</option>
+                <option value="arabic">Arabic Double Harmonic</option>
+                <option value="chromatic">Chromatic (All 12)</option>
+              </select>
+            </div>
+            <button id="btn-test-pitch" class="btn-audition">🔊 Audition Note</button>
           </div>
         </div>
-        <a href="examples/01-data-sonification/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 2 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🥁</div>
-          <h3 class="card-title">02. Rhythmic Matrix & Motion Sequencer</h3>
-          <p class="card-desc">
-            Multi-track rhythm sequencer triggering drum samples and synth bass, with interactive grid tiles performing real-time wiggles, 3D flips, bounces, and ripples.
-          </p>
-          <div class="card-tags">
-            <span class="tag">scaleSample</span>
-            <span class="tag">Wiggle & Flip</span>
-            <span class="tag">808 Drums</span>
-            <span class="tag">Tracks</span>
+        <!-- 2. scaleTension -->
+        <div class="scaler-box">
+          <div>
+            <h4>
+              <span>scaleTension()</span>
+              <span id="tension-out" class="output-badge">0.0 (Consonant)</span>
+            </h4>
+            <p>Coordinates risk & volatility into chord harmony (Major ➔ Tritone), filter cutoff, and tempo.</p>
+          </div>
+          <div class="scaler-controls">
+            <div class="control-row">
+              <label>Volatility Risk (0–100):</label>
+              <input type="range" id="tension-slider" min="0" max="100" value="0">
+            </div>
+            <div class="control-row">
+              <label>Harmonic Chord:</label>
+              <span id="chord-out" style="font-size: 0.8rem; font-family: monospace; color: var(--accent);">C Major Triad</span>
+            </div>
+            <button id="btn-test-tension" class="btn-audition">🔊 Audition Tension Chord</button>
           </div>
         </div>
-        <a href="examples/02-rhythmic-sequencer/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 3 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🌊</div>
-          <h3 class="card-title">03. Continuous Stream & Audio Sweeps</h3>
-          <p class="card-desc">
-            Live real-time time series stream with dynamic audio filter frequency sweeps, spatial stereo audio, and responsive wave choreographies.
-          </p>
-          <div class="card-tags">
-            <span class="tag">scaleFilter</span>
-            <span class="tag">Real-time Stream</span>
-            <span class="tag">Waveforms</span>
+        <!-- 3. scalePan & scaleFilter -->
+        <div class="scaler-box">
+          <div>
+            <h4>
+              <span>scalePan() & scaleFilter()</span>
+              <span id="pan-out" class="output-badge">Center | 2500 Hz</span>
+            </h4>
+            <p>Maps spatial X coordinates to stereo panning and continuous metrics to filter cutoffs.</p>
+          </div>
+          <div class="scaler-controls">
+            <div class="control-row">
+              <label>Stereo X (Left ↔ Right):</label>
+              <input type="range" id="pan-slider" min="-1" max="1" step="0.1" value="0">
+            </div>
+            <div class="control-row">
+              <label>Filter Cutoff (Hz):</label>
+              <input type="range" id="filter-slider" min="200" max="8000" step="100" value="2500">
+            </div>
+            <button id="btn-test-pan-filter" class="btn-audition">🔊 Audition Spatial Sweep</button>
           </div>
         </div>
-        <a href="examples/03-continuous-stream/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 4 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🎛️</div>
-          <h3 class="card-title">04. Scaler & Choreography Playground</h3>
-          <p class="card-desc">
-            Interactive workbench to experiment with musical scales (Major, Minor, Pentatonic, Blues, Insen), custom quantization, and movement physics with instant code generation.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Interactive Workbench</span>
-            <span class="tag">Code Generator</span>
-            <span class="tag">Presets</span>
+        <!-- 4. scaleSample (Drum Soundbank) -->
+        <div class="scaler-box">
+          <div>
+            <h4>
+              <span>scaleSample()</span>
+              <span class="output-badge">Zero-Asset Drums</span>
+            </h4>
+            <p>Built-in synthesized drum & percussion models ready offline without external audio files.</p>
+          </div>
+          <div class="scaler-controls">
+            <div class="pad-grid">
+              <button class="drum-pad" data-sample="kick">🥁 Kick</button>
+              <button class="drum-pad" data-sample="snare">🪘 Snare</button>
+              <button class="drum-pad" data-sample="hihat">🎩 HiHat</button>
+              <button class="drum-pad" data-sample="clap">👏 Clap</button>
+              <button class="drum-pad" data-sample="bell">🔔 Bell</button>
+              <button class="drum-pad" data-sample="blip">⚡ Blip</button>
+            </div>
           </div>
         </div>
-        <a href="examples/04-playground/" class="btn">Launch Demo ➔</a>
       </div>
 
-      <!-- Demo 5 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🎡</div>
-          <h3 class="card-title">05. Radial Sunburst & Cyclic Radar</h3>
-          <p class="card-desc">
-            Multi-layer hierarchical sunburst chart with rotating radar needle triggering cyclic arpeggios, octave registers, and kinetic radial pulses.
-          </p>
-          <div class="card-tags">
-            <span class="tag">d3.partition</span>
-            <span class="tag">Cyclic Time</span>
-            <span class="tag">Octave Layers</span>
-            <span class="tag">Radial Pulse</span>
+      <!-- Live Choreography Tester -->
+      <div style="margin-top: 2rem;">
+        <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.4rem;">choreography() Kinetic Presets</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Click any movement below to trigger hardware-synchronized CSS/SVG animation on the target:
+        </p>
+
+        <div class="choreography-box">
+          <div class="choreo-target" id="choreo-box">🎵</div>
+          <div class="choreo-buttons">
+            <button class="btn-choreo" data-choreo="wiggle">〰️ Wiggle</button>
+            <button class="btn-choreo" data-choreo="flip">🔄 3D Flip</button>
+            <button class="btn-choreo" data-choreo="pulse">💓 Pulse</button>
+            <button class="btn-choreo" data-choreo="bounce">🏀 Bounce</button>
+            <button class="btn-choreo" data-choreo="shake">⚡ Shake</button>
+            <button class="btn-choreo" data-choreo="ripple">🌊 Ripple</button>
+            <button class="btn-choreo" data-choreo="glow">✨ Glow</button>
+            <button class="btn-choreo" data-choreo="squash">🟢 Squash</button>
           </div>
         </div>
-        <a href="examples/05-radial-sunburst/" class="btn">Launch Demo ➔</a>
       </div>
+    </section>
 
-      <!-- Demo 6 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🕸️</div>
-          <h3 class="card-title">06. Force Network & Graph Sonifier</h3>
-          <p class="card-desc">
-            D3 Force physics network graph where node degree maps to harmonic pitch, drag-and-release plucks strings, and impulses traverse edges polyphonically.
-          </p>
-          <div class="card-tags">
-            <span class="tag">d3.forceSimulation</span>
-            <span class="tag">Degree Centrality</span>
-            <span class="tag">Pluck Synth</span>
-            <span class="tag">Spring Physics</span>
+    <!-- SECTION 2: Principles of Data Sonification -->
+    <section class="section-card" id="principles">
+      <h2 class="section-title">
+        <span>📜</span>
+        <span>Principles of Data Sonification</span>
+      </h2>
+      <p class="section-desc">
+        Derived from research and practice in data musicology (including Daniel Muldrew's <em>"Transforming Data Into Music"</em>):
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="color: var(--accent); margin-bottom: 0.5rem;">1. The Meaning Equation</h4>
+          <div style="font-family: monospace; font-size: 0.95rem; color: #fff; margin: 0.5rem 0;">
+            Data + Known Mapping = <strong>Meaning</strong><br>
+            Data + Cryptic Mapping = <strong>Noise / Junk</strong>
           </div>
-        </div>
-        <a href="examples/06-network-graph/" class="btn">Launch Demo ➔</a>
-      </div>
-
-      <!-- Demo 7 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🗺️</div>
-          <h3 class="card-title">07. Geographic Map & Spatial 2D Audio</h3>
-          <p class="card-desc">
-            World map sonifying longitude as stereo panning [-1, +1] and latitude as pitch register, with animated flight route tour and bouncing city beacons.
+          <p style="font-size: 0.82rem; color: var(--text-muted);">
+            Just as an unlabeled visual chart causes confusion, sonification without an explicit audio legend is mere noise. Every `d3-audio` demo provides an interactive `audioLegend()` key so listeners know what each sound signifies.
           </p>
-          <div class="card-tags">
-            <span class="tag">d3.geoProjection</span>
-            <span class="tag">Spatial Panning</span>
-            <span class="tag">Latitude/Longitude</span>
-            <span class="tag">Flight Tour</span>
-          </div>
         </div>
-        <a href="examples/07-geographic-map/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 8 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🌈</div>
-          <h3 class="card-title">08. Streamgraph & Harmonic Chord Voicer</h3>
-          <p class="card-desc">
-            Stacked area streamgraph of energy sources where each undulating layer is an independent harmonic voice playing 5-note polyphonic chords.
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="color: var(--accent2); margin-bottom: 0.5rem;">2. The "Stay Close to the Data" Rule</h4>
+          <blockquote style="font-style: italic; color: #fff; font-size: 0.95rem; margin: 0.5rem 0;">
+            "Stay close to the data... otherwise it's art!"
+          </blockquote>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">
+            Artistic sonification permits arbitrary aesthetic liberties. Analytical sonification demands mathematical faithfulness: ratios, deltas, and taxonomies must be preserved so a listener can reconstruct the data from the sound.
           </p>
-          <div class="card-tags">
-            <span class="tag">d3.stack</span>
-            <span class="tag">Polyphonic Chords</span>
-            <span class="tag">5-Voice Layers</span>
-            <span class="tag">Glow Waves</span>
-          </div>
         </div>
-        <a href="examples/08-streamgraph/" class="btn">Launch Demo ➔</a>
       </div>
 
-      <!-- Demo 9 -->
-      <div class="demo-card">
+      <!-- Data Taxonomy Matrix -->
+      <h4 style="font-size: 1.1rem; color: #fff; margin: 1.5rem 0 0.5rem 0;">Continuous vs. Ordinal vs. Categorical Data</h4>
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Data Variable Type</th>
+            <th>Visual Attribute</th>
+            <th>Auditory Attribute (`d3-audio`)</th>
+            <th>Recommended Scaler</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight: 700; color: #fff;">Continuous Quantitative</td>
+            <td>Position (X, Y), Length</td>
+            <td>Frequency / Pitch / Cutoff / Pan</td>
+            <td><code>scalePitch().quantize(false)</code>, <code>scaleFilter()</code>, <code>scalePan()</code></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 700; color: #fff;">Ordinal (Ranked Hierarchy)</td>
+            <td>Step Rank, Severity Level</td>
+            <td>Diatonic Scale Degrees, Octaves, Tension</td>
+            <td><code>scalePitch().quantize(true)</code>, <code>scaleTension()</code></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 700; color: #fff;">Categorical (Unranked Classes)</td>
+            <td>Color Hue, Pattern Texture</td>
+            <td>Instrument Timbre, Percussion Samples, Mode</td>
+            <td><code>scaleSample()</code>, distinct Synth Models, Modal Keys</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Ethical Guidelines -->
+      <div style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem;">
+        <h4 style="color: var(--red); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>⚠️</span> Ethical Sonification & Preventing Data Misrepresentation
+        </h4>
+        <ul style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-left: 1.25rem;">
+          <li><strong>The Cherry-Picked Scale Hazard</strong>: Never force chaotic or anomalous data into Pentatonic scales that falsely make severe volatility sound calm and melodic. Use `scaleTension()` with dissonant tritones.</li>
+          <li><strong>Cultural Key & Tonal Bias</strong>: Minor chords convey "sad / bad" in Western conditioning. Avoid mapping neutral demographic or product categories to minor keys.</li>
+          <li><strong>Psychoacoustic Non-Linearity (Fletcher-Munson)</strong>: The human ear is far more sensitive at 3 kHz than at 60 Hz. Use loudness weighting so low and high notes are perceived with balanced prominence.</li>
+          <li><strong>Temporal Masking</strong>: Keep event pacing $\ge 60\text{ ms}$ so rapid events don't blur into an unresolvable acoustic smear.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 3: 20 Interactive Demo Applications -->
+    <section class="section-card" id="demos">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
         <div>
-          <div class="card-icon">🏢</div>
-          <h3 class="card-title">09. Treemap & Hierarchical Market</h3>
-          <p class="card-desc">
-            Multi-sector stock market treemap mapping market cap to duration/gain and performance (+/-) to Major vs Minor modes with automated tile scanning.
+          <h2 class="section-title">
+            <span>🎮</span>
+            <span>20 Interactive Demo Applications</span>
+          </h2>
+          <p class="section-desc" style="margin-bottom: 0;">
+            Explore the complete gallery of sonified charts, physics simulations, educational games, and domain models:
           </p>
-          <div class="card-tags">
-            <span class="tag">d3.treemap</span>
-            <span class="tag">Market Sectors</span>
-            <span class="tag">3D Flips</span>
-            <span class="tag">Major / Minor</span>
-          </div>
         </div>
-        <a href="examples/09-treemap-matrix/" class="btn">Launch Demo ➔</a>
+        <div class="filter-chips" id="filter-chips">
+          <button class="chip active" data-filter="all">All (20)</button>
+          <button class="chip" data-filter="timeseries">Time-Series & Streams</button>
+          <button class="chip" data-filter="categorical">Categorical Data</button>
+          <button class="chip" data-filter="games">Games & Statistics</button>
+          <button class="chip" data-filter="physics">Physics & Spatial</button>
+        </div>
       </div>
 
-      <!-- Demo 10 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🧬</div>
-          <h3 class="card-title">10. Circular Chord Diagram & Flows</h3>
-          <p class="card-desc">
-            Directional bilateral matrix flows connecting regions with dual-note chord intervals, spatial angular panning, and shockwave ribbon ripples.
-          </p>
-          <div class="card-tags">
-            <span class="tag">d3.chord</span>
-            <span class="tag">Bilateral Flows</span>
-            <span class="tag">Interval Voicings</span>
-            <span class="tag">Ripple Wave</span>
+      <div class="grid-demos" id="demo-grid">
+        <!-- Demo 01 -->
+        <div class="demo-card" data-category="timeseries">
+          <div>
+            <div class="card-icon">📊</div>
+            <h3 class="card-title">01. Data Sonifier & Chart</h3>
+            <p class="card-desc">
+              Multi-variable scatter & bar chart with pitch, stereo pan, duration scaling, and synchronized visual playhead tracking.
+            </p>
+            <div class="card-tags">
+              <span class="tag">scalePitch</span>
+              <span class="tag">scalePan</span>
+              <span class="tag">Choreography</span>
+              <span class="tag">Audio Legend</span>
+            </div>
           </div>
+          <a href="examples/01-data-sonification/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/10-chord-diagram/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 11 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🏔️</div>
-          <h3 class="card-title">11. Ridgeline Joyplot Topography</h3>
-          <p class="card-desc">
-            Topographic probability distributions scanning pitch frequencies and filter cutoffs while curves vibrate dynamically like resonant strings.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Ridgeline / Joyplot</span>
-            <span class="tag">scaleFilter</span>
-            <span class="tag">Resonance Sweep</span>
-            <span class="tag">String Wiggles</span>
+        <!-- Demo 02 -->
+        <div class="demo-card" data-category="timeseries">
+          <div>
+            <div class="card-icon">🎛️</div>
+            <h3 class="card-title">02. Motion Matrix Sequencer</h3>
+            <p class="card-desc">
+              16-step 4-track sequencer triggering drum samples and synth bass with coordinated wiggles, 3D flips, bounces, and ripples.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Timeline</span>
+              <span class="tag">scaleSample</span>
+              <span class="tag">16-Step Grid</span>
+            </div>
           </div>
+          <a href="examples/02-rhythmic-sequencer/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/11-ridgeline-joyplot/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 12 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🌌</div>
-          <h3 class="card-title">12. Particle Flow Field Swarm</h3>
-          <p class="card-desc">
-            200+ autonomous particles flowing through a vector curl field with interactive vortex attractors generating ambient polyphonic soundscapes.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Vector Physics</span>
-            <span class="tag">Generative Audio</span>
-            <span class="tag">Vortex Attractors</span>
-            <span class="tag">Hirajoshi Ambient</span>
+        <!-- Demo 03 -->
+        <div class="demo-card" data-category="timeseries">
+          <div>
+            <div class="card-icon">📈</div>
+            <h3 class="card-title">03. Continuous Stream & Sweeps</h3>
+            <p class="card-desc">
+              Live time-series stream with audio filter frequency sweeps, spatial stereo audio, and responsive particle dynamics.
+            </p>
+            <div class="card-tags">
+              <span class="tag">scaleFilter</span>
+              <span class="tag">Live Stream</span>
+              <span class="tag">Glissando</span>
+            </div>
           </div>
+          <a href="examples/03-continuous-stream/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/12-particle-flowfield/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 13 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🌋</div>
-          <h3 class="card-title">13. Seismic Simon Earthquake Game</h3>
-          <p class="card-desc">
-            Educational "Simon Says" game built on real USGS earthquake data where pie slices sonify tectonic depth and magnitude with shockwave ripples.
-          </p>
-          <div class="card-tags">
-            <span class="tag">d3.pie</span>
-            <span class="tag">USGS Earthquakes</span>
-            <span class="tag">Simon Game</span>
-            <span class="tag">Sub-Bass Rumble</span>
+        <!-- Demo 04 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">🧪</div>
+            <h3 class="card-title">04. Scaler & Choreography Playground</h3>
+            <p class="card-desc">
+              Interactive workbench to test scale modes, movement presets, and copy live generated D3 code.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Interactive Lab</span>
+              <span class="tag">Code Generator</span>
+              <span class="tag">Choreography</span>
+            </div>
           </div>
+          <a href="examples/04-playground/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/13-pie-simon-earthquake/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 14 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🪐</div>
-          <h3 class="card-title">14. Exoplanet Orbit & Doppler Symphony</h3>
-          <p class="card-desc">
-            NASA Kepler & TRAPPIST-1 orbital physics lab where Kepler's 3rd law generates orbital frequencies and stellar transit chimes.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Kepler Physics</span>
-            <span class="tag">NASA Exoplanets</span>
-            <span class="tag">Doppler Pan</span>
-            <span class="tag">Transit Beats</span>
+        <!-- Demo 05 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">☀️</div>
+            <h3 class="card-title">05. Radial Sunburst Sonifier</h3>
+            <p class="card-desc">
+              Multi-tier radial partition chart with rotating radar needle triggering cyclic arpeggios, octave tiers, and kinetic radial pulses.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Sunburst</span>
+              <span class="tag">Octaves</span>
+              <span class="tag">Radar Sonar</span>
+              <span class="tag">Audio Legend</span>
+            </div>
           </div>
+          <a href="examples/05-radial-sunburst/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/14-exoplanet-doppler/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 15 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🌡️</div>
-          <h3 class="card-title">15. Climate Spiral & Carbon Quest</h3>
-          <p class="card-desc">
-            NASA temperature anomaly spiral (1880–2026) sonifying global warming as harmonic tension and policy scenarios as equilibrium resolution.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Climate Spiral</span>
-            <span class="tag">NASA GISS</span>
-            <span class="tag">Harmonic Tension</span>
-            <span class="tag">Policy Simulator</span>
+        <!-- Demo 06 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">🕸️</div>
+            <h3 class="card-title">06. Force Network Graph</h3>
+            <p class="card-desc">
+              D3 Force physics graph where node degree maps to harmonic pitch, drag-and-release plucks strings, and impulses traverse edges polyphonically.
+            </p>
+            <div class="card-tags">
+              <span class="tag">D3 Force</span>
+              <span class="tag">Degree Centrality</span>
+              <span class="tag">Spring Pluck</span>
+              <span class="tag">Audio Legend</span>
+            </div>
           </div>
+          <a href="examples/06-network-graph/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/15-climate-rhythm-quest/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 16 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🎲</div>
-          <h3 class="card-title">16. Galton Board & Plinko Statistics</h3>
-          <p class="card-desc">
-            Interactive Central Limit Theorem pinball where binomial random drops play acoustic marimba chimes and accumulate into a singing Gaussian bell curve.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Galton Board</span>
-            <span class="tag">Normal Distribution</span>
-            <span class="tag">Marimba Pluck</span>
-            <span class="tag">Binomial Physics</span>
+        <!-- Demo 07 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">🌐</div>
+            <h3 class="card-title">07. Geographic Spatial Audio</h3>
+            <p class="card-desc">
+              World map sonifying longitude as stereo panning [-1, +1] and latitude as pitch register, with flight route tour.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Geo Projection</span>
+              <span class="tag">Stereo Pan</span>
+              <span class="tag">Audio Legend</span>
+            </div>
           </div>
+          <a href="examples/07-geographic-map/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/16-galton-board-plinko/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 17 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🧬</div>
-          <h3 class="card-title">17. Protein & DNA Folding Sonifier</h3>
-          <p class="card-desc">
-            Macromolecular ribbon folding with 20 amino acid categorical timbres, hydropathy spatial panning, and an interactive audio legend.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Protein Sequences</span>
-            <span class="tag">DNA Double Helix</span>
-            <span class="tag">Kyte-Doolittle</span>
-            <span class="tag">Audio Legend</span>
+        <!-- Demo 08 -->
+        <div class="demo-card" data-category="timeseries">
+          <div>
+            <div class="card-icon">🌊</div>
+            <h3 class="card-title">08. Streamgraph Chord Voicer</h3>
+            <p class="card-desc">
+              Stacked area streamgraph of energy sources where each undulating layer is an independent voice playing 5-note chords.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Streamgraph</span>
+              <span class="tag">5-Voice Chords</span>
+              <span class="tag">Audio Legend</span>
+            </div>
           </div>
+          <a href="examples/08-streamgraph/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/17-protein-dna-sonifier/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 18 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🐾</div>
-          <h3 class="card-title">18. Categorical Ecosystem Food Web</h3>
-          <p class="card-desc">
-            Categorical trophic level timbres, biome musical modes, and IUCN conservation risk tension scaling with cascade sonification.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Categorical Data</span>
-            <span class="tag">Food Web Graph</span>
-            <span class="tag">scaleTension</span>
-            <span class="tag">IUCN Red List</span>
+        <!-- Demo 09 -->
+        <div class="demo-card" data-category="categorical">
+          <div>
+            <div class="card-icon">📦</div>
+            <h3 class="card-title">09. Treemap Market Matrix</h3>
+            <p class="card-desc">
+              S&P stock market treemap mapping market cap to duration/gain and performance (+/-) to Major vs Minor modes.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Treemap</span>
+              <span class="tag">Major/Minor</span>
+              <span class="tag">Sectors</span>
+            </div>
           </div>
+          <a href="examples/09-treemap-matrix/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/18-ecosystem-taxonomy/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 19 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🚲</div>
-          <h3 class="card-title">19. Pronto Bike Share Commuter Symphony</h3>
-          <p class="card-desc">
-            The canonical 24-hour Seattle commuter sonification comparing April 1st weekday rush hours with July 4th holiday leisure waves.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Pronto Case Study</span>
-            <span class="tag">Delta Semitones</span>
-            <span class="tag">Middle C Baseline</span>
-            <span class="tag">Audio Legend</span>
+        <!-- Demo 10 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">⭕</div>
+            <h3 class="card-title">10. Circular Chord Diagram</h3>
+            <p class="card-desc">
+              Directional bilateral matrix flows connecting regions with dual-note chord intervals and spatial angular panning.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Chord Matrix</span>
+              <span class="tag">Flow Ribbons</span>
+              <span class="tag">Spatial Angles</span>
+            </div>
           </div>
+          <a href="examples/10-chord-diagram/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/19-pronto-bike-commuter/" class="btn">Launch Demo ➔</a>
-      </div>
 
-      <!-- Demo 20 -->
-      <div class="demo-card">
-        <div>
-          <div class="card-icon">🔢</div>
-          <h3 class="card-title">20. The Sound of Sorting Algorithms</h3>
-          <p class="card-desc">
-            Auditory and visual computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort.
-          </p>
-          <div class="card-tags">
-            <span class="tag">Sound of Sorting</span>
-            <span class="tag">Radix Sort Redux</span>
-            <span class="tag">O(n log n)</span>
-            <span class="tag">Audio Legend</span>
+        <!-- Demo 11 -->
+        <div class="demo-card" data-category="timeseries">
+          <div>
+            <div class="card-icon">🏔️</div>
+            <h3 class="card-title">11. Ridgeline Joyplot Topography</h3>
+            <p class="card-desc">
+              Topographic probability distributions scanning pitch frequencies and filter cutoffs like vibrating resonant strings.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Joyplot</span>
+              <span class="tag">String Scan</span>
+              <span class="tag">Density Curves</span>
+            </div>
           </div>
+          <a href="examples/11-ridgeline-joyplot/" class="btn">Launch Demo ➔</a>
         </div>
-        <a href="examples/20-sound-of-sorting/" class="btn">Launch Demo ➔</a>
+
+        <!-- Demo 12 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">✨</div>
+            <h3 class="card-title">12. Particle Flow Field Swarm</h3>
+            <p class="card-desc">
+              200+ autonomous particles flowing through a vector curl field with interactive vortex attractors generating Hirajoshi soundscapes.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Particle Physics</span>
+              <span class="tag">Vortex Attractor</span>
+              <span class="tag">Hirajoshi</span>
+            </div>
+          </div>
+          <a href="examples/12-particle-flowfield/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 13 -->
+        <div class="demo-card" data-category="games">
+          <div>
+            <div class="card-icon">🌍</div>
+            <h3 class="card-title">13. Seismic Simon Earthquake Game</h3>
+            <p class="card-desc">
+              Educational memory game using real USGS earthquake data where pie slices sonify tectonic depth and magnitude with shockwave ripples.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Simon Game</span>
+              <span class="tag">USGS Earthquakes</span>
+              <span class="tag">Audio Legend</span>
+            </div>
+          </div>
+          <a href="examples/13-pie-simon-earthquake/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 14 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">🪐</div>
+            <h3 class="card-title">14. Exoplanet Orbit & Doppler</h3>
+            <p class="card-desc">
+              NASA Kepler & TRAPPIST-1 orbital physics lab where Kepler's 3rd law generates orbital frequencies, transit chimes, and Doppler panning.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Kepler 3rd Law</span>
+              <span class="tag">Doppler Pan</span>
+              <span class="tag">Audio Legend</span>
+            </div>
+          </div>
+          <a href="examples/14-exoplanet-doppler/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 15 -->
+        <div class="demo-card" data-category="games">
+          <div>
+            <div class="card-icon">🌡️</div>
+            <h3 class="card-title">15. Climate Spiral & Carbon Quest</h3>
+            <p class="card-desc">
+              NASA temperature anomaly spiral (1880–2026) sonifying global warming as harmonic tension and policy scenarios as equilibrium resolution.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Climate Spiral</span>
+              <span class="tag">scaleTension</span>
+              <span class="tag">Audio Legend</span>
+            </div>
+          </div>
+          <a href="examples/15-climate-rhythm-quest/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 16 -->
+        <div class="demo-card" data-category="games">
+          <div>
+            <div class="card-icon">🎲</div>
+            <h3 class="card-title">16. Galton Board & Plinko Statistics</h3>
+            <p class="card-desc">
+              Central Limit Theorem pinball where binomial random drops play acoustic marimba chimes and accumulate into a singing bell curve.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Central Limit Thm</span>
+              <span class="tag">Marimba Chimes</span>
+              <span class="tag">Audio Legend</span>
+            </div>
+          </div>
+          <a href="examples/16-galton-board-plinko/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 17 -->
+        <div class="demo-card" data-category="categorical">
+          <div>
+            <div class="card-icon">🧬</div>
+            <h3 class="card-title">17. Protein & DNA Folding Sonifier</h3>
+            <p class="card-desc">
+              Macromolecular ribbon folding with 20 amino acid categorical timbres, Kyte-Doolittle hydropathy spatial panning, and interactive audio legend.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Protein Sequences</span>
+              <span class="tag">DNA Double Helix</span>
+              <span class="tag">Audio Legend</span>
+            </div>
+          </div>
+          <a href="examples/17-protein-dna-sonifier/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 18 -->
+        <div class="demo-card" data-category="categorical">
+          <div>
+            <div class="card-icon">🐾</div>
+            <h3 class="card-title">18. Categorical Ecosystem Food Web</h3>
+            <p class="card-desc">
+              Categorical trophic level timbres (Producers, Herbivores, Carnivores, Apex, Decomposers), biome modes, and IUCN risk tension scaling.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Categorical Data</span>
+              <span class="tag">scaleTension</span>
+              <span class="tag">IUCN Red List</span>
+            </div>
+          </div>
+          <a href="examples/18-ecosystem-taxonomy/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 19 -->
+        <div class="demo-card" data-category="timeseries">
+          <div>
+            <div class="card-icon">🚲</div>
+            <h3 class="card-title">19. Pronto Bike Commuter Symphony</h3>
+            <p class="card-desc">
+              The canonical 24-hour Seattle commuter sonification comparing April 1st weekday rush hours with July 4th holiday leisure waves.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Pronto Case Study</span>
+              <span class="tag">Delta Semitones</span>
+              <span class="tag">Audio Legend</span>
+            </div>
+          </div>
+          <a href="examples/19-pronto-bike-commuter/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 20 -->
+        <div class="demo-card" data-category="games">
+          <div>
+            <div class="card-icon">🔢</div>
+            <h3 class="card-title">20. The Sound of Sorting Algorithms</h3>
+            <p class="card-desc">
+              Auditory computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort with memory panning.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Sound of Sorting</span>
+              <span class="tag">O(n log n)</span>
+              <span class="tag">Audio Legend</span>
+            </div>
+          </div>
+          <a href="examples/20-sound-of-sorting/" class="btn">Launch Demo ➔</a>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Quickstart Code Sample -->
-    <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Quickstart Example</h2>
-    <div class="code-box">
-<span class="hl-kw">import</span> * <span class="hl-kw">as</span> d3 <span class="hl-kw">from</span> <span class="hl-str">"d3"</span>;
-<span class="hl-kw">import</span> { scalePitch, scaleGain, scalePan, timeline, choreography } <span class="hl-kw">from</span> <span class="hl-str">"d3-audio"</span>;
+    <!-- SECTION 4: Quickstart & Integration -->
+    <section class="section-card" id="quickstart">
+      <h2 class="section-title">
+        <span>🚀</span>
+        <span>Quickstart Integration</span>
+      </h2>
+      <p class="section-desc">
+        `d3-audio` is distributed as a lightweight UMD bundle and ES module. Include D3, Tone.js, and `d3-audio` in your HTML:
+      </p>
 
-<span class="hl-cm">// 1. Define D3-like audio scalers</span>
-<span class="hl-kw">const</span> pitchScale = <span class="hl-fn">scalePitch</span>()
-  .<span class="hl-fn">domain</span>([0, 100])
-  .<span class="hl-fn">range</span>([<span class="hl-str">"C3"</span>, <span class="hl-str">"C6"</span>])
-  .<span class="hl-fn">scale</span>(<span class="hl-str">"pentatonic"</span>)
-  .<span class="hl-fn">root</span>(<span class="hl-str">"C"</span>);
+      <div class="code-box">
+<span class="hl-cm">&lt;!-- Load dependencies and d3-audio bundle --&gt;</span>
+&lt;<span class="hl-kw">script</span> <span class="hl-fn">src</span>=<span class="hl-str">"https://cdn.jsdelivr.net/npm/d3@7"</span>&gt;&lt;/<span class="hl-kw">script</span>&gt;
+&lt;<span class="hl-kw">script</span> <span class="hl-fn">src</span>=<span class="hl-str">"https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"</span>&gt;&lt;/<span class="hl-kw">script</span>&gt;
+&lt;<span class="hl-kw">script</span> <span class="hl-fn">src</span>=<span class="hl-str">"./dist/d3-audio.js"</span>&gt;&lt;/<span class="hl-kw">script</span>&gt;
 
-<span class="hl-kw">const</span> gainScale = <span class="hl-fn">scaleGain</span>().<span class="hl-fn">domain</span>([0, 50]).<span class="hl-fn">range</span>([0.2, 1.0]);
-<span class="hl-kw">const</span> panScale = <span class="hl-fn">scalePan</span>().<span class="hl-fn">domain</span>([0, 800]).<span class="hl-fn">range</span>([-1, 1]);
+&lt;<span class="hl-kw">script</span> <span class="hl-fn">type</span>=<span class="hl-str">"module"</span>&gt;
+  <span class="hl-kw">import</span> { scalePitch, scaleGain, scalePan, scaleTension, audioLegend, timeline, choreography } <span class="hl-kw">from</span> <span class="hl-str">"./src/index.js"</span>;
 
-<span class="hl-cm">// 2. Connect dataset to Tone.js Timeline</span>
-<span class="hl-kw">const</span> tl = <span class="hl-fn">timeline</span>({ bpm: 120, loop: <span class="hl-kw">true</span> })
-  .<span class="hl-fn">data</span>(dataset)
-  .<span class="hl-fn">time</span>((d, i) => i * 0.25)
-  .<span class="hl-fn">pitch</span>(d => <span class="hl-fn">pitchScale</span>(d.value))
-  .<span class="hl-fn">gain</span>(d => <span class="hl-fn">gainScale</span>(d.metric))
-  .<span class="hl-fn">pan</span>(d => <span class="hl-fn">panScale</span>(d.x))
-  .<span class="hl-fn">movement</span>(d => ({
-    movement: d.category === <span class="hl-str">"alert"</span> ? <span class="hl-str">"wiggle"</span> : <span class="hl-str">"flip"</span>,
-    intensity: d.value / 50,
-    element: d3.<span class="hl-fn">select</span>(<span class="hl-str">`#node-\${d.id}`</span>)
-  }));
+  <span class="hl-cm">// 1. Define D3-style audio scalers</span>
+  <span class="hl-kw">const</span> pitchScale = <span class="hl-fn">scalePitch</span>()
+    .<span class="hl-fn">domain</span>([0, 100])
+    .<span class="hl-fn">range</span>([<span class="hl-str">"C3"</span>, <span class="hl-str">"C6"</span>])
+    .<span class="hl-fn">scale</span>(<span class="hl-str">"pentatonic"</span>);
 
-<span class="hl-cm">// 3. Play synchronized audio + visual choreography</span>
-<span class="hl-kw">await</span> tl.<span class="hl-fn">play</span>();
-    </div>
+  <span class="hl-kw">const</span> panScale = <span class="hl-fn">scalePan</span>().<span class="hl-fn">domain</span>([0, 800]).<span class="hl-fn">range</span>([-0.9, 0.9]);
+  <span class="hl-kw">const</span> tensionScale = <span class="hl-fn">scaleTension</span>().<span class="hl-fn">domain</span>([0, 100]);
+
+  <span class="hl-cm">// 2. Mount Interactive Audio Legend</span>
+  <span class="hl-kw">const</span> legend = <span class="hl-fn">audioLegend</span>()
+    .<span class="hl-fn">title</span>(<span class="hl-str">"Chart Audio Key"</span>)
+    .<span class="hl-fn">pitch</span>(pitchScale, <span class="hl-str">"Metric Value (0 ➔ 100)"</span>)
+    .<span class="hl-fn">pan</span>(panScale, <span class="hl-str">"Horizontal X Position"</span>)
+    .<span class="hl-fn">tension</span>(tensionScale, <span class="hl-str">"Volatility Risk Alert"</span>);
+
+  d3.<span class="hl-fn">select</span>(<span class="hl-str">"#legend-mount"</span>).<span class="hl-fn">call</span>(legend);
+
+  <span class="hl-cm">// 3. Play frame-synchronized audio & screen choreography</span>
+  <span class="hl-kw">const</span> tl = <span class="hl-fn">timeline</span>({ bpm: 120, loop: <span class="hl-kw">true</span> })
+    .<span class="hl-fn">data</span>(dataset)
+    .<span class="hl-fn">pitch</span>(d =&gt; <span class="hl-fn">pitchScale</span>(d.value))
+    .<span class="hl-fn">pan</span>(d =&gt; <span class="hl-fn">panScale</span>(d.x))
+    .<span class="hl-fn">movement</span>(d =&gt; ({ movement: <span class="hl-str">"wiggle"</span>, intensity: 1.2, element: d.node }));
+
+  <span class="hl-kw">await</span> tl.<span class="hl-fn">play</span>();
+&lt;/<span class="hl-kw">script</span>&gt;
+      </div>
+    </section>
+
+    <!-- Footer with GitHub Repository Mention -->
+    <footer>
+      <p style="margin-bottom: 0.6rem;">
+        <strong>d3-audio</strong> is an open-source project by <a href="https://github.com/dmuldrew" target="_blank">Daniel Muldrew</a>.
+      </p>
+      <p style="margin-bottom: 1.25rem;">
+        View source code, report issues, or contribute on GitHub:  
+        <a href="https://github.com/dmuldrew/d3_audio" target="_blank" style="font-weight: 700; color: var(--accent);">https://github.com/dmuldrew/d3_audio</a>
+      </p>
+      <p style="font-size: 0.8rem; color: #64748b;">
+        Inspired by <em>"Transforming Data Into Music"</em> • MIT License © 2026.
+      </p>
+    </footer>
   </div>
 
+  <!-- Interactive JavaScript Logic -->
   <script type="module">
     import * as d3Audio from './src/index.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-      const pitch = d3Audio.scalePitch().domain([0, 100]).range(["C4", "D5"]).scale("pentatonic");
       let synth = null;
+      let polySynth = null;
+      let fmSynth = null;
+      const drums = d3Audio.createSamplePlayer();
 
       async function getSynth() {
         await d3Audio.defaultEngine.start();
-        if (!synth) {
-          synth = d3Audio.createSynth();
-        }
+        if (!synth) synth = d3Audio.createSynth({ type: "polySynth", volume: -2 });
         return synth;
       }
+      async function getPoly() {
+        await d3Audio.defaultEngine.start();
+        if (!polySynth) polySynth = d3Audio.createSynth({ type: "polySynth", volume: -3 });
+        return polySynth;
+      }
+      async function getFM() {
+        await d3Audio.defaultEngine.start();
+        if (!fmSynth) fmSynth = d3Audio.createSynth({ type: "fmSynth", harmonicity: 2.0, volume: -3 });
+        return fmSynth;
+      }
 
+      // 1. Enable Audio Banner
       const enableBtn = document.getElementById('enable-audio-btn');
       enableBtn.addEventListener('click', async () => {
         try {
@@ -722,6 +1329,8 @@
         }
       });
 
+      // 2. Hero Interactive Preview Nodes
+      const pitchHero = d3Audio.scalePitch().domain([0, 100]).range(["C4", "C5"]).scale("pentatonic");
       const nodes = document.querySelectorAll('.sound-node');
       nodes.forEach(node => {
         node.addEventListener('click', async () => {
@@ -729,17 +1338,17 @@
             const s = await getSynth();
             const val = +node.getAttribute('data-val');
             const move = node.getAttribute('data-move');
-            const note = pitch(val);
+            const note = pitchHero(val);
 
             s.triggerAttackRelease(note, "8n");
             d3Audio.choreography().movement(move).intensity(1.2).duration(0.4)(node);
           } catch (err) {
-            console.error("Node click error:", err);
+            console.error("Node error:", err);
           }
         });
       });
 
-      // Play Sequence button
+      // Hero Play Sequence
       const playSeqBtn = document.getElementById('play-sequence-btn');
       let isPlayingSeq = false;
       playSeqBtn.addEventListener('click', async () => {
@@ -754,12 +1363,11 @@
             const el = nodeList[i];
             const val = +el.getAttribute('data-val');
             const move = el.getAttribute('data-move');
-            const note = pitch(val);
+            const note = pitchHero(val);
 
             s.triggerAttackRelease(note, "8n");
             d3Audio.choreography().movement(move).intensity(1.3).duration(0.4)(el);
-
-            await new Promise(res => setTimeout(res, 250));
+            await new Promise(res => setTimeout(res, 260));
           }
 
           isPlayingSeq = false;
@@ -769,6 +1377,111 @@
           isPlayingSeq = false;
           playSeqBtn.innerText = "▶ Play Sequence";
         }
+      });
+
+      // 3. Interactive Workbench: scalePitch()
+      const pitchScale = d3Audio.scalePitch().domain([0, 100]).range(["C3", "C6"]).scale("pentatonic");
+      const pitchSlider = document.getElementById('pitch-slider');
+      const scaleSelect = document.getElementById('scale-mode-select');
+      const pitchOut = document.getElementById('pitch-out');
+
+      function updatePitchDisplay() {
+        const val = +pitchSlider.value;
+        const note = pitchScale(val);
+        const freq = pitchScale.frequency(val).toFixed(1);
+        pitchOut.innerText = `${note} (${freq} Hz)`;
+      }
+
+      pitchSlider.addEventListener('input', updatePitchDisplay);
+      scaleSelect.addEventListener('change', (e) => {
+        pitchScale.scale(e.target.value);
+        updatePitchDisplay();
+      });
+
+      document.getElementById('btn-test-pitch').addEventListener('click', async () => {
+        const s = await getSynth();
+        const note = pitchScale(+pitchSlider.value);
+        s.triggerAttackRelease(note, "8n");
+      });
+
+      // 4. Interactive Workbench: scaleTension()
+      const tensionScale = d3Audio.scaleTension().domain([0, 100]);
+      const tensionSlider = document.getElementById('tension-slider');
+      const tensionOut = document.getElementById('tension-out');
+      const chordOut = document.getElementById('chord-out');
+
+      function updateTensionDisplay() {
+        const val = +tensionSlider.value;
+        const res = tensionScale(val);
+        tensionOut.innerText = `${(val/100).toFixed(2)} (${res.tier})`;
+        chordOut.innerText = `${res.chord.join('-')} | ${res.cutoff}Hz`;
+      }
+      tensionSlider.addEventListener('input', updateTensionDisplay);
+
+      document.getElementById('btn-test-tension').addEventListener('click', async () => {
+        const p = await getPoly();
+        const res = tensionScale(+tensionSlider.value);
+        p.triggerAttackRelease(res.chord, "4n", undefined, 0.7);
+      });
+
+      // 5. Interactive Workbench: scalePan & scaleFilter
+      const panSlider = document.getElementById('pan-slider');
+      const filterSlider = document.getElementById('filter-slider');
+      const panOut = document.getElementById('pan-out');
+
+      function updatePanFilterDisplay() {
+        const panVal = +panSlider.value;
+        const panStr = panVal < -0.2 ? "Left" : panVal > 0.2 ? "Right" : "Center";
+        panOut.innerText = `${panStr} (${panVal}) | ${filterSlider.value} Hz`;
+      }
+      panSlider.addEventListener('input', updatePanFilterDisplay);
+      filterSlider.addEventListener('input', updatePanFilterDisplay);
+
+      document.getElementById('btn-test-pan-filter').addEventListener('click', async () => {
+        const fm = await getFM();
+        const pan = +panSlider.value;
+        const cutoff = +filterSlider.value;
+        fm.triggerAttackRelease("G4", "8n", undefined, 0.8, { pan, filterCutoff: cutoff });
+      });
+
+      // 6. Interactive Workbench: Drum Pads
+      document.querySelectorAll('.drum-pad').forEach(pad => {
+        pad.addEventListener('click', async () => {
+          await d3Audio.defaultEngine.start();
+          const sample = pad.getAttribute('data-sample');
+          drums.trigger(sample, "16n", undefined, 0.8);
+        });
+      });
+
+      // 7. Interactive Choreography Tester
+      const choreoTarget = document.getElementById('choreo-box');
+      document.querySelectorAll('.btn-choreo').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const choreoType = btn.getAttribute('data-choreo');
+          const s = await getSynth();
+          s.triggerAttackRelease("E4", "16n");
+          d3Audio.choreography().movement(choreoType).intensity(1.3).duration(0.45)(choreoTarget);
+        });
+      });
+
+      // 8. Demo Category Filtering
+      const chips = document.querySelectorAll('.chip');
+      const demoCards = document.querySelectorAll('.demo-card');
+
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          const filter = chip.getAttribute('data-filter');
+
+          demoCards.forEach(card => {
+            if (filter === 'all' || card.getAttribute('data-category') === filter) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
       });
     });
   </script>
