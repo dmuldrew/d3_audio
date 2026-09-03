@@ -141,7 +141,7 @@ Just as an unlabeled visual chart produces confusion, sound without an explanati
 
 `d3-audio` includes an interactive **`audioLegend()`** widget. Just like a color legend on a map, an Audio Legend displays the rules of the sonification and lets users click to audition each sound before playing the full visualization.
 
-### 2. The Stay Close to the Data Rule
+### 2. The Golden Rule of Sonification: Stay Close to the Data!
 > *Stay close to the data... otherwise it's art!*
 
 Music can take creative liberties, but **data sonification is an analytical tool**. Just as a data journalist or graphic designer must maintain visual fidelity in charts and graphs, a sound designer must maintain auditory fidelity:
@@ -151,7 +151,7 @@ Music can take creative liberties, but **data sonification is an analytical tool
 * **Visual "Chartjunk" vs. Auditory "Audiojunk"**: Edward Tufte coined the term *chartjunk* for decorative 3D bevels, fake drop shadows, and visual clutter that distract from the numbers. In audio sonification, gratuitous reverb, sweeping delay effects, and ornamental musical flourishes that don't represent data are auditory chartjunk. Every sound a listener hears should correspond to an actual data dimension.
 * **The Reconstruction Test**: When someone looks at an honest scatterplot, they can read the axis labels and reconstruct the underlying table of numbers. An honest sonification passes the exact same test: a listener, guided by a clear audio legend, should be able to hear whether values are rising, falling, accelerating, or holding steady, and reconstruct the true trend in their mind.
 
-### 3. The Golden Rule of Sonification
+### 3. Categorical Integrity: Avoiding False Pitch Hierarchies
 > **Never map unranked categories to higher and lower pitches.**
 
 The human brain instinctively hears higher musical notes as "higher," "better," "hotter," or "more important." In visual graphics, you would never represent unranked categories (like Engineering vs. Marketing, or Apples vs. Oranges) using an ordered vertical bar chart or a sequential heat ramp.
