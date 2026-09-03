@@ -2,6 +2,7 @@ import {
   scalePitch,
   scaleGain,
   scalePan,
+  audioLegend,
   choreography,
   defaultEngine,
   createSynth
@@ -78,6 +79,15 @@ const panScale = scalePan()
 const gainScale = scaleGain()
   .domain([3, 40])
   .range([0.45, 0.95]);
+
+// Interactive Audio Legend
+const legend = audioLegend()
+  .title("Geographic Spatial Sonification Key")
+  .pitch(pitchScale, "Latitude (-40° South ➔ +60° North)")
+  .pan(panScale, "Longitude (-180° West ↔ +180° East)")
+  .gain(gainScale, "Metro Population (3M ➔ 40M)");
+
+d3.select("#legend-mount").call(legend);
 
 const synth = createSynth({ type: "polySynth", volume: -2 });
 

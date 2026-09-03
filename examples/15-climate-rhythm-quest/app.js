@@ -3,6 +3,7 @@ import {
   scaleGain,
   scalePan,
   scaleFilter,
+  audioLegend,
   choreography,
   defaultEngine,
   createSynth
@@ -101,6 +102,14 @@ const filterScale = scaleFilter()
   .range([400, 6500]);
 
 const synthTone = createSynth({ type: "fmSynth", harmonicity: 2.0, volume: -2 });
+
+// Interactive Audio Legend
+const legend = audioLegend()
+  .title("Climate Spiral Sonification Key")
+  .pitch(pitchScale, "Temperature Anomaly (-0.4°C Calm ➔ +1.5°C Dissonance)")
+  .filter(filterScale, "Atmospheric CO₂ Concentration (280 ➔ 430 ppm)");
+
+d3.select("#legend-mount").call(legend);
 
 // Render historical spiral segments
 const colorScale = d3.scaleSequential(d3.interpolateTurbo)

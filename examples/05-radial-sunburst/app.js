@@ -3,6 +3,7 @@ import {
   scaleGain,
   scalePan,
   scaleFilter,
+  audioLegend,
   choreography,
   defaultEngine,
   createSynth
@@ -106,6 +107,15 @@ function getNodeColor(d) {
 // Synths for layers
 const synthLead = createSynth({ type: "fmSynth", harmonicity: 2.0, volume: -2 });
 const synthBass = createSynth({ type: "polySynth", volume: -3 });
+
+// Interactive Audio Legend
+const legend = audioLegend()
+  .title("Radial Sunburst Cyclic Audio Key")
+  .pitch(pitchScaleMid, "Radial Angle / Ring Depth (C3 Root ➔ G6 Leaves)")
+  .pan(panScale, "X Coordinate in Circular Space (Left ↔ Right)")
+  .gain(gainScale, "Subtree Weight / Segment Area");
+
+d3.select("#legend-mount").call(legend);
 
 // Render Arcs
 const segments = g.selectAll('path')

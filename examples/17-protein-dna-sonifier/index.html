@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17. Protein Sequence & DNA Folding Sonifier | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #050814;
+      --card: #0c1424;
+      --accent: #38bdf8;
+      --gold: #fbbf24;
+      --pink: #ec4899;
+      --green: #10b981;
+      --purple: #a855f7;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1180px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .canvas-box {
+      width: 100%;
+      height: 480px;
+      background: #02050e;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .residue-node {
+      cursor: pointer;
+      transform-box: fill-box;
+      transform-origin: center center;
+      transition: filter 0.15s, transform 0.2s;
+    }
+    .residue-node:hover {
+      filter: brightness(1.3) drop-shadow(0 0 10px rgba(56,189,248,0.8));
+    }
+    .residue-node.active-hit {
+      filter: brightness(1.6) drop-shadow(0 0 15px #ffffff);
+    }
+
+    .backbone-path {
+      fill: none;
+      stroke: rgba(148, 163, 184, 0.4);
+      stroke-width: 2.5px;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.7rem 1.3rem;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+
+    .control-group { margin-bottom: 1.1rem; }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      background: #060b17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .hud-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">17. Protein Sequence & DNA Folding Sonifier</h1>
+      </div>
+      <div>
+        <span id="molecule-status" style="font-family: monospace; font-size: 0.95rem; color: var(--accent); font-weight: 700;">Human Insulin Sequence</span>
+      </div>
+    </header>
+
+    <div class="layout-grid">
+      <!-- Folding Ribbon & Molecular Canvas -->
+      <div>
+        <div class="panel" style="padding: 0.75rem;">
+          <div class="canvas-box" id="molecular-area"></div>
+        </div>
+
+        <!-- Interactive Audio Legend Widget Mount -->
+        <div id="legend-mount"></div>
+      </div>
+
+      <!-- Sidebar Controls & Biochemical Lab -->
+      <div class="panel">
+        <button id="play-sequence-btn" class="btn">▶ Fold & Sonify Macromolecule</button>
+
+        <div class="control-group">
+          <label>Macromolecule Dataset</label>
+          <select id="molecule-select">
+            <option value="insulin" selected>Human Insulin (51 Residues, Dual Chains)</option>
+            <option value="gfp">Green Fluorescent Protein Chromophore (GFP)</option>
+            <option value="hemoglobin">Hemoglobin β (Normal Glu6 vs Sickle Val6)</option>
+            <option value="dnaStrand">DNA Double Helix Coding Strand (A, T, C, G)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Residue Choreography Movement</label>
+          <select id="move-select">
+            <option value="pulse" selected>Pulse (Conformational Breathing)</option>
+            <option value="wiggle">Wiggle (Thermal Fluctuation)</option>
+            <option value="flip">3D Flip (Sidechain Isomerization)</option>
+            <option value="ripple">Ripple (Solvent Shockwave)</option>
+            <option value="glow">Glow (Fluorescent Emission)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Sequencing Speed: <span id="speed-display">160</span> ms / residue</label>
+          <input type="range" id="speed-slider" min="60" max="400" value="160">
+        </div>
+
+        <div class="hud-box">
+          <div style="font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;" id="residue-title">🔬 Residue Details</div>
+          <div id="residue-stats" style="font-size: 0.78rem; color: var(--muted); line-height: 1.55;">
+            Click any amino acid or DNA base to inspect its hydropathy index, charge category, and acoustic timbre.
+          </div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; font-size: 0.75rem; color: var(--muted); line-height: 1.5; margin-top: 1rem;">
+          • <strong>Categorical Amino Acid Families</strong>: Hydrophobic (Pluck), Aromatic (FM Chime), Basic (Bright Up), Acidic (Deep Bass), Glycine (Click).<br>
+          • <strong>Continuous Hydropathy Index</strong>: Kyte-Doolittle scale (-4.5 to +4.5) controls filter cutoff & stereo spatial pan.<br>
+          • <strong>Continuous Molecular Weight</strong>: Residue mass controls velocity amplitude.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

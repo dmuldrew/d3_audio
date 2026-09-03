@@ -22,6 +22,8 @@ const sourceFiles = [
   'src/scales/scaleFilter.js',
   'src/scales/scaleSample.js',
   'src/scales/scaleTempo.js',
+  'src/scales/scaleTension.js',
+  'src/ui/audioLegend.js',
   'src/movements/motionEnvelope.js',
   'src/movements/presets/wiggle.js',
   'src/movements/presets/flip.js',
@@ -84,6 +86,8 @@ ${concatenatedCode}
   exports.scaleFilter = scaleFilter;
   exports.scaleSample = scaleSample;
   exports.scaleTempo = scaleTempo;
+  exports.scaleTension = scaleTension;
+  exports.audioLegend = audioLegend;
   exports.SUBDIVISIONS = SUBDIVISIONS;
 
   exports.Timeline = Timeline;
@@ -133,6 +137,8 @@ ${concatenatedCode}
       window.d3.scaleFilter = scaleFilter;
       window.d3.scaleSample = scaleSample;
       window.d3.scaleTempo = scaleTempo;
+      window.d3.scaleTension = scaleTension;
+      window.d3.audioLegend = audioLegend;
       window.d3.choreography = choreography;
       window.d3.timeline = timeline;
     }

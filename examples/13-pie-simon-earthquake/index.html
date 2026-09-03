@@ -198,6 +198,51 @@
             <span class="hub-status" id="turn-indicator">Watch</span>
           </div>
         </div>
+        <!-- Interactive Audio Legend Mount -->
+        <div id="legend-mount" style="margin-top: 1rem;"></div>
+
+        <!-- Explicit Data Transformation Breakdown -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+          <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>📐</span> How Earthquake Data is Transformed Into Sound & Visuals
+          </h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+                <th style="padding: 0.4rem 0;">Seismic Attribute</th>
+                <th style="padding: 0.4rem 0;">Data Domain</th>
+                <th style="padding: 0.4rem 0;">Audio / Visual Target</th>
+                <th style="padding: 0.4rem 0;">Transformation Function & Rationale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Focal Depth</td>
+                <td>10 km – 35 km</td>
+                <td>Pitch: G4 ➔ C2</td>
+                <td><code>scalePitch().domain([10,35]).range(['G4','C2'])</code> — Shallow crust quakes produce high resonant chimes; deep mantle quakes produce low sub-bass rumbles.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Magnitude ($M_w$)</td>
+                <td>7.0 – 9.5</td>
+                <td>Gain: 0.55 – 1.0</td>
+                <td><code>scaleGain().domain([7.0,9.5]).range([0.55,1.0])</code> — Exponential energy ($E \propto 10^{1.5M}$) drives punchy acoustic kick velocity and volume.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Longitude / Fault</td>
+                <td>6 Global Zones</td>
+                <td>Pan: -0.8 ➔ +0.8</td>
+                <td><code>scalePan().domain([0,5]).range([-0.8,0.8])</code> — Pacific Cascadia/Chile to Asian/Himalayan fault lines mapped across stereo width.</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Energy Arc Area</td>
+                <td>$E = 10^{(M-6)\times 0.8}$</td>
+                <td>Pie Slice Angle</td>
+                <td><code>d3.pie().value(...)</code> — Arc angle width scaled logarithmically to seismic joules released.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Sidebar / Educational Knowledge Hub -->

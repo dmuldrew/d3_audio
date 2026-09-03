@@ -174,6 +174,52 @@
           </div>
         </div>
       </div>
+
+      <!-- Interactive Audio Legend Mount -->
+      <div id="legend-mount" style="margin-top: 1.25rem;"></div>
+
+      <!-- Explicit Data Transformation Breakdown -->
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.25rem;">
+        <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>🕸️</span> How Graph Topology & Physics are Transformed Into Sound
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+              <th style="padding: 0.4rem 0;">Network Metric</th>
+              <th style="padding: 0.4rem 0;">Graph Domain</th>
+              <th style="padding: 0.4rem 0;">Auditory Mapping</th>
+              <th style="padding: 0.4rem 0;">Transformation Function & Physical Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Degree Centrality ($k$)</td>
+              <td>1 to 7 Connected Edges</td>
+              <td>Pitch: C3 ➔ C6</td>
+              <td><code>scalePitch().domain([1, 7]).range(['C3','C6'])</code> — Major network hubs chime at high registers; peripheral leaf nodes sound in low registers.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Node Position ($X$)</td>
+              <td>Force Simulation Bounds</td>
+              <td>Pan: -0.85 ➔ +0.85</td>
+              <td><code>scalePan().domain([0, width]).range([-0.85, 0.85])</code> — Dynamic physical coordinate in the vector space pans the audio output across stereo channels.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Drag-and-Release Pluck</td>
+              <td>Displacement Distance</td>
+              <td>Pluck Synth Velocity</td>
+              <td>Dragging a node stretches its force springs; releasing fires a plucked physical acoustic note with amplitude proportional to distance.</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Impulse Traversal</td>
+              <td>Graph Edge Adjacency</td>
+              <td>Polyphonic Arpeggio</td>
+              <td>Impulse walker steps along topological links, generating cascading modal arpeggios that reveal graph clustering.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 

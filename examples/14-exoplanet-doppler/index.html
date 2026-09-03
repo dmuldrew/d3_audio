@@ -155,6 +155,52 @@
       <!-- Space Simulation Canvas -->
       <div class="panel" style="padding: 1rem;">
         <div class="space-box" id="space-area"></div>
+
+        <!-- Interactive Audio Legend Mount -->
+        <div id="legend-mount" style="margin-top: 1rem;"></div>
+
+        <!-- Explicit Data Transformation Breakdown -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+          <h3 style="font-size: 1rem; color: var(--gold); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>🪐</span> How Orbital Astrodynamics is Transformed Into Music
+          </h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+                <th style="padding: 0.4rem 0;">Astronomical Metric</th>
+                <th style="padding: 0.4rem 0;">Physical Domain</th>
+                <th style="padding: 0.4rem 0;">Auditory Mapping</th>
+                <th style="padding: 0.4rem 0;">Transformation Function & Formula</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Orbital Radius ($a$)</td>
+                <td>0.01 – 30.0 AU</td>
+                <td>Pitch: C6 ➔ C2</td>
+                <td><strong>Kepler's 3rd Law</strong>: $T^2 \propto a^3 \Rightarrow f \propto a^{-1.5}$. Close, fast-orbiting planets chime at high frequencies; distant gas giants produce deep orbital bass tones.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Doppler Orbit ($X$)</td>
+                <td>$[-\text{Radius}, +\text{Radius}]$</td>
+                <td>Stereo Pan: -0.9 ➔ +0.9</td>
+                <td><code>scalePan().domain([-R, R]).range([-0.9, 0.9])</code> — Planets orbiting toward the observer pan Left, crossing Center, and receding to the Right.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Planetary Radius ($R_\oplus$)</td>
+                <td>0.7 – 11.2 $R_\oplus$</td>
+                <td>Velocity Gain: 0.4 ➔ 1.0</td>
+                <td><code>scaleGain().domain([0.7, 12]).range([0.4, 1.0])</code> — Larger planetary bodies generate fuller acoustic amplitude and wider visual transit ripples.</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Transit Event ($0^\circ$)</td>
+                <td>Stellar Conjunction</td>
+                <td>Harmonic Transit Chime</td>
+                <td>When orbital angle crosses $\theta = 0^\circ$ (12 o'clock), the host star pulses with a kinetic ripple and sounds a harmonic bell.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Controls & Educational Lab -->

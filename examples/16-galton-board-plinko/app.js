@@ -2,6 +2,7 @@ import {
   scalePitch,
   scaleGain,
   scalePan,
+  audioLegend,
   choreography,
   defaultEngine,
   createSynth,
@@ -44,6 +45,15 @@ const pitchScale = scalePitch()
 const panScale = scalePan()
   .domain([0, NUM_BINS - 1])
   .range([-0.85, 0.85]);
+
+// Interactive Audio Legend
+const legend = audioLegend()
+  .title("Probability & Normal Distribution Audio Key")
+  .pitch(pitchScale, "Binomial Peg Deflection (L ➔ R)")
+  .pan(panScale, "Stereo Acoustic Field (L ↔ R)")
+  .sample(null, "Central Limit Bell Bin Accumulation");
+
+d3.select("#legend-mount").call(legend);
 
 // Draw Peg Matrix
 const pegGroup = svg.append('g');

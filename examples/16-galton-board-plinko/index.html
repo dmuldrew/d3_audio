@@ -136,6 +136,52 @@
       <!-- Galton Board SVG Canvas -->
       <div class="panel" style="padding: 1rem;">
         <div class="board-box" id="board-area"></div>
+
+        <!-- Interactive Audio Legend Mount -->
+        <div id="legend-mount" style="margin-top: 1rem;"></div>
+
+        <!-- Explicit Data Transformation Breakdown -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+          <h3 style="font-size: 1rem; color: var(--gold); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>🎲</span> How Probability & Binomial Drops are Transformed Into Sound
+          </h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+                <th style="padding: 0.4rem 0;">Statistical Variable</th>
+                <th style="padding: 0.4rem 0;">Probability Domain</th>
+                <th style="padding: 0.4rem 0;">Auditory Mapping</th>
+                <th style="padding: 0.4rem 0;">Transformation Function & CLT Mechanics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Peg Deflection Column</td>
+                <td>Columns 0 to 10</td>
+                <td>Pitch: C3 ➔ C6</td>
+                <td><code>scalePitch().domain([0, 10]).range(['C3','C6'])</code> — Each binary random peg step shifts pitch degree; central bounces produce midrange harmonies, outer tails chime high.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Lateral Deflection ($X$)</td>
+                <td>Columns 0 to 10</td>
+                <td>Pan: -0.85 ➔ +0.85</td>
+                <td><code>scalePan().domain([0, 10]).range([-0.85, 0.85])</code> — Spatial stereo pan reflects the exact physical ball coordinate bouncing through the lattice.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Histogram Bell Height</td>
+                <td>Bin Frequency ($k$)</td>
+                <td>Polyphonic Bin Pulse</td>
+                <td>Central Limit Theorem ($\mathcal{N}(\mu, \sigma^2)$): As independent random choices sum, the center bins accumulate tallest, triggering richer harmonic chords and visual pulse choreography.</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Probability Bias ($p$)</td>
+                <td>$p \in [0.10, 0.90]$</td>
+                <td>Skewness Audition</td>
+                <td>Adjusting $p$ skews the binomial distribution $B(n, p)$, audibly shifting the acoustic center of gravity to the left or right stereo channel.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Controls & Statistics Lab -->

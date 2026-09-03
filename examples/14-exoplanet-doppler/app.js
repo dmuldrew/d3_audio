@@ -2,6 +2,7 @@ import {
   scalePitch,
   scaleGain,
   scalePan,
+  audioLegend,
   choreography,
   defaultEngine,
   createSynth
@@ -97,6 +98,14 @@ const pitchScale = scalePitch()
 const panScale = scalePan()
   .domain([-maxRadius, maxRadius])
   .range([-0.85, 0.85]);
+
+const legend = audioLegend()
+  .title("Orbital Astrodynamics Audio Key")
+  .pitch(pitchScale, "Kepler Orbital Semi-Major Axis (Inner ➔ Outer)")
+  .pan(panScale, "Doppler Orbit X-Position (Left ↔ Right)")
+  .sample(null, "Stellar Conjunction Transit Pulse");
+
+d3.select("#legend-mount").call(legend);
 
 let planetNodes = [];
 let orbitRings = [];

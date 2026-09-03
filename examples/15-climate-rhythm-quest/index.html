@@ -146,6 +146,52 @@
       <!-- Spiral SVG Canvas -->
       <div class="panel" style="padding: 1rem;">
         <div class="chart-box" id="spiral-area"></div>
+
+        <!-- Interactive Audio Legend Mount -->
+        <div id="legend-mount" style="margin-top: 1rem;"></div>
+
+        <!-- Explicit Data Transformation Breakdown -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+          <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>🌡️</span> How Climate Anomaly Data is Transformed Into Sound
+          </h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+                <th style="padding: 0.4rem 0;">Climate Variable</th>
+                <th style="padding: 0.4rem 0;">NASA GISS Domain</th>
+                <th style="padding: 0.4rem 0;">Auditory Mapping</th>
+                <th style="padding: 0.4rem 0;">Transformation Function & Formula</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Temperature Anomaly</td>
+                <td>-0.40 °C to +1.50 °C</td>
+                <td>Pitch: C3 ➔ F#5</td>
+                <td><code>scalePitch().domain([-0.4, 1.5]).range(['C3','F#5'])</code> — Pre-industrial baseline sounds as calm root notes; exceeding the +1.5°C Paris threshold ascends into harsh dissonant tritones.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Atmospheric CO₂</td>
+                <td>280 to 430 ppm</td>
+                <td>Filter: 400 ➔ 6500 Hz</td>
+                <td><code>scaleFilter().domain([280, 430]).range([400, 6500])</code> — Trapped heat is sonified as an opening lowpass filter, transitioning from muffled to piercing brightness.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Month / Year Cycle</td>
+                <td>12 Months (Jan–Dec)</td>
+                <td>Angle: 0 ➔ 2π</td>
+                <td><code>d3.scaleLinear().domain([0, 12]).range([0, 2π])</code> — Annual seasonal cycles form continuous spiral revolutions around the pre-industrial center.</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Policy Mitigation</td>
+                <td>Renewables / Forests</td>
+                <td>Harmonic Resolution</td>
+                <td>Interventions subtract up to 0.95°C from modern warming, audibly resolving musical dissonance back into consonant major intervals.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Controls & Climate Action Quest -->

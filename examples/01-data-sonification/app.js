@@ -3,6 +3,7 @@ import {
   scaleGain,
   scalePan,
   scaleDuration,
+  audioLegend,
   timeline,
   choreography,
   defaultEngine,
@@ -93,6 +94,15 @@ const panScale = scalePan()
 const durationScale = scaleDuration()
   .domain([0, 100])
   .range(["16n", "4n"]);
+
+// Interactive Audio Legend
+const legend = audioLegend()
+  .title("Time-Series Chart Sonification Key")
+  .pitch(pitchScale, "Metric Value / Bar Height (0 ➔ 100)")
+  .pan(panScale, "X-Axis Position (West ↔ East)")
+  .gain(gainScale, "Event Magnitude (1.0 ➔ 3.5)");
+
+d3.select("#legend-mount").call(legend);
 
 // Instrument synth
 let synth = createSynth({ type: "polySynth" });

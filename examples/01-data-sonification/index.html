@@ -187,6 +187,52 @@
         Hover or click any element to audition its sound + animation. During playback, data is mapped across Pitch (Height), Panning (X-axis), and Rhythmic Motion.
       </p>
       <div class="chart-container" id="chart"></div>
+
+      <!-- Interactive Audio Legend Mount -->
+      <div id="legend-mount" style="margin-top: 1.25rem;"></div>
+
+      <!-- Explicit Data Transformation Breakdown -->
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.25rem;">
+        <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>📊</span> How Chart Data is Transformed Into Musical Motion
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+              <th style="padding: 0.4rem 0;">Data Dimension</th>
+              <th style="padding: 0.4rem 0;">Sample Domain</th>
+              <th style="padding: 0.4rem 0;">Auditory Mapping</th>
+              <th style="padding: 0.4rem 0;">Transformation Function & Formula</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Metric Value ($Y$)</td>
+              <td>10 to 95 Units</td>
+              <td>Pitch: C3 ➔ C6</td>
+              <td><code>scalePitch().domain([10, 95]).range(['C3','C6'])</code> — Bar height directly quantizes to the selected diatonic or pentatonic scale degree.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Bar Index / Position ($X$)</td>
+              <td>Indices 0 to 9</td>
+              <td>Pan: -0.9 ➔ +0.9</td>
+              <td><code>scalePan().domain([0, 9]).range([-0.9, 0.9])</code> — Leftmost bars sound in the left stereo ear; playhead sweeps pan continuously to the right.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Sequential Transport Beat</td>
+              <td>Tone.Transport 120 BPM</td>
+              <td>Note Onset + Visual Lockstep</td>
+              <td><code>Tone.Draw.schedule()</code> — Triggers visual choreography on the exact hardware buffer clock frame matching audio note onset.</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Choreography Mode</td>
+              <td>Preset Selection</td>
+              <td>ADSR Motion Physics</td>
+              <td>Applies rotational wiggles, 3D flips, pulses, or gravitational bounces modulated by note velocity.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 

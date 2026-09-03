@@ -2,6 +2,7 @@ import {
   scalePitch,
   scaleGain,
   scalePan,
+  audioLegend,
   choreography,
   defaultEngine,
   createSynth,
@@ -95,6 +96,15 @@ const gainScale = scaleGain()
 const panScale = scalePan()
   .domain([0, 5])
   .range([-0.8, 0.8]);
+
+// Interactive Audio Legend
+const legend = audioLegend()
+  .title("Seismic Sonification Audio Key")
+  .pitch(pitchScale, "Focal Depth (10km Shallow ➔ 35km Mantle)")
+  .gain(gainScale, "Earthquake Magnitude (7.0 ➔ 9.5 Mw)")
+  .pan(panScale, "Stereo Fault Longitude (West ↔ East)");
+
+d3.select("#legend-mount").call(legend);
 
 // Audio Synthesizers
 const synthMelody = createSynth({ type: "fmSynth", harmonicity: 2.5, volume: -1 });

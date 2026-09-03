@@ -172,6 +172,52 @@
           </div>
         </div>
       </div>
+
+      <!-- Interactive Audio Legend Mount -->
+      <div id="legend-mount" style="margin-top: 1.25rem;"></div>
+
+      <!-- Explicit Data Transformation Breakdown -->
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.25rem;">
+        <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>🌐</span> How Geographic 2D Coordinates are Transformed Into Spatial Audio
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+              <th style="padding: 0.4rem 0;">Geographic Coordinate</th>
+              <th style="padding: 0.4rem 0;">Earth Domain</th>
+              <th style="padding: 0.4rem 0;">Acoustic Mapping</th>
+              <th style="padding: 0.4rem 0;">Transformation Function & Spatial Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Longitude ($\lambda$)</td>
+              <td>-180° (W) to +180° (E)</td>
+              <td>Pan: -1.0 ➔ +1.0</td>
+              <td><code>scalePan().domain([-180, 180]).range([-1, 1])</code> — Western hemisphere locations sound on the left headphone; crossing the Prime Meridian pans directly to the right headphone.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Latitude ($\phi$)</td>
+              <td>-60° (S) to +70° (N)</td>
+              <td>Pitch: C3 ➔ C6</td>
+              <td><code>scalePitch().domain([-60, 70]).range(['C3','C6'])</code> — Southern hemisphere locations sound in low bass registers; Northern high-latitude cities chime at high treble registers.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Metro Population</td>
+              <td>5M to 38M Citizens</td>
+              <td>Gain: 0.4 ➔ 1.0</td>
+              <td><code>scaleGain().domain([5M, 38M]).range([0.4, 1.0])</code> — Mega-metropolises (Tokyo, Delhi, São Paulo) produce full acoustic resonance and larger bounce shockwaves.</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Flight Waypoint Route</td>
+              <td>Great Circle Path</td>
+              <td>Continuous Spatial Vector</td>
+              <td>Smooth interpolation along geodesic flight vectors updates audio pan and pitch at 60 FPS in hardware lockstep.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 

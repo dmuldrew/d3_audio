@@ -185,6 +185,52 @@
           </div>
         </div>
       </div>
+
+      <!-- Interactive Audio Legend Mount -->
+      <div id="legend-mount" style="margin-top: 1.25rem;"></div>
+
+      <!-- Explicit Data Transformation Breakdown -->
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.25rem;">
+        <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>☀️</span> How Radial Hierarchy & Angles are Transformed Into Cyclic Sound
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+              <th style="padding: 0.4rem 0;">Hierarchical Dimension</th>
+              <th style="padding: 0.4rem 0;">Sunburst Geometry</th>
+              <th style="padding: 0.4rem 0;">Auditory Mapping</th>
+              <th style="padding: 0.4rem 0;">Transformation Function & Cyclic Mechanics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Ring Depth (Tier 1 ➔ 3)</td>
+              <td>Concentric Radii (r)</td>
+              <td>Octaves: C3 ➔ C5</td>
+              <td><code>scalePitch().domain([1, 3]).range(['C3','C5'])</code> — Core root categories sound in low registers; outer granular leaves chime in higher octaves.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Angular Arc ($\theta$)</td>
+              <td>0° to 360° (0 to 2π)</td>
+              <td>Scale Degree Order</td>
+              <td>Angle position around the circle determines chromatic or modal sequence progression as the radar sweeps past.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Segment Weight / Area</td>
+              <td>Subtree Value ($10 \dots 100$)</td>
+              <td>Filter Cutoff: 300 ➔ 8000 Hz</td>
+              <td><code>scaleFilter().domain([10, 100]).range([300, 8000])</code> — Larger nodes have brighter harmonic overtones and trigger stronger visual pulse blooms.</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Radar Sweep Needle</td>
+              <td>Continuous Angle</td>
+              <td>Radar Sonar Trigger</td>
+              <td>Rotating beam detects arc intersections, sonifying hierarchical partitions in a continuous cyclic loop.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 

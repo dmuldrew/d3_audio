@@ -6,7 +6,8 @@ import {
   scalePan,
   scaleFilter,
   scaleSample,
-  scaleTempo
+  scaleTempo,
+  scaleTension
 } from '../src/scales/index.js';
 
 export function testScales() {
@@ -86,4 +87,22 @@ export function testScales() {
   assertEqual(tempo(0), 60, "scaleTempo(0) is 60 BPM");
   assertEqual(tempo(100), 160, "scaleTempo(100) is 160 BPM");
   assertEqual(tempo(50), 110, "scaleTempo(50) is 110 BPM");
+
+  // 8. scaleTension
+  const tension = scaleTension()
+    .domain([0, 100])
+    .tempoRange([1.0, 2.0])
+    .filterRange([500, 5000]);
+
+  const t0 = tension(0);
+  assertEqual(t0.normalized, 0, "scaleTension(0) normalized is 0");
+  assertEqual(t0.tier, "consonant", "scaleTension(0) tier is consonant");
+  assertEqual(t0.tempoMultiplier, 1.0, "scaleTension(0) tempo is 1.0");
+
+  const t100 = tension(100);
+  assertEqual(t100.normalized, 1, "scaleTension(100) normalized is 1");
+  assertEqual(t100.tier, "dissonant", "scaleTension(100) tier is dissonant");
+  assertEqual(t100.isDissonant, true, "scaleTension(100) isDissonant is true");
+  assertEqual(t100.tempoMultiplier, 2.0, "scaleTension(100) tempo is 2.0");
+  assert(Array.isArray(t100.chord), "scaleTension(100) chord is an array");
 }

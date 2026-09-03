@@ -2,6 +2,7 @@ import {
   scalePitch,
   scaleGain,
   scalePan,
+  audioLegend,
   choreography,
   defaultEngine,
   createSynth
@@ -69,6 +70,15 @@ const panScale = scalePan()
 
 const synthPluck = createSynth({ type: "pluckSynth" });
 const synthPoly = createSynth({ type: "polySynth", volume: -2 });
+
+// Interactive Audio Legend
+const legend = audioLegend()
+  .title("Graph Topology & Spring Physics Audio Key")
+  .pitch(pitchScale, "Degree Centrality / Hubs (1 ➔ 7 Edges)")
+  .pan(panScale, "Physical Node X Position (Left ↔ Right)")
+  .sample(null, "Drag & Release Plucked Spring Sound");
+
+d3.select("#legend-mount").call(legend);
 
 // D3 Force Simulation
 const simulation = d3.forceSimulation(nodes)

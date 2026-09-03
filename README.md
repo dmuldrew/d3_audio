@@ -15,9 +15,13 @@
 ## 📑 Table of Contents
 
 - [Conceptual Model & Architecture](#-conceptual-model--architecture)
+- [Principles of Data Sonification](#-principles-of-data-sonification)
+- [Continuous, Ordinal, and Categorical Data Sonification](#-continuous-ordinal-and-categorical-data-sonification)
+- [Musical Tension, Release & Energy Dynamics](#-musical-tension-release--energy-dynamics)
 - [Key Features](#-key-features)
 - [Quickstart Guide](#-quickstart-guide)
 - [Interactive Demo Applications](#-interactive-demo-applications)
+- [Interactive Audio Legend (`audioLegend`)](#-interactive-audio-legend-audiolegend)
 - [D3 Audio Scalers Reference](#-d3-audio-scalers-reference)
   - [`scalePitch()`](#scalepitch)
   - [`scaleGain()`](#scalegain)
@@ -26,6 +30,7 @@
   - [`scaleFilter()`](#scalefilter)
   - [`scaleSample()`](#scalesample)
   - [`scaleTempo()`](#scaletempo)
+  - [`scaleTension()`](#scaletension)
 - [Rhythmic Movements & Choreography](#-rhythmic-movements--choreography)
   - [Movement Presets](#movement-presets)
   - [`choreography()` Engine](#choreography-engine)
@@ -93,6 +98,86 @@ flowchart TD
     TL -->|Audio Clock| Synth & Drums --> FX --> Speakers
     TL -->|Hardware Lockstep| TD --> Choreo --> DOM
 ```
+
+---
+
+## 📜 Principles of Data Sonification
+
+Inspired by foundational research and practice in data musicology (including Daniel Muldrew's *"Transforming Data Into Music"*):
+
+### 1. The Meaning Equation
+$$\text{Data} + \text{Known Mapping} = \textbf{Meaning}$$
+$$\text{Data} + \text{Cryptic Mapping} = \textbf{Noise / Junk}$$
+
+Just as an unlabeled visual chart produces confusion, sonification without an explicit mapping key is merely noise. A listener must understand *which* physical or musical property corresponds to *which* data dimension. `d3-audio` provides the `audioLegend()` component to make auditory mappings as explicit and interactive as visual axis ticks.
+
+### 2. The "Stay Close to the Data" Rule
+> *"Stay close to the data... otherwise it's art!"*
+
+Artistic sonification allows arbitrary aesthetic choices. Analytical sonification demands faithfulness to the data: relative intervals, ratios, and categorical distinctions must be audibly preserved so that a blind or eyes-free user can reconstruct the underlying dataset directly from the sound.
+
+### 3. Why Turn Data Into Sound?
+* **Accessibility (a11y)**: Empowers blind and vision-impaired analysts to explore high-dimensional data, distributions, and trends without relying on visual charts or slow screen-reader tabular readouts.
+* **Dual-Channel Perception**: Combining sight and sound dramatically accelerates pattern recognition and cognitive retention, revealing subtle periodic cycles or outliers that visual clutter obscures.
+* **Eyes-Free & Ambient Telemetry**: Monitoring production server health, financial trading volatility, or medical patient vitals while the user is visually occupied with other tasks.
+* **Emotional Resonance & Behavioral Motivation**: Audio connects emotionally. Applications sonifying personal health metrics (sleep regularity, fitness, carbon footprints) can use harmonic consonance as positive reinforcement and dissonance to encourage corrective habits.
+
+---
+
+## 📊 Continuous, Ordinal, and Categorical Data Sonification
+
+Choosing the right auditory dimension depends strictly on the statistical data type of your variable:
+
+```
+┌───────────────────────┬───────────────────────────┬───────────────────────────────────────────┐
+│ Data Variable Type    │ Visual Attribute          │ Auditory Attribute (`d3-audio` Scaler)    │
+├───────────────────────┼───────────────────────────┼───────────────────────────────────────────┤
+│ Continuous / Quant    │ Position (X, Y)           │ Sound Frequency / Pitch (`scalePitch`)    │
+│ Continuous / Quant    │ Luminosity / Opacity      │ Sound Loudness (`scaleGain`)              │
+│ Continuous / Quant    │ Color Temperature         │ Timbre / Filter Brightness (`scaleFilter`)│
+│ Continuous / Quant    │ Horizontal Position       │ Stereo Spatial Panning (`scalePan`)       │
+│ Continuous / Quant    │ Width / Size              │ Note Duration (`scaleDuration`)           │
+├───────────────────────┼───────────────────────────┼───────────────────────────────────────────┤
+│ Ordinal (Ranked)      │ Grid Order / Step Rank    │ Diatonic Scale Degrees (`scalePitch`)     │
+│ Ordinal (Ranked)      │ Concentric Octave Tiers   │ Octave Register (C3 ➔ C4 ➔ C5)            │
+│ Ordinal (Ranked)      │ Threat / Severity Level   │ Harmonic Tension (`scaleTension`)         │
+├───────────────────────┼───────────────────────────┼───────────────────────────────────────────┤
+│ Categorical (Classes) │ Color Hue (Red, Blue)     │ Instrument Timbre / Synthesizer Voice     │
+│ Categorical (Classes) │ Visual Texture / Shape    │ Percussion Sample (`scaleSample`)         │
+│ Categorical (Classes) │ Category Clusters         │ Modal Key Center / Scale Mode             │
+└───────────────────────┴───────────────────────────┴───────────────────────────────────────────┘
+```
+
+### Continuous Data (Quantitative Ranges)
+* **Definition**: Numeric values with infinite smooth gradations (e.g. temperatures, stock prices, velocities, geographical coordinates, chemical hydropathy).
+* **Sonic Mappings**: Smooth frequency sweeps, continuous dB gain scaling, stereo panning ($-1$ Left to $+1$ Right), and lowpass filter cutoffs ($200\text{ Hz}$ to $10,000\text{ Hz}$).
+* **Best Scalers**: `scalePitch().quantize(false)`, `scaleGain()`, `scaleFilter()`, `scalePan()`, `scaleDuration()`.
+
+### Ordinal Data (Ranked Categories)
+* **Definition**: Discrete classes that possess a strict, meaningful sequence or hierarchy (e.g. IUCN conservation risk levels, customer satisfaction $1\dots5$, earthquake magnitude classes, educational tiers).
+* **Sonic Mappings**: Quantized musical scale degrees (e.g. Root $\rightarrow$ 2nd $\rightarrow$ 3rd $\rightarrow$ 5th $\rightarrow$ 6th in Pentatonic), discrete octave shifts, and progression through harmonic tension tiers.
+* **Best Scalers**: `scalePitch().quantize(true)`, `scaleTension()`.
+
+### Categorical Data (Unranked Discrete Groups)
+* **Definition**: Discrete categories with **no intrinsic numerical ranking** (e.g. 20 amino acid biochemical families, DNA base pairs A/T/C/G, wildlife taxonomic kingdoms, vehicle fleet dispatch categories, server cluster regions).
+* **Sonic Mappings**:
+  * **Instrument Timbre**: Assigning fundamentally different synthesis engines or physical acoustic models (e.g. Plucked Kalimba for herbivores, Resonant FM Lead for carnivores, Sub Horn for apex predators, Woodblock click for glycine hinges).
+  * **Acoustic Percussion Soundbanks**: Using discrete percussion hits via `scaleSample()` (Kick, Snare, Hi-hat, Bell, Clap, Blip).
+  * **Modal Signatures**: Modulating musical modes across categories (e.g. Dorian mode for rainforests, Lydian mode for ocean reefs, Hirajoshi for arctic tundra).
+* ⚠️ **Critical Sonification Pitfall**: **Never map non-ranked categories to a single continuous pitch scale!** High notes psychoacoustically imply "greater than" or "higher priority." Mapping categorical variables (such as hair color or department names) to ascending pitches creates false perceived hierarchies. Use distinct instrument timbres, sample hits, or spatial pan positions instead.
+
+---
+
+## ⚡ Musical Tension, Release & Energy Dynamics
+
+Volatile time series, risk anomalies, and system alerts benefit from psychoacoustic tension/release cycles:
+
+* **Tension**: Analogous to the windup of a mechanical spring. Created by harmonic dissonance (tritones, minor 2nds, diminished 7ths), accelerating tempo, rising register, or microtonal detuning.
+* **Release**: The return to equilibrium and harmonic stability (consonant major triads, perfect 5ths, octaves) when metrics return within normal operating bounds.
+* **Musical Energy**:
+  $$\text{Energy} = \text{Loudness (Gain)} \times \text{Speed (BPM)}$$
+  As volatility surges, increasing both loudness and tempo magnifies user urgency without requiring visual attention.
+* **`scaleTension()`**: Coordinates harmonic chord voicing, filter cutoff, detuning cents, and tempo multipliers from a single continuous risk metric.
 
 ---
 
@@ -208,6 +293,8 @@ Or open [http://localhost:3000](http://localhost:3000) in your browser.
 | **14. Exoplanet Orbit & Doppler Symphony** | [`/examples/14-exoplanet-doppler/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/14-exoplanet-doppler/index.html) | NASA Kepler & TRAPPIST-1 orbital physics lab where Kepler's 3rd law generates orbital frequencies, transit chimes, and Doppler stereo panning. |
 | **15. Climate Spiral & Carbon Quest** | [`/examples/15-climate-rhythm-quest/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/15-climate-rhythm-quest/index.html) | NASA temperature anomaly spiral (1880–2026) sonifying global warming as harmonic tension and policy scenarios as equilibrium resolution. |
 | **16. Galton Board & Plinko Statistics** | [`/examples/16-galton-board-plinko/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/16-galton-board-plinko/index.html) | Interactive Central Limit Theorem pinball where binomial random drops play acoustic marimba chimes and accumulate into a singing Gaussian bell curve. |
+| **17. Protein & DNA Folding Sonifier** | [`/examples/17-protein-dna-sonifier/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/17-protein-dna-sonifier/index.html) | Macromolecular ribbon folding with 20 amino acid categorical timbres, Kyte-Doolittle hydropathy spatial panning, and interactive audio legend. |
+| **18. Categorical Ecosystem Food Web** | [`/examples/18-ecosystem-taxonomy/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/18-ecosystem-taxonomy/index.html) | Categorical trophic level timbres (Producers, Herbivores, Carnivores, Apex, Decomposers), biome modes, and IUCN conservation risk tension scaling. |
 
 ---
 
@@ -349,6 +436,64 @@ const tempo = d3Audio.scaleTempo()
   .range([70, 160]);
 
 tempo(50); // -> 115 BPM
+```
+
+---
+
+### `scaleTension()`
+Maps continuous anomaly, volatility, risk, or deviation metrics to multi-dimensional harmonic tension (consonance vs dissonance), filter cutoffs, tempo multipliers, and microtonal detuning cents.
+
+```javascript
+const tension = d3Audio.scaleTension()
+  .domain([0, 100])             // Low baseline ➔ High volatility
+  .root("C3")
+  .tempoRange([1.0, 1.8])       // 1.0x baseline ➔ 1.8x accelerated panic
+  .filterRange([400, 8000])     // Low dark ➔ High piercing resonance
+  .detuneRange([0, 60]);        // Microtonal cents of dissonance
+
+// Evaluate single data point:
+const state = tension(85);
+/* Returns:
+{
+  normalized: 0.85,
+  tier: "dissonant",
+  isDissonant: true,
+  chord: ["C3", "F#3", "Bb3", "Db4"], // Dissonant tritone cluster
+  filterCutoff: 6860,
+  gain: 0.91,
+  tempoMultiplier: 1.68,
+  detuneCents: 51
+}
+*/
+
+// Direct helper methods:
+tension.chord(85); // ["C3", "F#3", "Bb3", "Db4"]
+tension.tempo(85); // 1.68
+tension.pitch(85); // Note string
+```
+
+---
+
+## 🏷️ Interactive Audio Legend (`audioLegend`)
+
+Implements the foundational data sonification principle:
+> *"Communicate your data mapping to the user — just like you would label a graph!"*
+
+`audioLegend` creates an interactive visual-auditory key that can be mounted into any HTML or D3 container. Each entry displays the data-to-sound rule and features a **🔊 "Test Sound"** button that lets listeners audition the auditory dimension (pitch range, volume change, stereo panning, or harmonic tension) before playing the chart:
+
+```javascript
+import * as d3 from "d3";
+import { audioLegend, scalePitch, scaleGain, scalePan, scaleTension } from "d3-audio";
+
+const legend = audioLegend()
+  .title("Earthquake Seismic Audio Key")
+  .pitch(depthPitchScale, "Tectonic Depth (0 – 700 km)")
+  .gain(magnitudeGainScale, "Magnitude (3.0 – 9.0 Mw)")
+  .pan(longitudePanScale, "Longitude (West ↔ East)")
+  .tension(seismicTensionScale, "Tectonic Volatility Risk");
+
+// Mount to DOM using standard D3 selection.call:
+d3.select("#legend-container").call(legend);
 ```
 
 ---

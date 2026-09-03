@@ -2,6 +2,7 @@ import {
   scalePitch,
   scaleGain,
   scaleFilter,
+  audioLegend,
   choreography,
   defaultEngine,
   createSynth
@@ -71,6 +72,15 @@ const chordSynth = createSynth({
   type: "polySynth",
   volume: -3
 });
+
+// Interactive Audio Legend
+const pitchScale = scalePitch().domain([0, 4]).range(["C2", "D4"]).scale("pentatonic");
+const legend = audioLegend()
+  .title("Streamgraph Harmonic Chord Voicer Key")
+  .pitch(pitchScale, "Stacked Energy Stream Layer (Bass C2 ➔ Treble D4)")
+  .gain(scaleGain().domain([0, 100]).range([0.2, 1.0]), "Layer Thickness / Output Power (GW)");
+
+d3.select("#legend-mount").call(legend);
 
 // Render Stream Layers
 const layerPaths = svg.selectAll('.stream-layer')

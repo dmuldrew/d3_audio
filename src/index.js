@@ -6,6 +6,10 @@ export { scalePan } from './scales/scalePan.js';
 export { scaleFilter } from './scales/scaleFilter.js';
 export { scaleSample } from './scales/scaleSample.js';
 export { scaleTempo } from './scales/scaleTempo.js';
+export { scaleTension } from './scales/scaleTension.js';
+
+// UI & Presentation
+export { audioLegend } from './ui/audioLegend.js';
 
 // Timeline & Tracks
 export { Timeline, timeline } from './timeline/timeline.js';
@@ -68,6 +72,8 @@ if (typeof window !== 'undefined') {
     window.d3.scaleFilter = d3AudioNamespace.scaleFilter;
     window.d3.scaleSample = d3AudioNamespace.scaleSample;
     window.d3.scaleTempo = d3AudioNamespace.scaleTempo;
+    window.d3.scaleTension = d3AudioNamespace.scaleTension;
+    window.d3.audioLegend = d3AudioNamespace.audioLegend;
     window.d3.choreography = d3AudioNamespace.choreography;
     window.d3.timeline = d3AudioNamespace.timeline;
   }
