@@ -105,4 +105,30 @@ export function testScales() {
   assertEqual(t100.isDissonant, true, "scaleTension(100) isDissonant is true");
   assertEqual(t100.tempoMultiplier, 2.0, "scaleTension(100) tempo is 2.0");
   assert(Array.isArray(t100.chord), "scaleTension(100) chord is an array");
+
+  // 9. scalePitch ISO 226 equalLoudness
+  const eqPitch = scalePitch()
+    .domain([0, 100])
+    .range(["C2", "C6"]);
+
+  assertEqual(eqPitch.equalLoudness(), false, "scalePitch equalLoudness defaults to false");
+  assertEqual(eqPitch.gain(0), 1.0, "scalePitch.gain() returns 1.0 when equalLoudness is false");
+  eqPitch.equalLoudness(true);
+  assertEqual(eqPitch.equalLoudness(), true, "scalePitch.equalLoudness(true) enables normalization");
+  assert(eqPitch.gain(0) > eqPitch.gain(100), "scalePitch.gain(0) (C2 bass) > scalePitch.gain(100) (C6 treble)");
+  const ticks = eqPitch.ticks(3);
+  assert(ticks[0].gain !== undefined, "scalePitch.ticks() includes equal-loudness gain property");
+
+  // 10. scaleGain ISO 226 equalLoudness
+  const eqGain = scaleGain()
+    .domain([0, 100])
+    .range([0.1, 0.9]);
+
+  assertEqual(eqGain.equalLoudness(), false, "scaleGain equalLoudness defaults to false");
+  assertEqual(eqGain(50, "C2"), eqGain(50), "scaleGain ignores frequency argument when equalLoudness is false");
+  eqGain.equalLoudness(true);
+  assertEqual(eqGain.equalLoudness(), true, "scaleGain.equalLoudness(true) enables normalization");
+  assert(eqGain(50, "C2") > eqGain(50, "C5"), "scaleGain(50, 'C2') boosts bass gain relative to 'C5'");
+  assert(eqGain(50, 3500) < eqGain(50, 1000), "scaleGain(50, 3500) attenuates sensitive mid-treble relative to 1000 Hz");
+  assert(eqGain.compensate(0.5, "C2") > 0.5, "scaleGain.compensate(0.5, 'C2') returns boosted gain");
 }

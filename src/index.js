@@ -63,7 +63,9 @@ export {
   frequencyToCents,
   generateScaleNotes,
   quantizeToScale,
-  SCALE_INTERVALS
+  SCALE_INTERVALS,
+  equalLoudnessCompensation,
+  iso226Weight
 } from './musical/index.js';
 
 // Import all to build a bundled namespace object

@@ -216,7 +216,7 @@ Sound has a direct line to human emotion. Because of that, sound designers have 
 
 1. **Beware the "Sugarcoated Scale"**: If you map chaotic, failing system metrics onto a universally sweet pentatonic scale (the notes of a pleasant lullaby), the disaster will sound cheerful and calm! When data is bad or volatile, allow it to sound tense or dissonant.
 2. **Watch Cultural Biases in Chords**: In Western culture, minor chords often feel "sad" or "mysterious," while major chords feel "happy." Avoid using minor chords for neutral groups (like regions or demographic categories) unless you are truly representing a positive vs. negative change (like profits vs. losses).
-3. **Equal Loudness Across Registers**: Human ears hear middle pitches (like human speech, around 2,000 to 4,000 Hz) much louder than deep bass or ultra-high treble. Calibrate volume so high notes don't deafen the listener while low bass notes fade into inaudibility.
+3. **Equal Loudness Across Registers (ISO 226 / Fletcher-Munson)**: Human ears hear middle pitches (like human speech, around 2,000 to 4,000 Hz) much louder than deep bass or ultra-high treble. Enable `.equalLoudness(true)` on `scalePitch()` and `scaleGain()` to automatically normalize perceived phon/sone volume across wide octave sweeps.
 4. **Don't Overcrowd the Ears**: Triggering more than 20 notes per second causes individual sounds to blend together into an indistinct buzz. Keep events spaced so each data point can be clearly heard.
 
 ---
@@ -393,17 +393,19 @@ Maps continuous numeric domains or categorical values to musical pitches, freque
 ```javascript
 const pitch = d3Audio.scalePitch()
   .domain([0, 100])          // Input data domain
-  .range(["C3", "C6"])       // Pitch bounds (scientific pitch notation)
+  .range(["C2", "C6"])       // Pitch bounds (scientific pitch notation)
   .scale("pentatonic")       // Scale mode (see table below)
   .root("C")                 // Root key ("C", "D", "Eb", "F#", etc.)
   .quantize(true)            // true = snap to scale degrees; false = continuous microtonal
+  .equalLoudness(true)       // Enable ISO 226 / Fletcher-Munson equal-loudness normalization
   .clamp(true);              // Clamp domain inputs
 
 pitch(50);             // Returns note string: "G4"
 pitch.frequency(50);   // Returns frequency in Hz: 392.00
 pitch.midi(50);        // Returns MIDI number: 67
+pitch.gain(50);        // Returns equal-loudness gain multiplier (e.g. ~1.0 at 1 kHz, >1 for bass, <1 for 3-4 kHz)
 pitch.notes();         // Returns array of all available scale notes in range
-pitch.ticks(5);        // Returns sample domain ticks with note and frequency metadata
+pitch.ticks(5);        // Returns sample domain ticks with note, frequency, and gain metadata
 ```
 
 #### Supported Musical Scales & Modes
@@ -432,7 +434,7 @@ pitch.ticks(5);        // Returns sample domain ticks with note and frequency me
 ---
 
 ### `scaleGain()`
-Maps data to volume / gain amplitude `[0.0, 1.0]` or decibels `[-60, 0]`.
+Maps data to volume / gain amplitude `[0.0, 1.0]` or decibels `[-60, 0]`, with optional ISO 226 frequency compensation.
 
 ```javascript
 const gain = d3Audio.scaleGain()
@@ -440,10 +442,14 @@ const gain = d3Audio.scaleGain()
   .range([0.1, 1.0])
   .curve("perceptual")       // "linear", "exponential", "logarithmic", "perceptual"
   .exponent(2.0)             // Custom exponent for "exponential" curve
+  .equalLoudness(true)       // Enable ISO 226 equal-loudness register compensation
   .clamp(true);
 
-gain(500);     // -> ~0.64 (linear gain)
-gain.db(500);  // -> ~-3.87 dB
+gain(500);            // -> ~0.64 (base linear gain)
+gain(500, "C2");      // -> boosted gain compensating for bass inaudibility
+gain(500, "A7");      // -> attenuated gain compensating for ear-canal resonance
+gain.db(500);         // -> ~-3.87 dB
+gain.compensate(0.5, "C2"); // Direct helper returning frequency-compensated gain
 ```
 
 ---
@@ -1149,7 +1155,8 @@ d3_audio/
 │   ├── index.js                   # Library root export & D3 namespace attachment
 │   ├── musical/                   # Musical notes, pitch, frequency & scale algorithms
 │   │   ├── notes.js
-│   │   └── scales.js
+│   │   ├── scales.js
+│   │   └── equalLoudness.js       # ISO 226 / Fletcher-Munson equal-loudness contours
 │   ├── scales/                    # D3-style audio scalers
 │   │   ├── scalePitch.js
 │   │   ├── scaleGain.js
@@ -1173,7 +1180,7 @@ d3_audio/
 │       ├── timeline.js
 │       └── track.js
 ├── examples/                      # 21 Interactive Demo Applications (01 through 21)
-└── test/                          # Unit & integration test suite (130 passing tests)
+└── test/                          # Unit & integration test suite (148 passing tests)
 ```
 
 ---
@@ -1285,7 +1292,7 @@ docker run --rm -v "$PWD":/app -w /app node:20-alpine node test/run-tests.js
   ✓ Drums track holds 3 events
 
 ----------------------------------------
-✔ ALL 130 TESTS PASSED SUCCESSFULLY!
+✔ ALL 148 TESTS PASSED SUCCESSFULLY!
 ```
 
 ---

@@ -1,5 +1,6 @@
 import { parseNote, midiToNote, midiToFrequency, frequencyToMidi } from '../musical/notes.js';
 import { generateScaleNotes, quantizeToScale, SCALE_INTERVALS } from '../musical/scales.js';
+import { equalLoudnessCompensation } from '../musical/equalLoudness.js';
 
 /**
  * Creates a D3-like pitch scale that maps a continuous or discrete domain to musical pitches.
@@ -23,6 +24,7 @@ export function scalePitch() {
   let isQuantized = true;
   let isClamped = true;
   let isCategorical = false;
+  let isEqualLoudness = false;
 
   // Cached scale degrees
   let cachedScaleNotes = null;
@@ -149,6 +151,18 @@ export function scalePitch() {
     return scale;
   };
 
+  scale.equalLoudness = function(_) {
+    if (!arguments.length) return isEqualLoudness;
+    isEqualLoudness = !!_;
+    return scale;
+  };
+
+  scale.gain = function(x) {
+    if (!isEqualLoudness) return 1.0;
+    const freq = scale.frequency(x);
+    return equalLoudnessCompensation(freq);
+  };
+
   scale.notes = function() {
     if (!cachedScaleNotes) updateCache();
     return (cachedScaleNotes || []).map(n => n.note);
@@ -162,7 +176,12 @@ export function scalePitch() {
     const result = [];
     for (let i = 0; i < count; i++) {
       const val = d0 + i * step;
-      result.push({ value: val, note: scale(val), frequency: scale.frequency(val) });
+      result.push({
+        value: val,
+        note: scale(val),
+        frequency: scale.frequency(val),
+        gain: scale.gain(val)
+      });
     }
     return result;
   };
@@ -174,7 +193,8 @@ export function scalePitch() {
       .scale(scaleType)
       .root(rootNote)
       .quantize(isQuantized)
-      .clamp(isClamped);
+      .clamp(isClamped)
+      .equalLoudness(isEqualLoudness);
   };
 
   updateCache();

@@ -15,6 +15,7 @@ if (!fs.existsSync(distDir)) {
 const sourceFiles = [
   'src/musical/notes.js',
   'src/musical/scales.js',
+  'src/musical/equalLoudness.js',
   'src/scales/scalePitch.js',
   'src/scales/scaleGain.js',
   'src/scales/scaleDuration.js',
@@ -148,6 +149,8 @@ ${concatenatedCode}
   exports.generateScaleNotes = generateScaleNotes;
   exports.quantizeToScale = quantizeToScale;
   exports.SCALE_INTERVALS = SCALE_INTERVALS;
+  exports.equalLoudnessCompensation = equalLoudnessCompensation;
+  exports.iso226Weight = iso226Weight;
 
   // Integrate with d3 if present
   if (typeof window !== 'undefined') {

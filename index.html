@@ -1260,8 +1260,46 @@
         </tbody>
       </table>
 
+      <!-- SECTION: Musical Tension, Release & Energy Dynamics -->
+      <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.75rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚡</span>
+          <span>Musical Tension, Release & Energy Dynamics: The Utility of Psychoacoustics</span>
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Why map data to musical tension and energy instead of just plotting a visual line or playing a single pitch? Because numbers represent real-world states of <strong>equilibrium</strong>, <strong>stress</strong>, and <strong>urgency</strong>:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 1rem;">
+            <h5 style="color: var(--accent); margin-bottom: 0.35rem;">1. "Eyes-Free" Monitoring</h5>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
+              Stable data plays calm, consonant chords that fade into the background. When warning thresholds are breached, acoustic dissonance triggers an involuntary attention reflex without requiring screen glares.
+            </p>
+          </div>
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 1rem;">
+            <h5 style="color: var(--accent2); margin-bottom: 0.35rem;">2. Zero Translation Delay</h5>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
+              Unlike a rising pitch that requires mental calculation ("is high good or bad?"), dissonance (beating frequencies) is psychoacoustically hard-wired as urgency and consonance as safety.
+            </p>
+          </div>
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 1rem;">
+            <h5 style="color: #f59e0b; margin-bottom: 0.35rem;">3. Multivariate Compression</h5>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
+              <code>scaleTension()</code> communicates 3 metrics at once: pitch (baseline value), harmonic dissonance (risk proximity), and energy (Loudness × Tempo for acceleration).
+            </p>
+          </div>
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 1rem;">
+            <h5 style="color: var(--green); margin-bottom: 0.35rem;">4. Behavioral Feedback</h5>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
+              In budgeting, fitness pacing, or climate models, hearing tension audibly resolve into a clean major chord delivers a deeply rewarding confirmation of success.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- SECTION: A/B Ethical Comparison Widget -->
-      <div id="ab-test" style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.75rem;">
+      <div id="ab-test" style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.75rem;">
         <h3 style="font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
           <span>⚖️</span>
           <span>A/B Sound Test: Ethical Sonification vs. The "Cherry-Picked Scale" Trap</span>
@@ -1782,12 +1820,12 @@
               <span class="api-name">scalePitch()</span>
               <span class="api-category">Scalers</span>
             </div>
-            <p class="api-desc">Maps quantitative domain values to quantized musical pitch note strings (e.g. "C4", "G#5") or continuous Hz frequencies.</p>
+            <p class="api-desc">Maps quantitative domain values to quantized musical pitch note strings, frequencies (Hz), and ISO 226 equal-loudness normalized gain factors.</p>
             <div class="api-snippet">const pitch = scalePitch()
   .domain([0, 100])
-  .range(["C3", "C6"])
+  .range(["C2", "C6"])
   .scale("pentatonic")
-  .root("C");</div>
+  .equalLoudness(true); // ISO 226 normalization</div>
           </div>
           <button class="btn-copy">📋 Copy Snippet</button>
         </div>
@@ -1799,11 +1837,12 @@
               <span class="api-name">scaleGain()</span>
               <span class="api-category">Scalers</span>
             </div>
-            <p class="api-desc">Maps quantitative metrics to audio amplitude velocity [0.0, 1.0] or decibel gain [-60dB, 0dB] with linear or exponential curves.</p>
+            <p class="api-desc">Maps metrics to amplitude velocity [0.0, 1.0] or dB [-60dB, 0dB] with ISO 226 frequency loudness compensation across registers.</p>
             <div class="api-snippet">const gain = scaleGain()
   .domain([0, 1000])
   .range([0.2, 0.9])
-  .curve("exponential");</div>
+  .curve("perceptual")
+  .equalLoudness(true); // phon/sone loudness</div>
           </div>
           <button class="btn-copy">📋 Copy Snippet</button>
         </div>

@@ -8,7 +8,9 @@ import {
   transpose,
   generateScaleNotes,
   quantizeToScale,
-  SCALE_INTERVALS
+  SCALE_INTERVALS,
+  iso226Weight,
+  equalLoudnessCompensation
 } from '../src/musical/index.js';
 
 export function testMusical() {
@@ -55,4 +57,13 @@ export function testMusical() {
   // Test scale quantization
   const closestToFSharp = quantizeToScale(66, pentatonicNotes); // F#4 (66) -> should quantize to G4 (67) or E4 (64)
   assert(["E4", "G4"].includes(closestToFSharp.note), "Quantizing F#4 into C Pentatonic yields nearest scale note (E4 or G4)");
+
+  // Test ISO 226 / Fletcher-Munson Equal-Loudness
+  assertClose(iso226Weight(1000), 0.0, 0.5, "iso226Weight(1000) is ~0 dB");
+  assert(iso226Weight(100) < -15, "iso226Weight(100) shows lower human sensitivity (< -15 dB)");
+  assert(iso226Weight(3500) > 0, "iso226Weight(3500) shows higher ear canal sensitivity (> 0 dB)");
+  assertClose(equalLoudnessCompensation(1000), 1.0, 0.05, "equalLoudnessCompensation(1000) is ~1.0");
+  assert(equalLoudnessCompensation(100) > 1.5, "equalLoudnessCompensation(100) boosts sub-bass (> 1.5)");
+  assert(equalLoudnessCompensation(3500) < 1.0, "equalLoudnessCompensation(3500) attenuates mid-treble (< 1.0)");
+  assert(equalLoudnessCompensation("C2") > equalLoudnessCompensation("C5"), "equalLoudnessCompensation('C2') > 'C5'");
 }
