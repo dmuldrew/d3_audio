@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02. 24-Hour Circadian Pulse & Daily Life Rhythm | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="../../dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #070c18;
+      --card: #0f172a;
+      --accent: #38bdf8;
+      --gold: #facc15;
+      --green: #10b981;
+      --red: #f43f5e;
+      --purple: #a855f7;
+      --orange: #f97316;
+      --pink: #ec4899;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1150px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .chart-box {
+      width: 100%;
+      height: 480px;
+      background: #030713;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #7dd3fc; }
+    .btn-sec { background: #1e293b; color: #fff; border: 1px solid var(--border); }
+    .btn-sec:hover { background: #334155; }
+
+    .control-group { margin-bottom: 1rem; }
+    label {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      background: #060b17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+    }
+
+    .hud-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .hud-val {
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .hour-wedge {
+      cursor: pointer;
+      transition: opacity 0.2s, stroke-width 0.2s;
+    }
+    .hour-wedge:hover {
+      opacity: 0.9;
+    }
+
+    .timeline-track {
+      stroke-width: 1;
+      stroke: rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.75rem; margin-top: 0.3rem;">02. 24-Hour Circadian Pulse & Daily Life Rhythm</h1>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem;">
+          Rhythmic Time-Series Categorical Sonification (<code>scaleSample</code>), Circadian Energy Pitch (<code>scalePitch</code>), & Adaptive Tempo (<code>scaleTempo</code>)
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <button id="btn-audio-activate" class="btn-enable-audio" style="background: #f59e0b; color: #030712; font-weight: 800; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s;">🔊 Enable Audio</button>
+        <span id="active-category-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">Ready to Play</span>
+      </div>
+    </header>
+
+    <div class="game-grid">
+      <!-- Left Column: Circular Clock & Timeline -->
+      <div>
+        <div class="panel" style="padding: 1rem;">
+          <div class="chart-box" id="chart-area"></div>
+        </div>
+
+        <!-- Interactive Audio Legend Mount -->
+        <div id="legend-mount" style="margin-top: 1rem;"></div>
+
+        <!-- Explicit Data Transformation Breakdown -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.25rem;">
+          <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>⏱️</span> How 24-Hour Categorical Time-Series Data is Transformed Into Rhythm
+          </h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
+                <th style="padding: 0.4rem 0;">Dimension</th>
+                <th style="padding: 0.4rem 0;">Data Domain</th>
+                <th style="padding: 0.4rem 0;">Audio Target</th>
+                <th style="padding: 0.4rem 0;">Transformation Function & Acoustic Logic</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Activity Category</td>
+                <td>7 Discrete Activities</td>
+                <td>Rhythmic Timbre (Sample)</td>
+                <td><code>scaleSample().domain([...]).range(['tom','blip','shaker','kick','bell','clap','laser'])</code> — Sleep pulses deep toms; Work drives a four-on-the-floor kick; Commute chatters 16th-note shakers; Fitness strikes sharp claps.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Circadian Energy</td>
+                <td>Time of Day (00:00 ➔ 23:00)</td>
+                <td>Melodic Pitch Register</td>
+                <td><code>scalePitch().domain([0, 23]).range(['C2','E5'])</code> — Midnight rests in sub-bass ($C_2$); morning awakes in mid octaves ($G_3 \to C_4$); peak afternoon alertness chimes in bright treble ($E_5$).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Pace of Life</td>
+                <td>Activity Pace (Rest ➔ Sprint)</td>
+                <td>Playback Tempo</td>
+                <td><code>scaleTempo().domain([1, 4]).range([70, 135])</code> — Circadian BPM accelerates from tranquil rest (70 BPM) up to peak workout sprints (135 BPM).</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Life Domain</td>
+                <td>Spatial Context</td>
+                <td>Stereo Pan (-0.75 ➔ +0.75)</td>
+                <td><code>scalePan()</code> — Domestic home life & sleep pans left (-0.75); commuting flows center (0.0); professional work & gyms pan right (+0.75).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Column: Controls & Circadian HUD -->
+      <div class="panel">
+        <button id="toggle-play-btn" class="btn">▶ Play Circadian Groove</button>
+        <button id="jump-now-btn" class="btn btn-sec">📍 Jump to Current Hour</button>
+
+        <div class="hud-stat">
+          <span style="color: var(--muted); font-size: 0.85rem;">Clock Time:</span>
+          <span class="hud-val" id="hud-time" style="color: var(--gold); font-size: 1.15rem;">14:00 (2:00 PM)</span>
+        </div>
+        <div class="hud-stat">
+          <span style="color: var(--muted); font-size: 0.85rem;">Active Activity:</span>
+          <span class="hud-val" id="hud-activity" style="color: var(--accent);">Deep Focus Work</span>
+        </div>
+        <div class="hud-stat">
+          <span style="color: var(--muted); font-size: 0.85rem;">Energy & Tempo:</span>
+          <span class="hud-val" id="hud-tempo" style="color: var(--green);">120 BPM (High Focus)</span>
+        </div>
+        <div class="hud-stat">
+          <span style="color: var(--muted); font-size: 0.85rem;">Rhythmic Voice:</span>
+          <span class="hud-val" id="hud-instrument" style="color: #38bdf8;">Four-on-the-Floor Kick</span>
+        </div>
+
+        <div class="control-group" style="margin-top: 1.25rem;">
+          <label>Lifestyle Schedule Preset</label>
+          <select id="schedule-select">
+            <option value="professional" selected>Standard Urban Professional (9 to 5)</option>
+            <option value="nightowl">Night Owl Creative (Late Night Flow)</option>
+            <option value="athlete">Early Bird Athlete (Dawn Training)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Scrub Hour: <span id="scrub-hour-val">14:00</span></label>
+          <input type="range" id="hour-slider" min="0" max="23" step="1" value="14">
+        </div>
+
+        <div class="control-group">
+          <label>Clock Step Speed: <span id="speed-val">220</span> ms / hour</label>
+          <input type="range" id="speed-slider" min="100" max="600" step="20" value="220">
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-top: 1rem;">
+          • <strong>The Sound of 24 Hours</strong>: Watch the rotating clock hand trace your day. Notice how the rhythm transitions from peaceful ambient sleep to an upbeat midday productivity groove!<br>
+          • <strong>Interactive Dial</strong>: Click any hour wedge on the clock to immediately hear that hour's rhythmic groove.
+        </div>
+      </div>
+    </div>
+
+    <!-- How to Interpret the Audiovisual Results -->
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.25rem;">
+      <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span>🎧</span> How to Interpret the Audiovisual Results
+      </h3>
+      <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text); line-height: 1.6;">
+        <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-weight: 700; color: #facc15;">🥁 Activity Category ➔ Distinct Rhythmic Subdivisions (`scaleSample`)</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            As the 24-hour cycle progresses, each activity category takes the lead with its own percussion voice: <strong>Sleep</strong> breathes in slow resonant sub-bass toms; <strong>Morning</strong> rings with light kalimba bells; <strong>Commuting</strong> chatters in brisk 16th-note shakers; <strong>Deep Work</strong> locks into a steady four-on-the-floor kick; <strong>Fitness</strong> erupts in driving claps and basslines.
+          </p>
+        </li>
+        <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-weight: 700; color: #38bdf8;">📈 Circadian Alertness Curve ➔ Pitch Elevation ($C_2 \to E_5$) (`scalePitch`)</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            Pitch reflects physiological alertness throughout the day. Midnight rests in subterranean bass ($C_2 - G_2$). Morning brings ascending major triads ($G_3 \to C_4$). Midday focus soars into crisp treble arpeggios ($C_5 \to E_5$), before cascading back down to a nighttime lullaby.
+          </p>
+        </li>
+        <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-weight: 700; color: #10b981;">⚡ Biological Pace ➔ Dynamic Tempo Scaling (`scaleTempo`)</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            The rhythmic tempo naturally speeds up and slows down: night hours loop at an unhurried, resting 70 BPM. Morning commutes and focus hours accelerate to 120 BPM, and evening workout sprints peak at 135 BPM.
+          </p>
+        </li>
+        <li>
+          <div style="font-weight: 700; color: #a855f7;">🧭 Life Domain ➔ Stereo Stage Spatialization (`scalePan`)</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            Domestic home life and sleep sound on the left headphone ($-0.75$). Urban transit and commuting center in both ears ($0.0$). Workplaces, commercial hubs, and fitness centers pan to the right headphone ($+0.75$), creating an intuitive mental map of daily travel.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script src="../enable-audio.js"></script>
+</body>
+</html>
