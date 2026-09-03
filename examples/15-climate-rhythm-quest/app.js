@@ -73,8 +73,7 @@ const rScale = d3.scaleLinear()
 const thresholds = [
   { val: 0.0, label: "0.0°C Pre-Industrial", color: "#64748b", dash: "2 2", width: 1 },
   { val: 1.0, label: "+1.0°C Modern", color: "#38bdf8", dash: "3 2", width: 1 },
-  { val: 1.5, label: "+1.5°C Paris Target", color: "#f43f5e", dash: "4 3", width: 1.8 },
-  { val: 2.0, label: "+2.0°C Danger Zone", color: "#ef4444", dash: "3 3", width: 1.2 },
+  { val: 2.0, label: "+2.0°C Danger Zone", color: "#ef4444", dash: "3 3", width: 1.4 },
   { val: 3.0, label: "+3.0°C Severe Disruption", color: "#a855f7", dash: "2 2", width: 1 },
   { val: 4.0, label: "+4.0°C Catastrophic", color: "#ec4899", dash: "2 2", width: 1 }
 ];
@@ -86,14 +85,14 @@ thresholds.forEach(t => {
     .attr('stroke', t.color)
     .attr('stroke-width', t.width)
     .attr('stroke-dasharray', t.dash)
-    .attr('opacity', t.val === 1.5 ? 0.9 : 0.6);
+    .attr('opacity', t.val === 2.0 ? 0.9 : 0.6);
 
   g.append('text')
     .attr('x', 5)
     .attr('y', -rScale(t.val) - 3)
     .attr('fill', t.color)
     .attr('font-size', '9px')
-    .attr('font-weight', t.val === 1.5 ? '800' : '500')
+    .attr('font-weight', t.val === 2.0 ? '800' : '500')
     .text(t.label);
 });
 
