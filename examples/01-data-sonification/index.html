@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>01. Data Sonification & Visual Chart | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.0.4/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card: #151e33;
+      --accent: #38bdf8;
+      --accent2: #f43f5e;
+      --accent3: #10b981;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+    
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.25rem;
+      align-items: center;
+    }
+    .ctrl-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+    select, input[type="range"] {
+      background: #090e1a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .transport-bar {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+    .btn-stop { background: #475569; color: #fff; }
+    .btn-stop:hover { background: #64748b; }
+
+    .chart-container {
+      width: 100%;
+      height: 400px;
+      position: relative;
+    }
+    svg { width: 100%; height: 100%; overflow: visible; }
+    
+    .bar {
+      transition: fill 0.2s;
+      cursor: pointer;
+      transform-box: fill-box;
+      transform-origin: bottom center;
+    }
+    .bubble {
+      cursor: pointer;
+      transform-box: fill-box;
+      transform-origin: center center;
+    }
+    .playhead-line {
+      stroke: #f43f5e;
+      stroke-width: 2px;
+      stroke-dasharray: 4 2;
+      pointer-events: none;
+    }
+    .status-badge {
+      font-size: 0.85rem;
+      color: var(--accent3);
+      display: inline-block;
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">01. Data Sonification & Visual Chart</h1>
+      </div>
+      <div class="status-badge" id="transport-status">Transport: Stopped</div>
+    </header>
+
+    <div class="panel">
+      <div class="controls-grid">
+        <div class="ctrl-group">
+          <label>Scale Type (scalePitch)</label>
+          <select id="scale-type">
+            <option value="pentatonic" selected>Pentatonic Major</option>
+            <option value="minor">Natural Minor</option>
+            <option value="blues">Blues Scale</option>
+            <option value="major">Major (Ionian)</option>
+            <option value="dorian">Dorian Mode</option>
+            <option value="insen">Japanese Insen</option>
+          </select>
+        </div>
+
+        <div class="ctrl-group">
+          <label>Rhythmic Movement</label>
+          <select id="movement-type">
+            <option value="wiggle" selected>Wiggle (Rotational Wobble)</option>
+            <option value="flip">3D Flip (Perspective)</option>
+            <option value="pulse">Pulse (Scale Pop)</option>
+            <option value="bounce">Bounce (Spring Rebound)</option>
+            <option value="shake">Shake (Jitter)</option>
+            <option value="ripple">Ripple (Halo Shockwave)</option>
+            <option value="glow">Glow (Bloom)</option>
+            <option value="squash">Squash & Stretch</option>
+          </select>
+        </div>
+
+        <div class="ctrl-group">
+          <label>Tempo: <span id="bpm-val">120</span> BPM</label>
+          <input type="range" id="bpm-slider" min="60" max="220" value="120">
+        </div>
+
+        <div class="ctrl-group">
+          <label>Instrument Voice</label>
+          <select id="synth-type">
+            <option value="polySynth" selected>PolySynth (Smooth Lead)</option>
+            <option value="fmSynth">FMSynth (Vibrant Bells)</option>
+            <option value="amSynth">AMSynth (Vintage Mod)</option>
+            <option value="membraneSynth">Membrane (Percussive)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="transport-bar">
+        <button id="play-btn" class="btn">▶ Play Timeline</button>
+        <button id="stop-btn" class="btn btn-stop">⏹ Stop</button>
+        <input type="range" id="scrubber" min="0" max="100" value="0" style="flex-grow: 1;">
+        <span id="time-display" style="font-size: 0.85rem; font-family: monospace; color: var(--muted);">0:00</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Sonified Multi-Variable Chart</h3>
+      <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem;">
+        Hover or click any element to audition its sound + animation. During playback, data is mapped across Pitch (Height), Panning (X-axis), and Rhythmic Motion.
+      </p>
+      <div class="chart-container" id="chart"></div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

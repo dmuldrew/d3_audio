@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03. Continuous Stream & Audio Sweeps | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.0.4/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #070d18;
+      --card: #10192a;
+      --accent: #38bdf8;
+      --accent2: #06b6d4;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .canvas-container {
+      width: 100%;
+      height: 380px;
+      position: relative;
+      background: #040811;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .metric-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .metric-val { font-size: 1.6rem; font-weight: 800; color: var(--accent); font-family: monospace; }
+    .metric-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-top: 0.3rem; }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn:hover { background: #7dd3fc; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">03. Continuous Stream & Audio Sweeps</h1>
+      </div>
+      <div>
+        <button id="stream-toggle-btn" class="btn">▶ Start Live Stream</button>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.1rem;">Real-time Dynamic Sonification with Filter & Spatial Pan</h3>
+        <span style="font-size: 0.85rem; color: var(--muted);">Click and drag inside canvas to modulate stream stream vector</span>
+      </div>
+
+      <div class="canvas-container" id="chart-area"></div>
+
+      <div class="telemetry-grid">
+        <div class="metric-card">
+          <div class="metric-val" id="val-stream">0.00</div>
+          <div class="metric-lbl">Signal Amplitude</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="val-filter">1,200 Hz</div>
+          <div class="metric-lbl">scaleFilter Cutoff</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="val-pitch">C4</div>
+          <div class="metric-lbl">scalePitch Note</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="val-pan">0.00</div>
+          <div class="metric-lbl">scalePan Stereo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

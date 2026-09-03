@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04. Scaler & Choreography Playground | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.0.4/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #0b101b;
+      --card: #141c2e;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.35);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .playground-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.25rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    select, input[type="text"], input[type="range"] {
+      width: 100%;
+      background: #080d17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .stage-container {
+      width: 100%;
+      height: 320px;
+      background: #060a14;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-item {
+      width: 90px;
+      height: 90px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #1e293b, #334155);
+      border: 2px solid var(--accent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      user-select: none;
+      transform-origin: center center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .stage-item:hover {
+      background: linear-gradient(135deg, #334155, #475569);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.65rem 1.3rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+
+    .code-preview {
+      background: #03060f;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 1.25rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      color: #a7f3d0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">04. Scaler & Choreography Playground</h1>
+      </div>
+    </header>
+
+    <div class="playground-layout">
+      <!-- Left Controls Panel -->
+      <div class="panel">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Configuration</h3>
+
+        <div class="control-group">
+          <label>Musical Scale (scalePitch)</label>
+          <select id="scale-select">
+            <option value="pentatonic">Pentatonic Major</option>
+            <option value="pentatonicMinor">Pentatonic Minor</option>
+            <option value="blues">Blues Scale</option>
+            <option value="major">Major (Ionian)</option>
+            <option value="minor">Natural Minor (Aeolian)</option>
+            <option value="dorian">Dorian Mode</option>
+            <option value="insen">Japanese Insen</option>
+            <option value="hirajoshi">Japanese Hirajoshi</option>
+            <option value="bhairav">Indian Bhairav Raga</option>
+            <option value="wholeTone">Whole Tone</option>
+            <option value="chromatic">Chromatic (All 12)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Root Note</label>
+          <select id="root-select">
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="G">G</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="Eb">Eb</option>
+            <option value="F#">F#</option>
+            <option value="Ab">Ab</option>
+            <option value="Bb">Bb</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Rhythmic Movement Preset</label>
+          <select id="move-select">
+            <option value="wiggle">wiggle (Rotational Wobble)</option>
+            <option value="flip">flip (3D Perspective Flip)</option>
+            <option value="pulse">pulse (Radial Scale Pop)</option>
+            <option value="bounce">bounce (Spring Gravity Rebound)</option>
+            <option value="shake">shake (High-frequency Jitter)</option>
+            <option value="ripple">ripple (Expanding Shockwave Halo)</option>
+            <option value="glow">glow (Color Bloom & Drop-Shadow)</option>
+            <option value="squash">squash (Squash & Stretch Dynamics)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Movement Intensity: <span id="intensity-val">1.2</span>x</label>
+          <input type="range" id="intensity-slider" min="0.2" max="2.5" step="0.1" value="1.2">
+        </div>
+
+        <div class="control-group">
+          <label>Duration: <span id="duration-val">0.40</span>s</label>
+          <input type="range" id="duration-slider" min="0.1" max="1.2" step="0.05" value="0.4">
+        </div>
+
+        <button id="trigger-all-btn" class="btn">⚡ Trigger All Elements</button>
+      </div>
+
+      <!-- Right Stage & Code Generator -->
+      <div>
+        <div class="panel">
+          <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Interactive Stage (Click any element)</h3>
+          <div class="stage-container" id="stage">
+            <div class="stage-item" id="item-1" data-val="10">
+              <span>Item 1</span>
+              <span class="note-label" style="font-size: 0.75rem; color: var(--accent);">C4</span>
+            </div>
+            <div class="stage-item" id="item-2" data-val="40">
+              <span>Item 2</span>
+              <span class="note-label" style="font-size: 0.75rem; color: var(--accent);">E4</span>
+            </div>
+            <div class="stage-item" id="item-3" data-val="70">
+              <span>Item 3</span>
+              <span class="note-label" style="font-size: 0.75rem; color: var(--accent);">G4</span>
+            </div>
+            <div class="stage-item" id="item-4" data-val="100">
+              <span>Item 4</span>
+              <span class="note-label" style="font-size: 0.75rem; color: var(--accent);">C5</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Generated D3 + d3-audio Code</h3>
+          <pre class="code-preview" id="code-box"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

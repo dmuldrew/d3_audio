@@ -1,0 +1,30 @@
+{
+  "name": "d3-audio",
+  "version": "1.0.0",
+  "description": "D3 module for audio-visual data sonification and rhythmic choreography mapped to Tone.js timelines",
+  "main": "dist/d3-audio.js",
+  "module": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node test/run-tests.js",
+    "start": "python3 -m http.server 3000",
+    "serve": "node scripts/serve.js"
+  },
+  "keywords": [
+    "d3",
+    "d3-module",
+    "d3-audio",
+    "sonification",
+    "tonejs",
+    "web-audio",
+    "animation",
+    "choreography",
+    "data-visualization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^7.9.0",
+    "tone": "^15.0.4"
+  }
+}
