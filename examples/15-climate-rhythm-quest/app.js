@@ -14,11 +14,13 @@ import {
   IPCC_PROJECTIONS
 } from './climateData.js';
 
-let activeScenario = 'ssp126';
+let currentMode = 'ipcc'; // 'ipcc' | 'sandbox'
+let activeScenario = 'ssp585'; // Default to Worst-Case First!
 let activePolicies = new Set();
 
 function getActiveRecords() {
-  const future = IPCC_PROJECTIONS[activeScenario] || [];
+  const scenarioKey = currentMode === 'sandbox' ? 'ssp585' : activeScenario;
+  const future = IPCC_PROJECTIONS[scenarioKey] || [];
   return [...HISTORICAL_CLIMATE_DATA, ...future];
 }
 
@@ -124,10 +126,11 @@ const spiralGroup = g.append('g');
 
 function getNetAnomaly(rec) {
   let a = rec.anomaly;
-  if (rec.year > 2026) {
-    if (activePolicies.has('renewables')) a -= 0.4;
-    if (activePolicies.has('reforestation')) a -= 0.3;
+  if (currentMode === 'sandbox' && rec.year > 2026) {
+    if (activePolicies.has('renewables')) a -= 0.40;
+    if (activePolicies.has('reforestation')) a -= 0.30;
     if (activePolicies.has('methane')) a -= 0.25;
+    if (activePolicies.has('industry')) a -= 0.35;
   }
   return +a.toFixed(2);
 }
@@ -170,9 +173,14 @@ function renderSpiralUpTo(yearIdx) {
   }
 
   if (projPoints.length > 1) {
-    let projColor = '#10b981';
-    if (activeScenario === 'ssp245') projColor = '#f59e0b';
-    if (activeScenario === 'ssp585') projColor = '#f43f5e';
+    let projColor = '#f43f5e'; // Default Worst-Case
+    if (currentMode === 'sandbox') {
+      const netLast = projPoints[projPoints.length - 1].netA;
+      projColor = netLast <= 1.5 ? '#10b981' : (netLast <= 2.0 ? '#f59e0b' : '#f43f5e');
+    } else {
+      if (activeScenario === 'ssp245') projColor = '#f59e0b';
+      if (activeScenario === 'ssp126') projColor = '#10b981';
+    }
 
     spiralGroup.append('path')
       .datum(projPoints)
@@ -215,14 +223,22 @@ function sonifyYear(rec) {
   const yearTag = document.getElementById('year-tag');
   if (yearTag) {
     if (rec.year <= 2026) {
-      yearTag.innerText = "Historical Observed";
+      yearTag.innerText = "Historical Observed (NASA GISS)";
       yearTag.style.background = "rgba(56, 189, 248, 0.15)";
       yearTag.style.color = "#38bdf8";
+    } else if (currentMode === 'sandbox') {
+      const offset = (activePolicies.has('renewables') ? 0.4 : 0) +
+        (activePolicies.has('reforestation') ? 0.3 : 0) +
+        (activePolicies.has('methane') ? 0.25 : 0) +
+        (activePolicies.has('industry') ? 0.35 : 0);
+      yearTag.innerText = offset > 0 ? `Policy Sandbox (-${offset.toFixed(2)}°C Offset)` : "Sandbox (Worst-Case Baseline)";
+      yearTag.style.background = offset > 0 ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)";
+      yearTag.style.color = offset > 0 ? "#10b981" : "#f43f5e";
     } else {
-      let scName = "SSP1-2.6 (Net-Zero)";
-      let scColor = "#10b981";
+      let scName = "SSP5-8.5 (Worst-Case)";
+      let scColor = "#f43f5e";
       if (activeScenario === 'ssp245') { scName = "SSP2-4.5 (Pledges)"; scColor = "#f59e0b"; }
-      if (activeScenario === 'ssp585') { scName = "SSP5-8.5 (Worst-Case)"; scColor = "#f43f5e"; }
+      if (activeScenario === 'ssp126') { scName = "SSP1-2.6 (Net-Zero)"; scColor = "#10b981"; }
       yearTag.innerText = `Projected: ${scName}`;
       yearTag.style.background = `${scColor}22`;
       yearTag.style.color = scColor;
@@ -246,7 +262,7 @@ function sonifyYear(rec) {
     badge.innerText = "🚨 Critical Paris 1.5°C Breach";
     badge.style.background = "rgba(244, 63, 94, 0.2)";
     badge.style.color = "#f43f5e";
-  } else if (rec.year > 2050 && activeScenario === 'ssp126') {
+  } else if (rec.year > 2050 && (activeScenario === 'ssp126' || netA <= 1.4)) {
     badge.innerText = "🌱 Paris Net-Zero Harmonized Stabilization";
     badge.style.background = "rgba(16, 185, 129, 0.2)";
     badge.style.color = "#10b981";
@@ -300,7 +316,49 @@ slider.addEventListener('input', async (e) => {
   sonifyYear(climateRecords[currentYearIndex]);
 });
 
-// IPCC Scenario Switcher Buttons
+// Mode Tabs: Switch between Official IPCC Pathways and Policy Sandbox
+const tabIpcc = document.getElementById('tab-ipcc-mode');
+const tabSandbox = document.getElementById('tab-sandbox-mode');
+const secIpcc = document.getElementById('section-ipcc');
+const secSandbox = document.getElementById('section-sandbox');
+
+if (tabIpcc && tabSandbox) {
+  tabIpcc.addEventListener('click', async () => {
+    await defaultEngine.start();
+    currentMode = 'ipcc';
+    tabIpcc.classList.add('active');
+    tabIpcc.style.background = 'var(--accent)';
+    tabIpcc.style.color = '#030712';
+    tabSandbox.classList.remove('active');
+    tabSandbox.style.background = 'transparent';
+    tabSandbox.style.color = 'var(--muted)';
+    if (secIpcc) secIpcc.style.display = 'block';
+    if (secSandbox) secSandbox.style.display = 'none';
+
+    climateRecords = getActiveRecords();
+    renderSpiralUpTo(currentYearIndex);
+    sonifyYear(climateRecords[currentYearIndex]);
+  });
+
+  tabSandbox.addEventListener('click', async () => {
+    await defaultEngine.start();
+    currentMode = 'sandbox';
+    tabSandbox.classList.add('active');
+    tabSandbox.style.background = 'var(--accent)';
+    tabSandbox.style.color = '#030712';
+    tabIpcc.classList.remove('active');
+    tabIpcc.style.background = 'transparent';
+    tabIpcc.style.color = 'var(--muted)';
+    if (secIpcc) secIpcc.style.display = 'none';
+    if (secSandbox) secSandbox.style.display = 'block';
+
+    climateRecords = getActiveRecords();
+    renderSpiralUpTo(currentYearIndex);
+    sonifyYear(climateRecords[currentYearIndex]);
+  });
+}
+
+// IPCC Scenario Switcher Buttons (Sorted Worse Cases First)
 document.querySelectorAll('.btn-scenario').forEach(btn => {
   btn.addEventListener('click', async () => {
     await defaultEngine.start();
@@ -316,7 +374,7 @@ document.querySelectorAll('.btn-scenario').forEach(btn => {
   });
 });
 
-// Dynamic Policy Buttons
+// Dynamic Policy Buttons (For Sandbox Mode)
 document.querySelectorAll('.btn-policy').forEach(btn => {
   btn.addEventListener('click', async () => {
     await defaultEngine.start();

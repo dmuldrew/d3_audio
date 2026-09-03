@@ -243,33 +243,58 @@
           <input type="range" id="year-slider" min="1880" max="2100" value="1880">
         </div>
 
-        <div style="margin-top: 1.25rem;">
-          <label>IPCC AR6 / CMIP6 Climate Scenarios (2026–2100)</label>
-          <button class="btn btn-scenario active" data-scenario="ssp126" style="border-left: 4px solid #10b981;">
-            🌿 <strong>SSP1-2.6 (Paris Net-Zero)</strong><br>
-            <span style="font-size: 0.74rem; color: var(--muted);">Peak +1.6°C, resolves to +1.35°C (415 ppm)</span>
+        <!-- Mode Switcher: Separates self-contained IPCC Models from Interactive Sandbox -->
+        <div class="control-group" style="margin-top: 1.25rem;">
+          <label>Future Exploration Mode</label>
+          <div style="display: flex; gap: 0.35rem; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 8px; border: 1px solid var(--border);">
+            <button id="tab-ipcc-mode" class="btn-mode active" style="flex: 1; padding: 0.5rem 0.4rem; font-size: 0.74rem; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; background: var(--accent); color: #030712; transition: all 0.2s;">
+              🌐 Official IPCC Pathways
+            </button>
+            <button id="tab-sandbox-mode" class="btn-mode" style="flex: 1; padding: 0.5rem 0.4rem; font-size: 0.74rem; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.2s;">
+              🛠️ "What-If" Policy Sandbox
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 1: Official IPCC Scenarios (Sorted Worse Cases First) -->
+        <div id="section-ipcc" style="margin-top: 1rem;">
+          <label>IPCC AR6 / CMIP6 Pathways (Worse Cases First)</label>
+          <button class="btn btn-scenario active" data-scenario="ssp585" style="border-left: 4px solid #f43f5e;">
+            🏭 <strong>SSP5-8.5 (Fossil-Fueled Worst-Case)</strong><br>
+            <span style="font-size: 0.74rem; color: var(--muted);">Runaway emissions; warming accelerates to +4.55°C (1,080 ppm)</span>
           </button>
           <button class="btn btn-scenario" data-scenario="ssp245" style="border-left: 4px solid #f59e0b;">
             ⚖️ <strong>SSP2-4.5 (Middle of the Road)</strong><br>
-            <span style="font-size: 0.74rem; color: var(--muted);">Current pledges; warming reaches +2.7°C (560 ppm)</span>
+            <span style="font-size: 0.74rem; color: var(--muted);">Current policies; warming reaches +2.45°C (603 ppm)</span>
           </button>
-          <button class="btn btn-scenario" data-scenario="ssp585" style="border-left: 4px solid #f43f5e;">
-            🏭 <strong>SSP5-8.5 (Fossil-Fueled Worst-Case)</strong><br>
-            <span style="font-size: 0.74rem; color: var(--muted);">Runaway warming reaches +4.8°C (>1,020 ppm)</span>
+          <button class="btn btn-scenario" data-scenario="ssp126" style="border-left: 4px solid #10b981;">
+            🌿 <strong>SSP1-2.6 (Paris Net-Zero)</strong><br>
+            <span style="font-size: 0.74rem; color: var(--muted);">Aggressive decarbonization; peaks +1.52°C, resolves to +1.30°C</span>
           </button>
+          <p style="font-size: 0.72rem; color: var(--muted); margin-top: 0.5rem; line-height: 1.4;">
+            ℹ️ <em>Official IPCC CMIP6 multi-model ensemble benchmarks. Each scenario represents a complete, self-contained socioeconomic and policy framework.</em>
+          </p>
         </div>
 
-        <div style="margin-top: 1.25rem;">
-          <label>Interactive Mitigation Policies (Future Offsets)</label>
-          <button class="btn btn-policy" data-policy="renewables">⚡ 100% Renewable Grid Transition (-0.4°C)</button>
-          <button class="btn btn-policy" data-policy="reforestation">🌲 Global Forest Restoration (-0.3°C)</button>
-          <button class="btn btn-policy" data-policy="methane">🛑 Methane Flaring Cut (-0.25°C)</button>
+        <!-- Section 2: Interactive Policy Sandbox (Bend the Curve from Worst-Case) -->
+        <div id="section-sandbox" style="margin-top: 1rem; display: none;">
+          <label>Policy Sandbox: Bend the Worst-Case Curve</label>
+          <p style="font-size: 0.74rem; color: var(--muted); margin-bottom: 0.6rem; line-height: 1.4;">
+            Starting from the unconstrained SSP5-8.5 baseline, deploy interventions to hear and see the climate curve bend toward the Paris limit:
+          </p>
+          <button class="btn btn-policy" data-policy="renewables">⚡ 100% Clean Grid & Storage (-0.40°C)</button>
+          <button class="btn btn-policy" data-policy="reforestation">🌲 Global Afforestation & Soil Carbon (-0.30°C)</button>
+          <button class="btn btn-policy" data-policy="methane">🛑 Rapid Methane Elimination (-0.25°C)</button>
+          <button class="btn btn-policy" data-policy="industry">🏭 Heavy Industry & Transport Decarbonization (-0.35°C)</button>
+          <p style="font-size: 0.72rem; color: var(--green); margin-top: 0.5rem; line-height: 1.4;">
+            💡 <em>Stacked policies actively bend the future trajectory and resolve acoustic tension into consonant major chords!</em>
+          </p>
         </div>
 
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-top: 1rem;">
-          • <strong>Historical Observations (1880–2026)</strong>: Based on NASA GISS land-ocean anomalies & Mauna Loa CO₂.<br>
-          • <strong>IPCC Projections (2026–2100)</strong>: Select between Net-Zero, Middle of the Road, or Worst-Case pathways to hear future climate trajectories.<br>
-          • <strong>Harmonic Resolution</strong>: Under SSP1-2.6, warming tension resolves into consonant major equilibrium after 2050!
+          • <strong>NASA GISS & NOAA (1880–2026)</strong>: Official historical land-ocean observations and Mauna Loa CO₂.<br>
+          • <strong>Worst-Case Default</strong>: Begins in the high-emissions SSP5-8.5 world to highlight acoustic tension.<br>
+          • <strong>Harmonic Resolution</strong>: Under SSP1-2.6 or stacked sandbox policies, the acoustic dissonance audibly resolves into equilibrium!
         </div>
       </div>
     </div>
