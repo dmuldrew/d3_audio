@@ -229,7 +229,24 @@
 
       <!-- Controls & Climate Action Quest -->
       <div class="panel">
-        <button id="play-spiral-btn" class="btn">▶ Run Climate Time Machine (1880–2100)</button>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <button id="play-spiral-btn" class="btn" style="flex: 2; margin-bottom: 0;">▶ Run Climate Time Machine</button>
+          <button id="jump-present-btn" class="btn" style="flex: 1.3; margin-bottom: 0; background: #1e293b; color: #38bdf8; font-size: 0.76rem; border: 1px solid rgba(56, 189, 248, 0.4); white-space: nowrap;">📍 Start at 2026</button>
+        </div>
+
+        <!-- Rotation Speed Controls -->
+        <div class="control-group" style="margin-bottom: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <label style="margin-bottom: 0; font-size: 0.8rem;">Needle Rotation Speed</label>
+            <span id="speed-label" style="font-family: monospace; font-size: 0.78rem; color: #facc15; font-weight: 700;">1.0x (120ms)</span>
+          </div>
+          <div style="display: flex; gap: 0.35rem; background: rgba(0,0,0,0.3); padding: 3px; border-radius: 8px; border: 1px solid var(--border);">
+            <button class="btn-speed" data-speed="0.5" style="flex: 1; padding: 0.35rem 0.2rem; font-size: 0.75rem; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.2s;">0.5x</button>
+            <button class="btn-speed active" data-speed="1.0" style="flex: 1; padding: 0.35rem 0.2rem; font-size: 0.75rem; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; background: #facc15; color: #030712; transition: all 0.2s;">1.0x</button>
+            <button class="btn-speed" data-speed="2.0" style="flex: 1; padding: 0.35rem 0.2rem; font-size: 0.75rem; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.2s;">2.0x</button>
+            <button class="btn-speed" data-speed="4.0" style="flex: 1; padding: 0.35rem 0.2rem; font-size: 0.75rem; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.2s;">4.0x</button>
+          </div>
+        </div>
 
         <div class="hud-stat">
           <span style="color: var(--muted); font-size: 0.85rem;">Year:</span>

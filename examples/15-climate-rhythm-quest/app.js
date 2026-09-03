@@ -390,6 +390,15 @@ renderSpiralUpTo(0);
 // Play Time Machine Loop (1880 to 2100)
 let isPlaying = false;
 let timeMachineTimer = null;
+let playbackSpeed = 1.0;
+let playbackInterval = 120;
+
+function updatePlaybackTimer() {
+  if (isPlaying) {
+    clearInterval(timeMachineTimer);
+    timeMachineTimer = setInterval(stepTime, playbackInterval);
+  }
+}
 
 async function stepTime() {
   currentYearIndex = (currentYearIndex + 1) % climateRecords.length;
@@ -404,12 +413,49 @@ playBtn.addEventListener('click', async () => {
   if (isPlaying) {
     clearInterval(timeMachineTimer);
     isPlaying = false;
-    playBtn.innerText = "▶ Run Climate Time Machine (1880–2100)";
+    playBtn.innerText = "▶ Run Climate Time Machine";
   } else {
     isPlaying = true;
     playBtn.innerText = "⏸ Pause Time Machine";
-    timeMachineTimer = setInterval(stepTime, 120);
+    timeMachineTimer = setInterval(stepTime, playbackInterval);
   }
+});
+
+// Start at Present (2026) Button
+const jumpPresentBtn = document.getElementById('jump-present-btn');
+if (jumpPresentBtn) {
+  jumpPresentBtn.addEventListener('click', async () => {
+    await defaultEngine.start();
+    const idx2026 = Math.min(climateRecords.length - 1, 2026 - 1880);
+    currentYearIndex = idx2026;
+    document.getElementById('year-slider').value = 2026;
+    renderSpiralUpTo(currentYearIndex);
+    sonifyYear(climateRecords[currentYearIndex]);
+  });
+}
+
+// Playback Speed Controller Buttons
+document.querySelectorAll('.btn-speed').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    await defaultEngine.start();
+    const sp = parseFloat(btn.getAttribute('data-speed')) || 1.0;
+    playbackSpeed = sp;
+    playbackInterval = Math.round(120 / sp);
+
+    document.querySelectorAll('.btn-speed').forEach(b => {
+      b.classList.remove('active');
+      b.style.background = 'transparent';
+      b.style.color = 'var(--muted)';
+    });
+    btn.classList.add('active');
+    btn.style.background = '#facc15';
+    btn.style.color = '#030712';
+
+    const speedLabel = document.getElementById('speed-label');
+    if (speedLabel) speedLabel.innerText = `${sp.toFixed(1)}x (${playbackInterval}ms)`;
+
+    updatePlaybackTimer();
+  });
 });
 
 // Slider scrubber
