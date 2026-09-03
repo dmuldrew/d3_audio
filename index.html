@@ -1185,7 +1185,7 @@
         <span>Principles of Data Sonification</span>
       </h2>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
         <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
           <h4 style="color: var(--accent); margin-bottom: 0.5rem;">1. Mapping Data to Sound</h4>
           <div style="font-family: monospace; font-size: 0.95rem; color: #fff; margin: 0.5rem 0;">
@@ -1198,12 +1198,30 @@
         </div>
 
         <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
-          <h4 style="color: var(--accent2); margin-bottom: 0.5rem;">2. The "Stay Close to the Data" Rule</h4>
+          <h4 style="color: var(--accent2); margin-bottom: 0.5rem;">2. The Stay Close to the Data Rule</h4>
           <blockquote style="font-style: italic; color: #fff; font-size: 0.95rem; margin: 0.5rem 0;">
-            "Stay close to the data... otherwise it's art!"
+            Stay close to the data... otherwise it's art!
           </blockquote>
-          <p style="font-size: 0.82rem; color: var(--text-muted);">
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">
             Artistic sonification permits arbitrary aesthetic liberties. Analytical sonification demands mathematical faithfulness: ratios, deltas, and taxonomies must be preserved so a listener can reconstruct the data from the sound.
+          </p>
+          <ul style="font-size: 0.78rem; color: #cbd5e1; list-style: disc; margin-left: 1.2rem; line-height: 1.5;">
+            <li><strong>Truncated Y-Axes ➔ Distorted Pitch Ranges</strong>: Starting a bar chart at 90 makes a 2% change look like a 500% spike; stretching a narrow 1% shift across multiple octaves creates the exact same visual-auditory lie.</li>
+            <li><strong>Bubble Area Scaling ➔ Decibel Calibration</strong>: Scaling bubble radii distorts geometric area; similarly, linear volume scaling ignores logarithmic human hearing (always calibrate with decibels).</li>
+            <li><strong>Visual Chartjunk ➔ Audiojunk</strong>: Gratuitous reverbs, synth sweeps, or decorative arpeggios that don't encode data are auditory chartjunk that masks the true signal.</li>
+          </ul>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="color: #f59e0b; margin-bottom: 0.5rem;">3. The Golden Rule of Sonification</h4>
+          <blockquote style="font-style: italic; color: #fff; font-size: 0.95rem; margin: 0.5rem 0;">
+            Never map unranked categories to higher and lower pitches!
+          </blockquote>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            The human brain inherently hears higher notes as "higher," "better," or "more important." In visual charts, you would never represent unranked categories using an ordered vertical bar chart or a sequential heat map.
+          </p>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">
+            Reserve pitch exclusively for continuous measurements and ordinal rankings. Use distinct <strong>instrument timbres</strong> (e.g. Piano vs. Marimba vs. Guitar) or <strong>stereo pan positions</strong> to sonify unranked qualitative categories.
           </p>
         </div>
       </div>

@@ -3,6 +3,7 @@
 > **Audio-Visual Data Sonification and Rhythmic Choreography for D3.js and Tone.js**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-2ea44f?style=flat&logo=github)](https://dmuldrew.github.io/d3_audio/)
 [![Tests](https://img.shields.io/badge/tests-130%20passed-brightgreen.svg)](#-unit-tests--verification)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ed.svg)](#-running-with-docker)
 [![D3 Compatible](https://img.shields.io/badge/D3-v7%2B-F9A03C.svg)](https://d3js.org/)
@@ -13,6 +14,8 @@
 Think of a hospital heart monitor beeping in tempo with a pulse, a car's parking sensors beeping faster as you back closer to an obstacle, or a microwave chiming when food is hot. We all use sound every day to understand what is happening without having to stare at a screen.
 
 `d3-audio` brings this power to web data visualization. Just as tools like **D3.js** turn numbers into bar heights, circles, and line graphs on your screen, `d3-audio` translates those same numbers into musical notes, rhythms, volume, and stereo sound—while keeping on-screen animations moving in perfect lockstep with the audio.
+
+> 🌐 **Live Interactive Showcase**: Experience the full suite of **21 interactive sonification applications** running live in your browser at **[https://dmuldrew.github.io/d3_audio/](https://dmuldrew.github.io/d3_audio/)**!
 
 ---
 
@@ -138,10 +141,22 @@ Just as an unlabeled visual chart produces confusion, sound without an explanati
 
 `d3-audio` includes an interactive **`audioLegend()`** widget. Just like a color legend on a map, an Audio Legend displays the rules of the sonification and lets users click to audition each sound before playing the full visualization.
 
-### 2. The "Stay Close to the Data" Rule
-> *"Stay close to the data... otherwise it's art!"*
+### 2. The Stay Close to the Data Rule
+> *Stay close to the data... otherwise it's art!*
 
-Music can take creative liberties, but **data sonification is an analytical tool**. If sales double, the pitch or volume should audibly reflect that doubling. If the data is calm, the sound should be calm; if the data is volatile, the sound should reflect that volatility. Maintaining mathematical fidelity ensures that anyone listening can accurately understand the real-world story behind the numbers.
+Music can take creative liberties, but **data sonification is an analytical tool**. Just as a data journalist or graphic designer must maintain visual fidelity in charts and graphs, a sound designer must maintain auditory fidelity:
+
+* **Truncated Y-Axes vs. Distorted Pitch Ranges**: In visual graphics, starting a bar chart's vertical axis at 95 instead of 0 creates a misleading optical illusion—a tiny 1% difference looks like a catastrophic collapse. In audio sonification, cramming a narrow 1% change across three wild octaves commits the exact same deception. The audio range must reflect the true proportional magnitude of the shift.
+* **Bubble Area vs. Loudness & Decibels**: In visual charts, scaling a bubble's *radius* instead of its *area* accidentally squares the perceived difference (making a 2x increase look 4x bigger). In sound, human ears perceive loudness logarithmically, not linearly. Using properly calibrated decibel curves (`scaleGain.db()`) ensures that a doubling in data sounds like a true doubling in intensity, rather than an overwhelming distortion.
+* **Visual "Chartjunk" vs. Auditory "Audiojunk"**: Edward Tufte coined the term *chartjunk* for decorative 3D bevels, fake drop shadows, and visual clutter that distract from the numbers. In audio sonification, gratuitous reverb, sweeping delay effects, and ornamental musical flourishes that don't represent data are auditory chartjunk. Every sound a listener hears should correspond to an actual data dimension.
+* **The Reconstruction Test**: When someone looks at an honest scatterplot, they can read the axis labels and reconstruct the underlying table of numbers. An honest sonification passes the exact same test: a listener, guided by a clear audio legend, should be able to hear whether values are rising, falling, accelerating, or holding steady, and reconstruct the true trend in their mind.
+
+### 3. The Golden Rule of Sonification
+> **Never map unranked categories to higher and lower pitches.**
+
+The human brain instinctively hears higher musical notes as "higher," "better," "hotter," or "more important." In visual graphics, you would never represent unranked categories (like Engineering vs. Marketing, or Apples vs. Oranges) using an ordered vertical bar chart or a sequential heat ramp.
+
+In sonification, if you assign Department A to a low C3 and Department B to a high C5, listeners will unavoidably perceive an implicit hierarchy or rank. Always reserve pitch for continuous quantities and ordinal rankings; use distinct **instrument timbres** (piano vs. flute vs. marimba) or **stereo pan positions** for unranked categories.
 
 ---
 
@@ -171,7 +186,7 @@ In data analysis, different types of data require different visual charts. In da
   * Department A → Warm Piano
   * Department B → Bright Marimba
   * Department C → Acoustic Guitar
-* ⚠️ **The Golden Rule of Sonification**: **Never map unranked categories to higher and lower pitches!** The human brain naturally hears higher notes as "higher", "better", or "more important." If you play Marketing on a low note and Engineering on a high note, listeners will perceive an unintended hierarchy. Always use different instrument sounds or stereo positions for categories!
+* **Tools**: `scaleSample()`, multi-instrument timbre routing, `scalePan()`.
 
 ---
 
@@ -317,13 +332,14 @@ You can load `d3-audio` directly from the `dist/` bundle alongside D3 and Tone.j
 
 ## 🎮 Interactive Demo Applications & GitHub Pages Hosting
 
-The repository includes **22 interactive applications** demonstrating different sonification and choreography patterns.
+The repository includes **21 interactive applications** demonstrating different sonification and choreography patterns.
 
-### 🌐 Live GitHub Pages Site
-The entire demo gallery and documentation is configured for static hosting on **GitHub Pages**:
-* **Live Demo URL**: `https://<username>.github.io/<repository-name>/`
-* **Automated CI/CD**: A GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) is included to automatically publish the site on every push to `main`.
-* **Zero Configuration**: A `.nojekyll` file is included in the root, and all asset/module references use relative paths to support any repository subpath.
+### 🌐 Live Deployment on GitHub Pages
+The entire interactive demo gallery and documentation is hosted live at:
+👉 **[https://dmuldrew.github.io/d3_audio/](https://dmuldrew.github.io/d3_audio/)**
+
+* **Automated CI/CD**: A GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) publishes the site automatically on every push to `main`.
+* **Zero Configuration**: Static hosting ready with `.nojekyll` and modular relative imports.
 
 ### 🐳 Local Docker Server
 To run locally inside Docker:
@@ -332,30 +348,30 @@ docker compose up
 ```
 Or open [http://localhost:3000](http://localhost:3000) in your browser.
 
-| Demo | Path | Description |
-|---|---|---|
-| **Overview Hub** | [`/index.html`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/index.html) | Interactive launchpad with live sound nodes and feature cards. |
-| **01. Data Sonifier & Chart** | [`/examples/01-data-sonification/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/01-data-sonification/index.html) | Multi-variable scatter & bar chart with pitch, stereo pan, duration scaling, and synchronized visual playhead tracking. |
-| **02. Motion Matrix Sequencer** | [`/examples/02-rhythmic-sequencer/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/02-rhythmic-sequencer/index.html) | 16-step 4-track sequencer triggering drum samples and synth bass with coordinated wiggles, 3D flips, bounces, and ripples. |
-| **03. Continuous Stream & Sweeps** | [`/examples/03-continuous-stream/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/03-continuous-stream/index.html) | Live time-series stream with audio filter frequency sweeps, spatial stereo audio, and responsive particle dynamics. |
-| **04. Scaler & Choreography Playground** | [`/examples/04-playground/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/04-playground/index.html) | Interactive workbench to test scale modes, movement presets, and copy live generated D3 code. |
-| **05. Radial Sunburst & Cyclic Radar** | [`/examples/05-radial-sunburst/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/05-radial-sunburst/index.html) | Multi-tier radial partition chart with rotating radar needle triggering cyclic arpeggios, octave tiers, and kinetic radial pulses. |
-| **06. Force Network & Graph Sonifier** | [`/examples/06-network-graph/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/06-network-graph/index.html) | D3 Force physics network graph where node degree maps to harmonic pitch, drag-and-release plucks strings, and impulses traverse edges polyphonically. |
-| **07. Geographic Map & Spatial 2D Audio** | [`/examples/07-geographic-map/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/07-geographic-map/index.html) | World map sonifying longitude as stereo panning [-1, +1] and latitude as pitch register, with animated flight route tour and bouncing city beacons. |
-| **08. Streamgraph & Harmonic Chord Voicer** | [`/examples/08-streamgraph/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/08-streamgraph/index.html) | Stacked area streamgraph of energy sources where each undulating layer is an independent harmonic voice playing 5-note polyphonic chords. |
-| **09. Treemap & Hierarchical Market** | [`/examples/09-treemap-matrix/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/09-treemap-matrix/index.html) | Multi-sector stock market treemap mapping market cap to duration/gain and performance (+/-) to Major vs Minor modes with automated tile scanning. |
-| **10. Circular Chord Diagram & Flows** | [`/examples/10-chord-diagram/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/10-chord-diagram/index.html) | Directional bilateral matrix flows connecting regions with dual-note chord intervals, spatial angular panning, and shockwave ribbon ripples. |
-| **11. Ridgeline Joyplot Topography** | [`/examples/11-ridgeline-joyplot/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/11-ridgeline-joyplot/index.html) | Topographic probability distributions scanning pitch frequencies and filter cutoffs while curves vibrate dynamically like resonant strings. |
-| **12. Particle Flow Field Swarm** | [`/examples/12-particle-flowfield/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/12-particle-flowfield/index.html) | 200+ autonomous particles flowing through a vector curl field with interactive vortex attractors generating ambient polyphonic soundscapes. |
-| **13. Seismic Simon Earthquake Game** | [`/examples/13-pie-simon-earthquake/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/13-pie-simon-earthquake/index.html) | Educational "Simon Says" memory game using real USGS earthquake data where pie slices sonify tectonic depth and magnitude with shockwave ripples. |
-| **14. Exoplanet Orbit & Doppler Symphony** | [`/examples/14-exoplanet-doppler/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/14-exoplanet-doppler/index.html) | NASA Kepler & TRAPPIST-1 orbital physics lab where Kepler's 3rd law generates orbital frequencies, transit chimes, and Doppler stereo panning. |
-| **15. Climate Spiral & Carbon Quest** | [`/examples/15-climate-rhythm-quest/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/15-climate-rhythm-quest/index.html) | NASA temperature anomaly spiral (1880–2026) sonifying global warming as harmonic tension and policy scenarios as equilibrium resolution. |
-| **16. Galton Board & Plinko Statistics** | [`/examples/16-galton-board-plinko/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/16-galton-board-plinko/index.html) | Interactive Central Limit Theorem pinball where binomial random drops play acoustic marimba chimes and accumulate into a singing Gaussian bell curve. |
-| **17. Protein & DNA Folding Sonifier** | [`/examples/17-protein-dna-sonifier/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/17-protein-dna-sonifier/index.html) | Macromolecular ribbon folding with 20 amino acid categorical timbres, Kyte-Doolittle hydropathy spatial panning, and interactive audio legend. |
-| **18. Categorical Ecosystem Food Web** | [`/examples/18-ecosystem-taxonomy/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/18-ecosystem-taxonomy/index.html) | Categorical trophic level timbres (Producers, Herbivores, Carnivores, Apex, Decomposers), biome modes, and IUCN conservation risk tension scaling. |
-| **19. The Sound of Sorting Algorithms** | [`/examples/19-sound-of-sorting/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/19-sound-of-sorting/index.html) | Auditory computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort with stereo memory array panning (citing Timo Bingmann's *The Sound of Sorting*, 2013). |
-| **20. Advanced Scalers & Multivariate Sound Lab** | [`/examples/20-advanced-scalers/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/20-advanced-scalers/index.html) | Interactive testbed for statistical confidence bit-crushing (16➔2b), 3D spatial room reverb, network latency feedback echo, and multivariate harmonic triad voicings. |
-| **21. Euclidean Polyrhythms & Groove Engine** | [`/examples/21-euclidean-rhythms/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/21-euclidean-rhythms/index.html) | Bjorklund algorithm polyrhythm visualizer with rotating concentric clockwork radar, multi-track server load sonification, and authentic world rhythm presets. |
+| Demo | Live Web App | Source Code | Description |
+|---|---|---|---|
+| **Overview Hub** | [Launch Hub ➔](https://dmuldrew.github.io/d3_audio/) | [`index.html`](index.html) | Interactive launchpad with live sound nodes and feature cards. |
+| **01. Data Sonifier & Chart** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/01-data-sonification/) | [`examples/01-data-sonification/`](examples/01-data-sonification/) | Multi-variable scatter & bar chart with pitch, stereo pan, duration scaling, and synchronized visual playhead tracking. |
+| **02. Motion Matrix Sequencer** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/02-rhythmic-sequencer/) | [`examples/02-rhythmic-sequencer/`](examples/02-rhythmic-sequencer/) | 16-step 4-track sequencer triggering drum samples and synth bass with coordinated wiggles, 3D flips, bounces, and ripples. |
+| **03. Continuous Stream & Sweeps** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/03-continuous-stream/) | [`examples/03-continuous-stream/`](examples/03-continuous-stream/) | Live time-series stream with audio filter frequency sweeps, spatial stereo audio, and responsive particle dynamics. |
+| **04. Scaler & Choreography Playground** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/04-playground/) | [`examples/04-playground/`](examples/04-playground/) | Interactive workbench to test scale modes, movement presets, and copy live generated D3 code. |
+| **05. Radial Sunburst & Cyclic Radar** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/05-radial-sunburst/) | [`examples/05-radial-sunburst/`](examples/05-radial-sunburst/) | Multi-tier radial partition chart with rotating radar needle triggering cyclic arpeggios, octave tiers, and kinetic radial pulses. |
+| **06. Force Network & Graph Sonifier** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/06-network-graph/) | [`examples/06-network-graph/`](examples/06-network-graph/) | D3 Force physics network graph where node degree maps to harmonic pitch, drag-and-release plucks strings, and impulses traverse edges polyphonically. |
+| **07. Geographic Map & Spatial 2D Audio** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/07-geographic-map/) | [`examples/07-geographic-map/`](examples/07-geographic-map/) | World map sonifying longitude as stereo panning [-1, +1] and latitude as pitch register, with animated flight route tour and bouncing city beacons. |
+| **08. Streamgraph & Harmonic Chord Voicer** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/08-streamgraph/) | [`examples/08-streamgraph/`](examples/08-streamgraph/) | Stacked area streamgraph of energy sources where each undulating layer is an independent harmonic voice playing 5-note polyphonic chords. |
+| **09. Treemap & Hierarchical Market** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/09-treemap-matrix/) | [`examples/09-treemap-matrix/`](examples/09-treemap-matrix/) | Multi-sector stock market treemap mapping market cap to duration/gain and performance (+/-) to Major vs Minor modes with automated tile scanning. |
+| **10. Circular Chord Diagram & Flows** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/10-chord-diagram/) | [`examples/10-chord-diagram/`](examples/10-chord-diagram/) | Directional bilateral matrix flows connecting regions with dual-note chord intervals, spatial angular panning, and shockwave ribbon ripples. |
+| **11. Ridgeline Joyplot Topography** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/11-ridgeline-joyplot/) | [`examples/11-ridgeline-joyplot/`](examples/11-ridgeline-joyplot/) | Topographic probability distributions scanning pitch frequencies and filter cutoffs while curves vibrate dynamically like resonant strings. |
+| **12. Particle Flow Field Swarm** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/12-particle-flowfield/) | [`examples/12-particle-flowfield/`](examples/12-particle-flowfield/) | 200+ autonomous particles flowing through a vector curl field with interactive vortex attractors generating ambient polyphonic soundscapes. |
+| **13. Seismic Simon Earthquake Game** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/13-pie-simon-earthquake/) | [`examples/13-pie-simon-earthquake/`](examples/13-pie-simon-earthquake/) | Educational "Simon Says" memory game using real USGS earthquake data where pie slices sonify tectonic depth and magnitude with shockwave ripples. |
+| **14. Exoplanet Orbit & Doppler Symphony** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/14-exoplanet-doppler/) | [`examples/14-exoplanet-doppler/`](examples/14-exoplanet-doppler/) | NASA Kepler & TRAPPIST-1 orbital physics lab where Kepler's 3rd law generates orbital frequencies, transit chimes, and Doppler stereo panning. |
+| **15. Climate Spiral & Carbon Quest** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/15-climate-rhythm-quest/) | [`examples/15-climate-rhythm-quest/`](examples/15-climate-rhythm-quest/) | NASA temperature anomaly spiral (1880–2026) sonifying global warming as harmonic tension and policy scenarios as equilibrium resolution. |
+| **16. Galton Board & Plinko Statistics** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/16-galton-board-plinko/) | [`examples/16-galton-board-plinko/`](examples/16-galton-board-plinko/) | Interactive Central Limit Theorem pinball where binomial random drops play acoustic marimba chimes and accumulate into a singing Gaussian bell curve. |
+| **17. Protein & DNA Folding Sonifier** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/17-protein-dna-sonifier/) | [`examples/17-protein-dna-sonifier/`](examples/17-protein-dna-sonifier/) | Macromolecular ribbon folding with 20 amino acid categorical timbres, Kyte-Doolittle hydropathy spatial panning, and interactive audio legend. |
+| **18. Categorical Ecosystem Food Web** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/18-ecosystem-taxonomy/) | [`examples/18-ecosystem-taxonomy/`](examples/18-ecosystem-taxonomy/) | Categorical trophic level timbres (Producers, Herbivores, Carnivores, Apex, Decomposers), biome modes, and IUCN conservation risk tension scaling. |
+| **19. The Sound of Sorting Algorithms** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/19-sound-of-sorting/) | [`examples/19-sound-of-sorting/`](examples/19-sound-of-sorting/) | Auditory computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort with stereo memory array panning (citing Timo Bingmann's *The Sound of Sorting*, 2013). |
+| **20. Advanced Scalers & Multivariate Sound Lab** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/20-advanced-scalers/) | [`examples/20-advanced-scalers/`](examples/20-advanced-scalers/) | Interactive testbed for statistical confidence bit-crushing (16➔2b), 3D spatial room reverb, network latency feedback echo, and multivariate harmonic triad voicings. |
+| **21. Euclidean Polyrhythms & Groove Engine** | [Launch Demo ➔](https://dmuldrew.github.io/d3_audio/examples/21-euclidean-rhythms/) | [`examples/21-euclidean-rhythms/`](examples/21-euclidean-rhythms/) | Bjorklund algorithm polyrhythm visualizer with rotating concentric clockwork radar, multi-track server load sonification, and authentic world rhythm presets. |
 
 ---
 
@@ -1148,8 +1164,8 @@ d3_audio/
 │   └── timeline/                  # Tone.js transport & multi-track conductor
 │       ├── timeline.js
 │       └── track.js
-├── examples/                      # 20 Interactive Demo Applications (01 through 20)
-└── test/                          # Unit & integration test suite (90 passing tests)
+├── examples/                      # 21 Interactive Demo Applications (01 through 21)
+└── test/                          # Unit & integration test suite (130 passing tests)
 ```
 
 ---
@@ -1261,30 +1277,8 @@ docker run --rm -v "$PWD":/app -w /app node:20-alpine node test/run-tests.js
   ✓ Drums track holds 3 events
 
 ----------------------------------------
-✔ ALL 90 TESTS PASSED SUCCESSFULLY!
+✔ ALL 130 TESTS PASSED SUCCESSFULLY!
 ```
-
----
-
-## 🔮 Future Features & Technical Roadmap
-
-Planned capabilities and technical enhancements for the d3-audio roadmap:
-
-### 1. Standard MIDI File Export (`Timeline.exportMidi()`)
-* **Rationale**: MIDI is the digital universal sheet music format.
-* **Capability**: Add native client-side export to standard `.mid` files (Type 0 and Type 1) so analysts and musicians can download their data sonification and import it directly into Digital Audio Workstations (DAWs) like Ableton Live, Logic Pro, GarageBand, FL Studio, or notation tools like MuseScore.
-
-### 2. ISO 226 / Fletcher-Munson Equal-Loudness Normalization
-* **Rationale**: Compensate for human auditory non-linearities where mid-treble (2 kHz to 4 kHz) sounds dramatically louder than sub-bass or high air frequencies.
-* **Capability**: Add `.equalLoudness(true)` to `scalePitch()` and `scaleGain()` to automatically normalize perceived phon/sone loudness across all octave registers.
-
-### 3. Microsoft PowerBI & Observable Custom Visual Plugins
-* **Rationale**: Bridge the gap between developer toolkits and enterprise business intelligence dashboards.
-* **Capability**: Package `d3-audio` as an official PowerBI Custom Visual (via the PowerBI Visuals SDK) and an Observable Plot / Jupyter widget, allowing executives and analysts to add audible KPI thresholds and ambient telemetry to enterprise dashboards.
-
-### 4. Built-in Auditory Icons & Micro-Earcons (`d3Audio.earcon()`)
-* **Rationale**: Headless devices, screen readers, and low-vision notifications require standardized auditory semantics.
-* **Capability**: Pre-packaged, psychoacoustically validated audio icons for instant UI and data state notifications (`earcon("success")`, `earcon("warning")`, `earcon("thresholdBreach")`, `earcon("dataNull")`).
 
 ---
 

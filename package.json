@@ -21,7 +21,12 @@
     "choreography",
     "data-visualization"
   ],
-  "author": "",
+  "homepage": "https://dmuldrew.github.io/d3_audio/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmuldrew/d3_audio.git"
+  },
+  "author": "Daniel Muldrew",
   "license": "MIT",
   "dependencies": {
     "d3": "^7.9.0",
