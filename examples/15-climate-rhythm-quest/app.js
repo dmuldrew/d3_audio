@@ -9,62 +9,20 @@ import {
   createSynth
 } from '../../src/index.js';
 
-// 1. Build Historical Data (1880 to 2026)
-// NASA GISS Annual Global Mean Surface Temperature Anomaly (°C relative to 1951-1980 baseline)
-// and NOAA Mauna Loa atmospheric CO2 measurements
-const historicalRecords = [];
-for (let yr = 1880; yr <= 2026; yr++) {
-  const t = (yr - 1880) / (2026 - 1880);
-  let baseAnomaly;
-  if (yr < 1910) baseAnomaly = -0.22 + (Math.sin(yr) * 0.08);
-  else if (yr < 1940) baseAnomaly = -0.15 + ((yr - 1910) / 30) * 0.25 + (Math.sin(yr * 2) * 0.06);
-  else if (yr < 1975) baseAnomaly = 0.02 + (Math.sin(yr * 1.5) * 0.07);
-  else if (yr < 2000) baseAnomaly = 0.15 + ((yr - 1975) / 25) * 0.35 + (Math.sin(yr) * 0.06);
-  else baseAnomaly = 0.55 + ((yr - 2000) / 26) * 0.75 + (Math.sin(yr * 3) * 0.08);
-
-  const co2 = Math.round(285 + Math.pow(t, 2.2) * 140);
-  historicalRecords.push({
-    year: yr,
-    anomaly: +(baseAnomaly).toFixed(2),
-    co2,
-    isProjected: false
-  });
-}
-
-// 2. IPCC AR6 / CMIP6 Projection Pathway Generator (2027 to 2100)
-function generateProjections(scenario) {
-  const futureRecords = [];
-  for (let yr = 2027; yr <= 2100; yr++) {
-    const t = (yr - 2026) / (2100 - 2026);
-    let anomaly, co2;
-    if (scenario === 'ssp126') {
-      // SSP1-2.6: Paris Net-Zero. Peaks around 2045 at +1.58°C, then steadily cools/stabilizes at +1.35°C by 2100
-      const peak = Math.sin(t * Math.PI) * 0.28;
-      const cooldown = t > 0.4 ? (t - 0.4) * 0.28 : 0;
-      anomaly = +(1.30 + peak - cooldown + Math.sin(yr * 2) * 0.03).toFixed(2);
-      co2 = Math.round(425 + Math.sin(t * Math.PI) * 20 - (t > 0.45 ? (t - 0.45) * 35 : 0));
-    } else if (scenario === 'ssp245') {
-      // SSP2-4.5: Middle of the Road / Current Policies. Continues to +2.0°C by 2055 and +2.72°C by 2100
-      anomaly = +(1.30 + t * 1.42 + Math.sin(yr * 2.5) * 0.04).toFixed(2);
-      co2 = Math.round(425 + t * 135);
-    } else if (scenario === 'ssp585') {
-      // SSP5-8.5: Fossil-Fueled Worst-Case. Accelerates past +4.75°C with CO2 exceeding 1,020 ppm
-      anomaly = +(1.30 + Math.pow(t, 1.35) * 3.45 + Math.sin(yr * 3) * 0.05).toFixed(2);
-      co2 = Math.round(425 + Math.pow(t, 1.4) * 595);
-    }
-    futureRecords.push({
-      year: yr,
-      anomaly,
-      co2,
-      isProjected: true
-    });
-  }
-  return futureRecords;
-}
+import {
+  HISTORICAL_CLIMATE_DATA,
+  IPCC_PROJECTIONS
+} from './climateData.js';
 
 let activeScenario = 'ssp126';
 let activePolicies = new Set();
-let climateRecords = [...historicalRecords, ...generateProjections(activeScenario)];
+
+function getActiveRecords() {
+  const future = IPCC_PROJECTIONS[activeScenario] || [];
+  return [...HISTORICAL_CLIMATE_DATA, ...future];
+}
+
+let climateRecords = getActiveRecords();
 
 const container = document.getElementById('spiral-area');
 const width = container.clientWidth || 650;
@@ -351,8 +309,8 @@ document.querySelectorAll('.btn-scenario').forEach(btn => {
     document.querySelectorAll('.btn-scenario').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    // Rebuild full records with selected scenario projections
-    climateRecords = [...historicalRecords, ...generateProjections(activeScenario)];
+    // Rebuild full records with verified IPCC CMIP6 projection tables
+    climateRecords = getActiveRecords();
     renderSpiralUpTo(currentYearIndex);
     sonifyYear(climateRecords[currentYearIndex]);
   });
