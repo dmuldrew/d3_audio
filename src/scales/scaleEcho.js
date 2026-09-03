@@ -40,6 +40,9 @@ export function scaleEcho() {
     return arguments.length ? ((feedbackRange = f.slice()), scaler) : feedbackRange.slice();
   };
 
+  scaler.delayRange = scaler.range;
+  scaler.feedbackRange = scaler.feedback;
+
   scaler.clamp = function(c) {
     return arguments.length ? ((clamp = Boolean(c)), scaler) : clamp;
   };

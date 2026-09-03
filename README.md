@@ -353,7 +353,7 @@ You can load `d3-audio` directly from the `dist/` bundle alongside D3 and Tone.j
 
 ## 🎮 Interactive Demo Applications & GitHub Pages Hosting
 
-The repository includes **20 interactive applications** demonstrating different sonification and choreography patterns.
+The repository includes **22 interactive applications** demonstrating different sonification and choreography patterns.
 
 ### 🌐 Live GitHub Pages Site
 The entire demo gallery and documentation is configured for static hosting on **GitHub Pages**:
@@ -391,6 +391,8 @@ Or open [http://localhost:3000](http://localhost:3000) in your browser.
 | **18. Categorical Ecosystem Food Web** | [`/examples/18-ecosystem-taxonomy/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/18-ecosystem-taxonomy/index.html) | Categorical trophic level timbres (Producers, Herbivores, Carnivores, Apex, Decomposers), biome modes, and IUCN conservation risk tension scaling. |
 | **19. Pronto Bike Share Commuter Symphony** | [`/examples/19-pronto-bike-commuter/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/19-pronto-bike-commuter/index.html) | The canonical 24-hour Seattle commuter sonification comparing April 1st weekday rush hours with July 4th holiday leisure waves using delta semitones from Middle C. |
 | **20. The Sound of Sorting Algorithms** | [`/examples/20-sound-of-sorting/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/20-sound-of-sorting/index.html) | Auditory computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort with stereo memory array panning. |
+| **21. Advanced Scalers & Multivariate Sound Lab** | [`/examples/21-advanced-scalers/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/21-advanced-scalers/index.html) | Interactive testbed for statistical confidence bit-crushing (16➔2b), 3D spatial room reverb, network latency feedback echo, and multivariate harmonic triad voicings. |
+| **22. Euclidean Polyrhythms & Groove Engine** | [`/examples/22-euclidean-rhythms/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/22-euclidean-rhythms/index.html) | Bjorklund algorithm polyrhythm visualizer with rotating concentric clockwork radar, multi-track server load sonification, and authentic world rhythm presets. |
 
 ---
 

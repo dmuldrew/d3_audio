@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>21. Advanced Scalers & Multivariate Sound Lab | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="../../dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #070c18;
+      --card: #0e172a;
+      --accent: #38bdf8;
+      --gold: #fbbf24;
+      --green: #10b981;
+      --red: #f43f5e;
+      --purple: #c084fc;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+    .nav-link:hover { text-decoration: underline; }
+
+    /* Tab switcher */
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: #1e293b;
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { background: #334155; color: #fff; }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #030712;
+      border-color: var(--accent);
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .canvas-box {
+      width: 100%;
+      height: 480px;
+      background: #030713;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #7dd3fc; }
+    .btn-sec { background: #334155; color: #fff; }
+    .btn-sec:hover { background: #475569; }
+
+    .control-group { margin-bottom: 1.1rem; }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 0.45rem;
+      border-radius: 6px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-family: monospace;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+    }
+
+    .readout-box {
+      background: #040814;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.85rem;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      font-family: monospace;
+      line-height: 1.5;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-top: 0.5rem;
+    }
+    th, td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: left;
+    }
+    th {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    tr:hover { background: rgba(255, 255, 255, 0.02); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1 style="font-size: 1.45rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🎛️</span>
+          <span>21. Advanced Scalers & Multivariate Sound Lab</span>
+        </h1>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem;">
+          Confidence Bit-Crushing, 3D Spatial Reverb, Latency Echo Taps, & Multivariate Harmonic Triad Voicings
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <button id="btn-audio-activate" class="btn-enable-audio" style="background: #f59e0b; color: #030712; font-weight: 800; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s;">🔊 Enable Audio</button>
+        <a href="../../index.html" class="nav-link">← Back to Showcase</a>
+      </div>
+    </header>
+
+    <!-- Lab View Switcher Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="unified">🌐 Unified Multi-Scaler Symphony</button>
+      <button class="tab-btn" data-tab="uncertainty">🔬 1. Confidence & BitCrush (scaleUncertainty)</button>
+      <button class="tab-btn" data-tab="spatial">🌌 2. 3D Spatial Reverb (scaleSpatial)</button>
+      <button class="tab-btn" data-tab="echo">📡 3. Latency & Delay Echo (scaleEcho)</button>
+      <button class="tab-btn" data-tab="chord">🎹 4. Multivariate Triads (scaleChord)</button>
+    </div>
+
+    <div class="grid-layout">
+      <!-- Main Visualization Panel -->
+      <div class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 id="view-title" style="font-size: 1.05rem; color: #fff;">Unified Multi-Scaler Symphony</h3>
+          <span id="active-badge" class="status-badge">Ready</span>
+        </div>
+        <div class="canvas-box" id="chart-container">
+          <svg id="main-svg"></svg>
+        </div>
+        <div style="margin-top: 0.85rem; font-size: 0.8rem; color: var(--muted);" id="view-instruction">
+          💡 Click or drag anywhere across the visualization to scrub audio parameters in real time!
+        </div>
+      </div>
+
+      <!-- Controls & Real-Time Parameter Telemetry -->
+      <div>
+        <div class="panel">
+          <h4 style="font-size: 0.95rem; margin-bottom: 0.85rem; color: #fff;">Interactive Playback</h4>
+          <button id="btn-audio-activate" class="btn" style="background: #f59e0b; color: #030712; margin-bottom: 0.85rem;">🔊 Click to Enable Audio</button>
+          <button id="btn-play-toggle" class="btn">▶ Play Interactive Sequence</button>
+          <button id="btn-audition-hover" class="btn btn-sec">🔊 Audition Current Point</button>
+
+          <div class="control-group" style="margin-top: 1rem;">
+            <label>Scrub Position / Data Index: <span id="scrub-val" style="color: var(--accent);">0</span></label>
+            <input type="range" id="scrub-slider" min="0" max="15" value="0">
+          </div>
+
+          <div class="control-group">
+            <label>Playback Speed (Tempo): <span id="speed-val" style="color: var(--gold);">120 BPM</span></label>
+            <input type="range" id="speed-slider" min="60" max="220" value="120">
+          </div>
+
+          <h4 style="font-size: 0.85rem; margin-top: 1.25rem; margin-bottom: 0.4rem; color: var(--muted); text-transform: uppercase;">
+            Live Acoustic Modulation
+          </h4>
+          <div class="readout-box" id="telemetry-readout">
+            • Bit Depth: 16 bits (Pristine)<br>
+            • Reverb Decay: 0.4s (5% Wet)<br>
+            • Echo Delay: 0.08s (10% Feedback)<br>
+            • Harmonic Voicing: C3 Major Triad
+          </div>
+        </div>
+
+        <div class="panel">
+          <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--gold);">Audio Legend Key</h4>
+          <div id="audio-legend-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Transformation Breakdown Table -->
+    <div class="panel">
+      <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem; color: #fff;">
+        Explicit Data Transformation Breakdown
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>New Scaler</th>
+            <th>Tone.js Primitive</th>
+            <th>Data Domain & Input Metric</th>
+            <th>Acoustic Transformation</th>
+            <th>Data Visualization Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong><code>scaleUncertainty()</code></strong></td>
+            <td><code>Tone.BitCrusher</code></td>
+            <td>Confidence Interval, <em>p</em>-value, or error margin</td>
+            <td>Bit reduction (16-bit pure ➔ 2-bit grit)</td>
+            <td>De-clutters error bars: reliable data sounds crystalline; noisy data sounds grainy and distorted.</td>
+          </tr>
+          <tr>
+            <td><strong><code>scaleSpatial()</code></strong></td>
+            <td><code>Tone.Freeverb</code></td>
+            <td>3D Z-depth, cluster hierarchy, epicenter distance</td>
+            <td>Wet reverb mix (5% ➔ 95%) and decay (0.4s ➔ 7.0s)</td>
+            <td>Z-depth and distance: nearby objects sound dry and intimate; distant points sound cavernous.</td>
+          </tr>
+          <tr>
+            <td><strong><code>scaleEcho()</code></strong></td>
+            <td><code>Tone.FeedbackDelay</code></td>
+            <td>Network latency, rolling window, historical memory</td>
+            <td>Delay time (0.06s ➔ 0.65s) and feedback taps</td>
+            <td>Encodes transmission lag or temporal inertia directly into rhythmic delay echoes.</td>
+          </tr>
+          <tr>
+            <td><strong><code>scaleChord()</code></strong></td>
+            <td><code>Tone.PolySynth</code></td>
+            <td>3-column multivariate record (e.g. GDP, Health, Edu)</td>
+            <td>Multi-note chord voicing (Root, 3rd, 5th, 7th)</td>
+            <td>Sonifies multi-factor correlation as harmonious (Major) vs strained (Diminished) chords.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script src="../enable-audio.js"></script>
+</body>
+</html>

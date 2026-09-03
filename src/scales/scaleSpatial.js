@@ -42,6 +42,9 @@ export function scaleSpatial() {
     return arguments.length ? ((decayRange = d.slice()), scaler) : decayRange.slice();
   };
 
+  scaler.decayRange = scaler.decay;
+  scaler.wetRange = scaler.range;
+
   scaler.clamp = function(c) {
     return arguments.length ? ((clamp = Boolean(c)), scaler) : clamp;
   };

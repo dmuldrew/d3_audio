@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>22. Euclidean Polyrhythms & Algorithmic Groove Engine | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="../../dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #070d18;
+      --card: #0e172a;
+      --accent: #38bdf8;
+      --purple: #c084fc;
+      --gold: #fbbf24;
+      --green: #10b981;
+      --red: #f43f5e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .preset-chips {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .preset-btn {
+      background: #1e293b;
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.45rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .preset-btn:hover { background: #334155; color: #fff; }
+    .preset-btn.active {
+      background: var(--accent);
+      color: #030712;
+      border-color: var(--accent);
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .radar-box {
+      width: 100%;
+      height: 480px;
+      background: #030713;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #7dd3fc; }
+    .btn-sec { background: #334155; color: #fff; }
+    .btn-sec:hover { background: #475569; }
+
+    .track-control {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .track-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+    .track-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .pattern-string {
+      font-family: monospace;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-top: 0.35rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 6px;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-top: 0.5rem;
+    }
+    th, td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: left;
+    }
+    th {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    tr:hover { background: rgba(255, 255, 255, 0.02); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1 style="font-size: 1.45rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🥁</span>
+          <span>22. Euclidean Polyrhythms & Algorithmic Groove Engine</span>
+        </h1>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem;">
+          Bjorklund Algorithm, Polyrhythmic Density Scaling, & Multi-Track Concentric Radar Visualization
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <button id="btn-audio-activate" class="btn-enable-audio" style="background: #f59e0b; color: #030712; font-weight: 800; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s;">🔊 Enable Audio</button>
+        <a href="../../index.html" class="nav-link">← Back to Showcase</a>
+      </div>
+    </header>
+
+    <!-- World Rhythms & Data Presets -->
+    <div class="preset-chips">
+      <span style="font-size: 0.8rem; color: var(--muted); align-self: center; font-weight: 700;">World Presets:</span>
+      <button class="preset-btn active" data-preset="bossa">🇧🇷 Bossa Nova E(5, 16)</button>
+      <button class="preset-btn" data-preset="tresillo">🇨🇺 Cuban Tresillo E(3, 8)</button>
+      <button class="preset-btn" data-preset="cinquillo">🇨🇺 Cinquillo E(5, 8)</button>
+      <button class="preset-btn" data-preset="samba">🇧🇷 Samba E(7, 16)</button>
+      <button class="preset-btn" data-preset="techno">🎛️ 4-on-the-Floor E(4, 16)</button>
+      <button class="preset-btn" data-preset="aksak">🇧🇬 Bulgarian Aksak E(9, 16)</button>
+      <button class="preset-btn" data-preset="gnawa">🇲🇦 Moroccan Gnawa E(7, 12)</button>
+      <button class="preset-btn" data-preset="heavy">⚡ High Server Load Spike</button>
+    </div>
+
+    <div class="grid-layout">
+      <!-- Main Circular Radar Visualization -->
+      <div class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 style="font-size: 1.05rem; color: #fff;">Concentric Euclidean Clockwork Radar</h3>
+          <span id="active-badge" style="font-size: 0.78rem; font-family: monospace; padding: 0.25rem 0.6rem; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: var(--accent);">Ready</span>
+        </div>
+        <div class="radar-box" id="radar-container">
+          <svg id="radar-svg"></svg>
+        </div>
+        <div style="margin-top: 0.85rem; font-size: 0.8rem; color: var(--muted);">
+          💡 Rotating radar arm sweeps clockwise. Active Euclidean beads flash with kinetic ripples upon strike!
+        </div>
+      </div>
+
+      <!-- Controls & Multi-Track Steppers -->
+      <div>
+        <div class="panel">
+          <h4 style="font-size: 0.95rem; margin-bottom: 0.85rem; color: #fff;">Interactive Transport</h4>
+          <button id="btn-audio-activate" class="btn" style="background: #f59e0b; color: #030712; margin-bottom: 0.75rem;">🔊 Click to Enable Audio</button>
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <button id="btn-play-toggle" class="btn" style="flex: 1; margin-bottom: 0;">▶ Start Engine</button>
+            <button id="btn-simulate-traffic" class="btn btn-sec" style="flex: 1; margin-bottom: 0;">📈 Load Spike</button>
+          </div>
+
+          <div style="margin-top: 0.85rem; margin-bottom: 1rem;">
+            <label style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); font-weight: 700; text-transform: uppercase;">
+              <span>Tempo (BPM):</span>
+              <span id="bpm-val" style="color: var(--gold);">128 BPM</span>
+            </label>
+            <input type="range" id="bpm-slider" min="70" max="180" value="128">
+          </div>
+
+          <h4 style="font-size: 0.85rem; margin-bottom: 0.6rem; color: var(--muted); text-transform: uppercase;">
+            Multi-Track Euclidean Scalers
+          </h4>
+
+          <!-- Track 1: Kick -->
+          <div class="track-control" style="border-left: 3px solid var(--accent);">
+            <div class="track-header">
+              <span class="track-title" style="color: var(--accent);">🥁 Track 1: Kick Drum (Ingress Load)</span>
+              <span id="t1-val" style="font-size: 0.75rem; font-family: monospace; color: #fff;">E(4, 16)</span>
+            </div>
+            <input type="range" id="t1-slider" min="0" max="16" value="4">
+            <div class="pattern-string" id="t1-pattern">x...x...x...x...</div>
+          </div>
+
+          <!-- Track 2: Snare -->
+          <div class="track-control" style="border-left: 3px solid var(--purple);">
+            <div class="track-header">
+              <span class="track-title" style="color: var(--purple);">🪘 Track 2: Snare / Rim (DB Ops)</span>
+              <span id="t2-val" style="font-size: 0.75rem; font-family: monospace; color: #fff;">E(2, 16)</span>
+            </div>
+            <input type="range" id="t2-slider" min="0" max="16" value="2">
+            <div class="pattern-string" id="t2-pattern">....x.......x...</div>
+          </div>
+
+          <!-- Track 3: Hi-Hat -->
+          <div class="track-control" style="border-left: 3px solid var(--gold);">
+            <div class="track-header">
+              <span class="track-title" style="color: var(--gold);">🎩 Track 3: Hi-Hat (Network Packets)</span>
+              <span id="t3-val" style="font-size: 0.75rem; font-family: monospace; color: #fff;">E(8, 16)</span>
+            </div>
+            <input type="range" id="t3-slider" min="0" max="16" value="8">
+            <div class="pattern-string" id="t3-pattern">x.x.x.x.x.x.x.x.</div>
+          </div>
+
+          <!-- Track 4: Melody / Marimba -->
+          <div class="track-control" style="border-left: 3px solid var(--green);">
+            <div class="track-header">
+              <span class="track-title" style="color: var(--green);">🎹 Track 4: Marimba Lead (CPU Load)</span>
+              <span id="t4-val" style="font-size: 0.75rem; font-family: monospace; color: #fff;">E(5, 16)</span>
+            </div>
+            <input type="range" id="t4-slider" min="0" max="16" value="5">
+            <div class="pattern-string" id="t4-pattern">x..x..x..x.x....</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Transformation Breakdown Table -->
+    <div class="panel">
+      <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem; color: #fff;">
+        Explicit Data Transformation Breakdown
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Telemetry Track</th>
+            <th>Data Domain & Input Metric</th>
+            <th>Euclidean Formula E(k, n)</th>
+            <th>Musical Instrument & Timbre</th>
+            <th>Sonification Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Track 1 (Outer Ring)</strong></td>
+            <td>Ingress Traffic / Request Volume</td>
+            <td><code>scaleRhythm().steps(16)</code> ➔ $E(k_1, 16)$</td>
+            <td>Acoustic Sub-Bass Kick (Synthesized)</td>
+            <td>Establishes the macro pulse; higher traffic locks into energetic driving beats.</td>
+          </tr>
+          <tr>
+            <td><strong>Track 2 (Ring 2)</strong></td>
+            <td>Database Read/Write Transactions</td>
+            <td><code>scaleRhythm().steps(16)</code> ➔ $E(k_2, 16)$</td>
+            <td>Snare & Rimshot Accent</td>
+            <td>Functions as rhythmic syncopation; provides backbeats and transactional counterpoint.</td>
+          </tr>
+          <tr>
+            <td><strong>Track 3 (Ring 3)</strong></td>
+            <td>Network Packet Volume & Throughput</td>
+            <td><code>scaleRhythm().steps(16)</code> ➔ $E(k_3, 16)$</td>
+            <td>Crisp Metallic Hi-Hat</td>
+            <td>High-frequency sonic chatter representing discrete micro-bursts of packet streams.</td>
+          </tr>
+          <tr>
+            <td><strong>Track 4 (Inner Ring)</strong></td>
+            <td>CPU Core Load & Memory Pressure</td>
+            <td><code>scaleRhythm().steps(16)</code> ➔ $E(k_4, 16)$</td>
+            <td>Pentatonic Marimba Pluck ($C_4 \dots C_5$)</td>
+            <td>Melodic density: higher computing pressure weaves intricate polyrhythmic arpeggios.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script src="../enable-audio.js"></script>
+</body>
+</html>

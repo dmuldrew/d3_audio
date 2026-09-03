@@ -1262,6 +1262,9 @@ function scaleSpatial() {
     return arguments.length ? ((decayRange = d.slice()), scaler) : decayRange.slice();
   };
 
+  scaler.decayRange = scaler.decay;
+  scaler.wetRange = scaler.range;
+
   scaler.clamp = function(c) {
     return arguments.length ? ((clamp = Boolean(c)), scaler) : clamp;
   };
@@ -1324,6 +1327,9 @@ function scaleEcho() {
   scaler.feedback = function(f) {
     return arguments.length ? ((feedbackRange = f.slice()), scaler) : feedbackRange.slice();
   };
+
+  scaler.delayRange = scaler.range;
+  scaler.feedbackRange = scaler.feedback;
 
   scaler.clamp = function(c) {
     return arguments.length ? ((clamp = Boolean(c)), scaler) : clamp;

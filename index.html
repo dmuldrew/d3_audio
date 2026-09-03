@@ -779,7 +779,7 @@
         <span>d3-audio</span>
       </a>
       <ul class="nav-links">
-        <li><a href="#demos">20 Demos</a></li>
+        <li><a href="#demos">22 Demos</a></li>
         <li><a href="#scalers-lab">Scalers Lab</a></li>
         <li><a href="#csv-sandbox">Drop & Sonify CSV</a></li>
         <li><a href="#ab-test">Ethical A/B Test</a></li>
@@ -787,6 +787,9 @@
         <li><a href="#api-cheatsheet">API Cheat Sheet</a></li>
         <li><a href="#principles">Principles</a></li>
         <li><a href="#quickstart">Quickstart</a></li>
+        <li>
+          <button id="nav-enable-audio-btn" class="btn-enable-audio" style="background: #f59e0b; color: #030712; font-weight: 800; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s;">🔊 Enable Audio</button>
+        </li>
         <li>
           <a href="https://github.com/dmuldrew/d3_audio" target="_blank" class="nav-github-btn">
             <svg height="15" width="15" viewBox="0 0 16 16" fill="currentColor">
@@ -1350,14 +1353,14 @@
         <div>
           <h2 class="section-title">
             <span>🎮</span>
-            <span>20 Interactive Demo Applications</span>
+            <span>22 Interactive Demo Applications</span>
           </h2>
           <p class="section-desc" style="margin-bottom: 0;">
             Explore the complete gallery of sonified charts, physics simulations, educational games, and domain models:
           </p>
         </div>
         <div class="filter-chips" id="filter-chips">
-          <button class="chip active" data-filter="all">All (20)</button>
+          <button class="chip active" data-filter="all">All (22)</button>
           <button class="chip" data-filter="timeseries">Time-Series & Streams</button>
           <button class="chip" data-filter="categorical">Categorical Data</button>
           <button class="chip" data-filter="games">Games & Statistics</button>
@@ -1707,6 +1710,42 @@
             </div>
           </div>
           <a href="examples/20-sound-of-sorting/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 21 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">🎛️</div>
+            <h3 class="card-title">21. Advanced Scalers & Multivariate Sound Lab</h3>
+            <p class="card-desc">
+              Interactive testbed for statistical confidence bit-crushing (16➔2b), 3D spatial room reverb, network latency feedback echo, and multivariate harmonic triad voicings.
+            </p>
+            <div class="card-tags">
+              <span class="tag">scaleUncertainty</span>
+              <span class="tag">scaleSpatial</span>
+              <span class="tag">scaleEcho</span>
+              <span class="tag">scaleChord</span>
+            </div>
+          </div>
+          <a href="examples/21-advanced-scalers/" class="btn">Launch Demo ➔</a>
+        </div>
+
+        <!-- Demo 22 -->
+        <div class="demo-card" data-category="physics">
+          <div>
+            <div class="card-icon">🥁</div>
+            <h3 class="card-title">22. Euclidean Polyrhythms & Groove Engine</h3>
+            <p class="card-desc">
+              Bjorklund algorithm polyrhythm visualizer with rotating concentric clockwork radar, multi-track server load sonification, and authentic world rhythm presets.
+            </p>
+            <div class="card-tags">
+              <span class="tag">scaleRhythm</span>
+              <span class="tag">euclideanRhythm</span>
+              <span class="tag">Bjorklund</span>
+              <span class="tag">Polyrhythms</span>
+            </div>
+          </div>
+          <a href="examples/22-euclidean-rhythms/" class="btn">Launch Demo ➔</a>
         </div>
       </div>
     </section>
@@ -3100,5 +3139,6 @@ scrubber.scrub(normalizedX); // 0.0 to 1.0</div>
       });
     });
   </script>
+  <script src="examples/enable-audio.js"></script>
 </body>
 </html>
