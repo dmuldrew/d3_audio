@@ -10,11 +10,14 @@ import {
 } from '../../src/index.js';
 
 // Station Definitions & Synthesizer Voices
+// Each station is anchored to its own distinct octave register (Bass C2, Tenor C3, Alto C4, Soprano C5)
+// and stereo pan position. This allows all 4 notes to be played simultaneously while remaining
+// 100% individually distinguishable by the listener's ear without frequency masking!
 const stations = [
-  { id: "downtown", name: "Financial District (3rd & Pike)", color: "#38bdf8", baseBikes: 16, voice: "fm" },
-  { id: "university", name: "University of Washington Hub", color: "#a855f7", baseBikes: 20, voice: "pluck" },
-  { id: "waterfront", name: "Waterfront Pier 69", color: "#f97316", baseBikes: 14, voice: "lead" },
-  { id: "residential", name: "Capitol Hill Residential", color: "#10b981", baseBikes: 18, voice: "bass" }
+  { id: "downtown", name: "Financial District (3rd & Pike)", color: "#38bdf8", baseBikes: 16, voice: "fm", baseMidi: 72, pan: -0.75, role: "Soprano (C5 Bell)" },
+  { id: "university", name: "University of Washington Hub", color: "#a855f7", baseBikes: 20, voice: "pluck", baseMidi: 60, pan: -0.25, role: "Alto (C4 Marimba)" },
+  { id: "waterfront", name: "Waterfront Pier 69", color: "#f97316", baseBikes: 14, voice: "lead", baseMidi: 48, pan: 0.25, role: "Tenor (C3 Lead)" },
+  { id: "residential", name: "Capitol Hill Residential", color: "#10b981", baseBikes: 18, voice: "bass", baseMidi: 36, pan: 0.75, role: "Bass (C2 Sub)" }
 ];
 
 // Generate 96 15-minute intervals for Weekday vs Holiday
@@ -103,11 +106,30 @@ g.append('text')
   .attr('font-size', '10px')
   .text("Middle C (C4) Midnight Baseline");
 
-// Synthesizer Instruments
-const synthFM = createSynth({ type: "fmSynth", harmonicity: 2.0, volume: -2 });
-const synthPluck = createSynth({ type: "pluckSynth", volume: -2 });
-const synthLead = createSynth({ type: "polySynth", volume: -3 });
-const synthBass = createSynth({ type: "polySynth", volume: -2 });
+// Synthesizer Instruments with crisp, punchy, percussive envelopes
+// Shorter decay and release ensure clean silence between notes, avoiding muddy drone
+const synthFM = createSynth({
+  type: "fmSynth",
+  harmonicity: 2.0,
+  volume: -2,
+  envelope: { attack: 0.005, decay: 0.12, sustain: 0.0, release: 0.08 }
+});
+const synthPluck = createSynth({
+  type: "pluckSynth",
+  volume: -1
+});
+const synthLead = createSynth({
+  type: "polySynth",
+  volume: -3,
+  oscillator: { type: "triangle" },
+  envelope: { attack: 0.005, decay: 0.12, sustain: 0.0, release: 0.08 }
+});
+const synthBass = createSynth({
+  type: "polySynth",
+  volume: -2,
+  oscillator: { type: "sine" },
+  envelope: { attack: 0.008, decay: 0.15, sustain: 0.0, release: 0.08 }
+});
 
 const stationSynths = {
   downtown: synthFM,
@@ -121,6 +143,17 @@ const playhead = g.append('line')
   .attr('class', 'playhead-cursor')
   .attr('y1', 0).attr('y2', innerH)
   .attr('x1', 0).attr('x2', 0);
+
+// Visual Station Note Markers on the Playhead
+const stationMarkers = {};
+stations.forEach(st => {
+  stationMarkers[st.id] = g.append('circle')
+    .attr('r', 5)
+    .attr('fill', st.color)
+    .attr('stroke', '#fff')
+    .attr('stroke-width', 1.5)
+    .style('opacity', 0);
+});
 
 // Draw Station Paths
 const lineGenerator = (key) => d3.line()
@@ -158,8 +191,22 @@ const legend = audioLegend()
 
 d3.select("#legend-mount").call(legend);
 
+// Track playback state & voicing mode
+let soloStation = "simultaneous"; // "simultaneous", "arpeggiated", "downtown", "university", "waterfront", "residential"
+let stepIntervalMs = 500;
+let isPlaying = false;
+let currentInterval = 0;
+let playTimer = null;
+let activeTimeouts = [];
+
+function clearSubTimeouts() {
+  activeTimeouts.forEach(t => clearTimeout(t));
+  activeTimeouts = [];
+}
+
 // Sonify a 15-Minute Time Interval
 function sonifyInterval(idx) {
+  clearSubTimeouts();
   const row = activeData[idx];
   const xPos = xScale(idx);
 
@@ -179,23 +226,78 @@ function sonifyInterval(idx) {
   else if (hr >= 12 && hr <= 14) statusEl.innerText = "🥪 Midday Lunch Transit";
   else statusEl.innerText = "🌙 Off-Peak Steady Flow";
 
-  // Trigger Audio per station
-  stations.forEach((st, sIdx) => {
+  // Trigger individual station notes
+  if (soloStation === "simultaneous") {
+    // ⚡ ALL 4 NOTES AT THE EXACT SAME TIME:
+    // Each station triggers at the exact same millisecond across its own octave band (C2, C3, C4, C5)
+    // with distinct pan and timbre. Every note is individually audible in full polyphonic harmony!
+    stations.forEach(st => {
+      const bikes = row[st.id];
+      const delta = bikes - st.baseBikes;
+      const midiNote = st.baseMidi + delta;
+      const note = midiToNote(Math.max(24, Math.min(96, midiNote)));
+      const s = stationSynths[st.id];
+
+      s.triggerAttackRelease(note, "16n", undefined, 0.75, { pan: st.pan });
+
+      // Visual flash marker on playhead
+      const marker = stationMarkers[st.id];
+      marker.style('opacity', 1)
+        .attr('cx', xPos)
+        .attr('cy', yScale(bikes))
+        .attr('r', 8)
+        .transition()
+        .duration(200)
+        .attr('r', 4.5);
+    });
+  } else if (soloStation === "arpeggiated") {
+    // 🎼 ARPEGGIATED CASCADE: Staggered across 16th-note sub-beats
+    const subDelay = Math.min(110, stepIntervalMs / 4.5);
+
+    stations.forEach((st, sIdx) => {
+      const tId = setTimeout(() => {
+        const bikes = row[st.id];
+        const delta = bikes - st.baseBikes;
+        const midiNote = st.baseMidi + delta;
+        const note = midiToNote(Math.max(24, Math.min(96, midiNote)));
+        const s = stationSynths[st.id];
+
+        s.triggerAttackRelease(note, "16n", undefined, 0.75, { pan: st.pan });
+
+        const marker = stationMarkers[st.id];
+        marker.style('opacity', 1)
+          .attr('cx', xPos)
+          .attr('cy', yScale(bikes))
+          .attr('r', 7.5)
+          .transition()
+          .duration(200)
+          .attr('r', 4.5);
+      }, sIdx * subDelay);
+
+      activeTimeouts.push(tId);
+    });
+  } else {
+    // 🎯 SOLO STATION MODE: Isolates only the chosen station
+    const st = stations.find(s => s.id === soloStation);
+    if (!st) return;
     const bikes = row[st.id];
-    const delta = bikes - st.baseBikes; // Delta relative to midnight
-    const midiNote = 60 + delta; // Middle C = 60
+    const delta = bikes - st.baseBikes;
+    const midiNote = 60 + delta; // Middle C solo reference
     const note = midiToNote(Math.max(36, Math.min(84, midiNote)));
     const s = stationSynths[st.id];
-    const pan = -0.75 + sIdx * 0.5;
 
-    s.triggerAttackRelease(note, "16n", undefined, 0.65, { pan });
-  });
+    s.triggerAttackRelease(note, "16n", undefined, 0.85, { pan: 0 });
+
+    const marker = stationMarkers[st.id];
+    marker.style('opacity', 1)
+      .attr('cx', xPos)
+      .attr('cy', yScale(bikes))
+      .attr('r', 8.5)
+      .transition()
+      .duration(250)
+      .attr('r', 4.5);
+  }
 }
-
-// Playback Loop: 96 intervals x 500ms = 48 seconds total (1 day = 24 measures)
-let isPlaying = false;
-let currentInterval = 0;
-let playTimer = null;
 
 async function stepPlayhead() {
   sonifyInterval(currentInterval);
@@ -208,11 +310,12 @@ playBtn.addEventListener('click', async () => {
   await defaultEngine.start();
   if (isPlaying) {
     clearInterval(playTimer);
+    clearSubTimeouts();
     isPlaying = false;
-    playBtn.innerText = "▶ Run 24-Hour Symphony (48s)";
+    playBtn.innerText = "▶ Run 24-Hour Symphony";
   } else {
     isPlaying = true;
-    playTimer = setInterval(stepPlayhead, 500); // 1 beat = 0.5s
+    playTimer = setInterval(stepPlayhead, stepIntervalMs);
     playBtn.innerText = "⏸ Pause Day Symphony";
   }
 });
@@ -221,6 +324,41 @@ document.getElementById('time-slider').addEventListener('input', async (e) => {
   await defaultEngine.start();
   currentInterval = +e.target.value;
   sonifyInterval(currentInterval);
+});
+
+// Speed Slider
+const speedSlider = document.getElementById('speed-slider');
+const speedVal = document.getElementById('speed-val');
+speedSlider.addEventListener('input', () => {
+  stepIntervalMs = +speedSlider.value;
+  const bpm = Math.round((60 / (stepIntervalMs / 1000)));
+  speedVal.innerText = `${stepIntervalMs}ms (${bpm} BPM)`;
+  if (isPlaying) {
+    clearInterval(playTimer);
+    playTimer = setInterval(stepPlayhead, stepIntervalMs);
+  }
+});
+
+// Solo Station Buttons
+document.querySelectorAll('.btn-station-solo').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    await defaultEngine.start();
+    document.querySelectorAll('.btn-station-solo').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    soloStation = btn.getAttribute('data-station');
+
+    // Update path opacities to highlight soloed station
+    stations.forEach(st => {
+      if (soloStation === "simultaneous" || soloStation === "arpeggiated" || soloStation === st.id) {
+        lines[st.id].style('opacity', 1).style('stroke-width', soloStation === st.id ? '4px' : '2.5px');
+      } else {
+        lines[st.id].style('opacity', 0.2).style('stroke-width', '1.5px');
+      }
+    });
+
+    // Audition immediately
+    sonifyInterval(currentInterval);
+  });
 });
 
 // Toggle Scenarios

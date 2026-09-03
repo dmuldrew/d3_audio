@@ -118,6 +118,25 @@
     }
     .btn-toggle:hover { background: #334155; border-color: var(--accent); }
     .btn-toggle.active { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    
+    .btn-station-solo {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .btn-station-solo:hover { background: #334155; color: #fff; }
+    .btn-station-solo.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+    }
 
     .hud-box {
       background: rgba(255,255,255,0.03);
@@ -176,10 +195,10 @@
                 <td>Station ⬄ Instrument Voice: Downtown Financial (FM Bells), University Hub (Marimba Pluck), Waterfront Ferry (Brass Lead), Residential Hill (Sub Bass).</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Midnight Baseline</td>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Midnight Baselines</td>
                 <td>12:00 AM Availability</td>
-                <td>Middle C ($C_4$)</td>
-                <td>Each station starts at midnight anchored to $C_4$.</td>
+                <td>4-Part Voicing ($C_2, C_3, C_4, C_5$)</td>
+                <td>Each station anchors to its own non-overlapping octave register: Downtown ($C_5$), University ($C_4$), Waterfront ($C_3$), Residential ($C_2$). Enables all 4 notes to play at the same time with crystal clarity.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Delta Bike Change</td>
@@ -214,7 +233,27 @@
           <button id="btn-holiday" class="btn-toggle">🎆 July 4th: Independence Day (Holiday Leisure Waves)</button>
         </div>
 
-        <div class="control-group">
+        <div class="control-group" style="margin-top: 0.75rem;">
+          <label>Playback Voicing Mode</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 0.25rem;">
+            <button class="btn-station-solo active" data-station="simultaneous" style="grid-column: span 2;">⚡ All 4 Notes at Same Time (4-Part Polyphony)</button>
+            <button class="btn-station-solo" data-station="arpeggiated" style="grid-column: span 2;">🎼 All 4 Notes (Arpeggiated Cascade)</button>
+            <button class="btn-station-solo" data-station="downtown" style="border-left: 3px solid #38bdf8;">🏙️ Solo Downtown (C5)</button>
+            <button class="btn-station-solo" data-station="university" style="border-left: 3px solid #a855f7;">🎓 Solo University (C4)</button>
+            <button class="btn-station-solo" data-station="waterfront" style="border-left: 3px solid #f97316;">⚓ Solo Waterfront (C3)</button>
+            <button class="btn-station-solo" data-station="residential" style="border-left: 3px solid #10b981;">🏡 Solo Residential (C2)</button>
+          </div>
+        </div>
+
+        <div class="control-group" style="margin-top: 0.75rem;">
+          <div style="display: flex; justify-content: space-between;">
+            <label>Playback Speed</label>
+            <span id="speed-val" style="font-size: 0.78rem; font-family: monospace; color: var(--gold);">500ms (120 BPM)</span>
+          </div>
+          <input type="range" id="speed-slider" min="250" max="800" step="25" value="500">
+        </div>
+
+        <div class="control-group" style="margin-top: 0.75rem;">
           <label>Time-of-Day Scrubber (24 Hours)</label>
           <input type="range" id="time-slider" min="0" max="95" value="0">
         </div>

@@ -214,10 +214,14 @@ Inspired by the award-winning *Pronto Data Challenge* sonification by Daniel Mul
    * **University District**: Marimba Pluck Synthesizer (student commute hub).
    * **Waterfront Pier 69**: Bright Brass Lead (leisure and ferry transit).
    * **Capitol Hill Residential**: Deep Sub-Bass (residential origin).
-2. **Midnight Calibration**: Every station starts at 12:00 AM anchored to **Middle C ($C_4 = \text{MIDI } 60$)**.
-3. **Relative Delta Step**: $\pm 1$ bicycle dock change $= \pm 1$ semitone step:
-   * Net bike checkouts drain the station and lower the pitch ($C_4 \rightarrow B_3 \rightarrow A_3$).
-   * Net bike returns fill the docks and raise the pitch ($C_4 \rightarrow C\#_4 \rightarrow D_4$).
+2. **Midnight Calibration & Polyphonic Voicing**: To allow all 4 stations to be played **at the exact same time** while remaining 100% individually distinguishable without frequency masking or unison clutter, each station anchors to its own non-overlapping octave register:
+   * **Downtown Financial**: Soprano Register ($C_5 = \text{MIDI } 72$)
+   * **University District**: Alto Register ($C_4 = \text{MIDI } 60$, Middle C)
+   * **Waterfront Pier 69**: Tenor Register ($C_3 = \text{MIDI } 48$)
+   * **Capitol Hill Residential**: Bass Register ($C_2 = \text{MIDI } 36$)
+3. **Relative Delta Step**: $\pm 1$ bicycle dock change $= \pm 1$ semitone step relative to its anchor:
+   * Net bike checkouts drain the station and lower the pitch ($C \rightarrow B \rightarrow A$).
+   * Net bike returns fill the docks and raise the pitch ($C \rightarrow C\# \rightarrow D$).
 4. **Time Compression Equation**:
    $$\text{15-Minute Interval} \Longleftrightarrow \text{1 Music Beat (0.5s)}$$
    $$\text{1 Hour} \Longleftrightarrow \text{1 Measure (4 beats = 2.0s)}$$
