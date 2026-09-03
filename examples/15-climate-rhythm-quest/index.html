@@ -96,13 +96,35 @@
       background: #1e293b;
       color: #f8fafc;
       font-size: 0.82rem;
-      padding: 0.5rem;
+      padding: 0.55rem 0.75rem;
       margin-bottom: 0.4rem;
       text-align: left;
       border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      transition: all 0.2s;
     }
     .btn-scenario:hover { background: #334155; border-color: var(--accent); }
-    .btn-scenario.active { background: rgba(16, 185, 129, 0.2); border-color: var(--green); color: var(--green); }
+    .btn-scenario.active { background: rgba(16, 185, 129, 0.2); border-color: var(--green); color: #fff; font-weight: 700; }
+
+    .btn-policy {
+      background: #0f172a;
+      color: #cbd5e1;
+      font-size: 0.8rem;
+      padding: 0.45rem 0.75rem;
+      margin-bottom: 0.35rem;
+      text-align: left;
+      border: 1px dashed rgba(255,255,255,0.15);
+      border-radius: 6px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      transition: all 0.2s;
+    }
+    .btn-policy:hover { background: #1e293b; border-color: var(--accent); }
+    .btn-policy.active { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
 
     .control-group { margin-bottom: 1.2rem; }
     label {
@@ -125,6 +147,7 @@
     .hud-stat {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 0.75rem;
     }
     .hud-val { font-family: monospace; font-size: 1.1rem; font-weight: 800; }
@@ -154,41 +177,41 @@
         <!-- Explicit Data Transformation Breakdown -->
         <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
           <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
-            <span>🌡️</span> How Climate Anomaly Data is Transformed Into Sound
+            <span>🌡️</span> How Climate History & Projections are Transformed Into Sound
           </h3>
           <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
             <thead>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #f8fafc;">
                 <th style="padding: 0.4rem 0;">Climate Variable</th>
-                <th style="padding: 0.4rem 0;">NASA GISS Domain</th>
+                <th style="padding: 0.4rem 0;">Domain (1880–2100)</th>
                 <th style="padding: 0.4rem 0;">Auditory Mapping</th>
-                <th style="padding: 0.4rem 0;">Transformation Function & Formula</th>
+                <th style="padding: 0.4rem 0;">Transformation Function & Dynamic Behavior</th>
               </tr>
             </thead>
             <tbody>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Temperature Anomaly</td>
-                <td>-0.40 °C to +1.50 °C</td>
-                <td>Pitch: C3 ➔ F#5</td>
-                <td><code>scalePitch().domain([-0.4, 1.5]).range(['C3','F#5'])</code> — Pre-industrial baseline sounds as calm root notes; exceeding the +1.5°C Paris threshold ascends into harsh dissonant tritones.</td>
+                <td>-0.50 °C to +5.00 °C</td>
+                <td>Pitch: C3 ➔ G6</td>
+                <td><code>scalePitch().domain([-0.5, 5.0]).range(['C3','G6'])</code> — Pre-industrial baseline sounds as calm root notes ($C_3$); exceeding the +1.5°C Paris limit climbs into alert tones; +3.0°C and +4.8°C sound piercing alarm sirens ($G_6$).</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Atmospheric CO₂</td>
-                <td>280 to 430 ppm</td>
-                <td>Filter: 400 ➔ 6500 Hz</td>
-                <td><code>scaleFilter().domain([280, 430]).range([400, 6500])</code> — Trapped heat is sonified as an opening lowpass filter, transitioning from muffled to piercing brightness.</td>
+                <td>280 to 1,020 ppm</td>
+                <td>Filter: 350 ➔ 9500 Hz</td>
+                <td><code>scaleFilter().domain([280, 1020]).range([350, 9500])</code> — Trapped greenhouse heat is sonified as an opening lowpass filter, expanding from muffled 350 Hz to wide-open piercing sizzle at 1,020 ppm.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Month / Year Cycle</td>
-                <td>12 Months (Jan–Dec)</td>
-                <td>Angle: 0 ➔ 2π</td>
-                <td><code>d3.scaleLinear().domain([0, 12]).range([0, 2π])</code> — Annual seasonal cycles form continuous spiral revolutions around the pre-industrial center.</td>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">IPCC CMIP6 Pathways</td>
+                <td>SSP1-2.6 vs SSP5-8.5</td>
+                <td>Harmonic Resolution vs Acoustic Distortion</td>
+                <td>Under <strong>SSP1-2.6</strong>, warming peaks at +1.58°C in 2045 and then <em>audibly resolves back to calm consonant major chords</em>; under <strong>SSP5-8.5</strong>, FM modulation index intensifies into abrasive acoustic alarm.</td>
               </tr>
               <tr>
-                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Policy Mitigation</td>
-                <td>Renewables / Forests</td>
-                <td>Harmonic Resolution</td>
-                <td>Interventions subtract up to 0.95°C from modern warming, audibly resolving musical dissonance back into consonant major intervals.</td>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Concentric Thresholds</td>
+                <td>0°, 1°, 1.5°, 2°, 3°, 4°C</td>
+                <td>Concentric Boundary Rings</td>
+                <td>Visual and auditory markers for the +1.5°C Paris Agreement limit and catastrophic ecological tipping points.</td>
               </tr>
             </tbody>
           </table>
@@ -197,11 +220,14 @@
 
       <!-- Controls & Climate Action Quest -->
       <div class="panel">
-        <button id="play-spiral-btn" class="btn">▶ Run Climate Time Machine (1880–2026)</button>
+        <button id="play-spiral-btn" class="btn">▶ Run Climate Time Machine (1880–2100)</button>
 
         <div class="hud-stat">
           <span style="color: var(--muted); font-size: 0.85rem;">Year:</span>
-          <span class="hud-val" id="year-display" style="color: var(--accent);">1880</span>
+          <div style="display: flex; align-items: center;">
+            <span class="hud-val" id="year-display" style="color: var(--accent);">1880</span>
+            <span id="year-tag" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 4px; font-weight: 700; margin-left: 0.5rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">Historical Observed</span>
+          </div>
         </div>
         <div class="hud-stat">
           <span style="color: var(--muted); font-size: 0.85rem;">Temp Anomaly:</span>
@@ -213,21 +239,37 @@
         </div>
 
         <div class="control-group" style="margin-top: 1rem;">
-          <label>Timeline Scrubber (1880 – 2026)</label>
-          <input type="range" id="year-slider" min="1880" max="2026" value="1880">
+          <label>Timeline Scrubber (1880 – 2100)</label>
+          <input type="range" id="year-slider" min="1880" max="2100" value="1880">
         </div>
 
         <div style="margin-top: 1.25rem;">
-          <label>Policy & Mitigation Interventions</label>
-          <button class="btn btn-scenario" data-scenario="renewables">⚡ 100% Renewable Grid Transition (-0.4°C)</button>
-          <button class="btn btn-scenario" data-scenario="reforestation">🌲 Global Forest Restoration (-0.3°C)</button>
-          <button class="btn btn-scenario" data-scenario="methane">🛑 Methane Flaring Cut (-0.25°C)</button>
+          <label>IPCC AR6 / CMIP6 Climate Scenarios (2026–2100)</label>
+          <button class="btn btn-scenario active" data-scenario="ssp126" style="border-left: 4px solid #10b981;">
+            🌿 <strong>SSP1-2.6 (Paris Net-Zero)</strong><br>
+            <span style="font-size: 0.74rem; color: var(--muted);">Peak +1.6°C, resolves to +1.35°C (415 ppm)</span>
+          </button>
+          <button class="btn btn-scenario" data-scenario="ssp245" style="border-left: 4px solid #f59e0b;">
+            ⚖️ <strong>SSP2-4.5 (Middle of the Road)</strong><br>
+            <span style="font-size: 0.74rem; color: var(--muted);">Current pledges; warming reaches +2.7°C (560 ppm)</span>
+          </button>
+          <button class="btn btn-scenario" data-scenario="ssp585" style="border-left: 4px solid #f43f5e;">
+            🏭 <strong>SSP5-8.5 (Fossil-Fueled Worst-Case)</strong><br>
+            <span style="font-size: 0.74rem; color: var(--muted);">Runaway warming reaches +4.8°C (>1,020 ppm)</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <label>Interactive Mitigation Policies (Future Offsets)</label>
+          <button class="btn btn-policy" data-policy="renewables">⚡ 100% Renewable Grid Transition (-0.4°C)</button>
+          <button class="btn btn-policy" data-policy="reforestation">🌲 Global Forest Restoration (-0.3°C)</button>
+          <button class="btn btn-policy" data-policy="methane">🛑 Methane Flaring Cut (-0.25°C)</button>
         </div>
 
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-top: 1rem;">
-          • <strong>NASA GISS Data</strong>: Maps monthly land-ocean temperature anomalies.<br>
-          • <strong>Sonification Harmonic Tension</strong>: Cold anomalies sound in calm major chords ($C_3$); warming spikes introduce dissonant sharp tensions ($F\#_5$).<br>
-          • <strong>Action Scenarios</strong>: Activate mitigation policies to hear the harmonic dissonance resolve into equilibrium!
+          • <strong>Historical Observations (1880–2026)</strong>: Based on NASA GISS land-ocean anomalies & Mauna Loa CO₂.<br>
+          • <strong>IPCC Projections (2026–2100)</strong>: Select between Net-Zero, Middle of the Road, or Worst-Case pathways to hear future climate trajectories.<br>
+          • <strong>Harmonic Resolution</strong>: Under SSP1-2.6, warming tension resolves into consonant major equilibrium after 2050!
         </div>
       </div>
     </div>

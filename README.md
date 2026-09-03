@@ -215,28 +215,34 @@ Data sonification is grounded in foundational principles of auditory display and
 
 ### 1. Mapping Data to Sound
 > **Data + Clear Mapping = Meaning**  
-> **Data + Unexplained Sounds = Noise**
+> **Cryptic Unexplained Sounds = Noise**
 
-Just as an unlabeled visual chart produces confusion, sound without an explanation is merely noise. A listener needs to know *what* they are hearing: *"Does higher pitch mean more sales, or higher risk?"*
+Just as an unlabeled visual chart produces confusion, sound without an explicit key is mere noise. Every honest sonification requires clear perceptual mappings:
 
-`d3-audio` includes an interactive **`audioLegend()`** widget. Just like a color legend on a map, an Audio Legend displays the rules of the sonification and lets users click to audition each sound before playing the full visualization.
+* **Explicit Auditory Legends**: Every data dimension must be paired with an interactive `audioLegend()` key so listeners can preview and audition mappings.
+* **Single-Source Mapping**: Bind each acoustic parameter (pitch, gain, pan, filter) to a distinct variable to prevent sensory confusion and cognitive overload.
+* **Natural Sonic Affordances**: Leverage intuitive psychoacoustic metaphors (e.g. rising pitch = growing quantity; faster tempo = increasing urgency).
+* **Consistent Sonic Vocabulary**: Keep timbre and scale conventions uniform across related charts so listeners do not need to repeatedly re-learn rules.
 
 ### 2. The Golden Rule of Sonification: Stay Close to the Data!
 > *Stay close to the data... otherwise it's art!*
 
 Music takes creative liberties, but **data sonification is an analytical tool**. Every rule of visual chart integrity has a direct auditory counterpart:
 
-* **Truncated Y-Axis ➔ Exaggerated Pitch**: Starting a bar chart at 90 exaggerates a 1% blip into a huge spike; stretching a narrow metric across three wild octaves creates the same deception. Keep pitch spans proportional to real data changes.
-* **Bubble Size vs. Volume Calibration**: In visual charts, accidentally scaling a circle's radius instead of its area makes a 2× increase look 4× bigger. In audio, human hearing perceives volume logarithmically rather than linearly. Always calibrate loudness using decibels (`scaleGain.db()`) so volume changes sound mathematically honest.
-* **Visual Chartjunk ➔ Auditory "Audiojunk"**: Edward Tufte's *chartjunk* (decorative 3D bevels and visual clutter) has an audio cousin: gratuitous reverb, echo, and synth flourishes that obscure real numbers. Every sound must represent an actual data point.
-* **Reading the Axes ➔ The Reconstruction Test**: If someone looks at an honest visual chart, they can read the axes and reconstruct the numbers. An honest sonification passes the same test: a listener, guided by an audio legend, can reconstruct the underlying trend from sound alone.
+* **Truncated Y-Axis ➔ Pitch Distortion**: Stretching a narrow 1% fluctuation across three wild octaves exaggerates data just like a clipped chart axis. Keep pitch spans proportional to real metrics.
+* **Bubble Area ➔ Decibel Calibration**: Human hearing perceives loudness logarithmically rather than linearly; always calibrate volume in decibels (`scaleGain.db()`) for honest ratios.
+* **Visual Chartjunk ➔ Auditory "Audiojunk"**: Edward Tufte's *chartjunk* has an audio cousin: gratuitous reverbs, delays, and synth sweeps that don't encode data mask real metrics with decorative noise.
+* **Reading the Axes ➔ The Reconstruction Test**: An honest sonification allows a listener, guided by an audio key, to accurately reconstruct the underlying trend from sound alone.
 
 ### 3. Categorical Integrity: Avoiding False Pitch Hierarchies
 > **Never map unranked categories to higher and lower pitches.**
 
-The human brain instinctively hears higher musical notes as "higher," "better," "hotter," or "more important." In visual graphics, you would never represent unranked categories (like Engineering vs. Marketing, or Apples vs. Oranges) using an ordered vertical bar chart or a sequential heat ramp.
+The human brain instinctively hears higher musical notes as "higher," "better," "hotter," or "more important." In visual graphics, unranked classes are never plotted on an ordered axis:
 
-In sonification, if you assign Department A to a low C3 and Department B to a high C5, listeners will unavoidably perceive an implicit hierarchy or rank. Always reserve pitch for continuous quantities and ordinal rankings; use distinct **instrument timbres** (piano vs. flute vs. marimba) or **stereo pan positions** for unranked categories.
+* **No Accidental Ranking**: Assigning Category A to low C3 and Category B to high C5 creates an unintended, false hierarchy of importance.
+* **Acoustic Instrument Timbres**: Distinguish qualitative groups using distinct instrument families (e.g. Contrabass vs. Marimba vs. Flute).
+* **Stereo Spatial Panning**: Spread unranked categories across the stereo field (Left, Center, Right) to express horizontal separation without rank.
+* **Percussion & Soundbanks**: Use discrete sample hits (`scaleSample()`) or modal color rather than vertical pitch ladders for unranked categories.
 
 ---
 
