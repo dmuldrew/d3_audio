@@ -328,6 +328,33 @@
         </tbody>
       </table>
     </div>
+
+    <!-- How to Interpret the Audiovisual Results -->
+    <div class="panel" style="margin-top: 1.25rem;">
+      <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span>🎧</span> How to Interpret the Audiovisual Results
+      </h3>
+      <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text); line-height: 1.6;">
+        <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-weight: 700; color: #facc15;">🥁 Concentric Rings ➔ Independent Metric Tracks & Timbral Layers</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            Each concentric circle monitors a separate system stream: <strong>Outer Ring (Kick)</strong> monitors Ingress Traffic, <strong>Ring 2 (Snare)</strong> tracks DB Writes, <strong>Ring 3 (Hi-Hat)</strong> monitors Network Packets, and <strong>Inner Ring (Marimba)</strong> traces CPU Load.
+          </p>
+        </li>
+        <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-weight: 700; color: #38bdf8;">🔄 Euclidean Distribution $E(k, n)$ ➔ Evenly Spaced Rhythmic Density</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            Using the Bjorklund algorithm, $k$ pulses are distributed as evenly as possible over $n=16$ steps. Higher metric loads increase pulse density $k$, naturally evolving simple isolated beats into traditional Afro-Cuban, Middle Eastern, and Brazilian polyrhythmic grooves.
+          </p>
+        </li>
+        <li>
+          <div style="font-weight: 700; color: #10b981;">⚡ Concentric Radar Sweep ➔ Cross-Rhythmic Visual Audio Sync</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            As the central radar line sweeps clockwise ($0^\circ \to 360^\circ$), active polygon vertices trigger sound onsets and visual pop ripples in exact synchronization, allowing system operators to diagnose server throughput and bottle-necks entirely by ear.
+          </p>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <script type="module" src="app.js"></script>

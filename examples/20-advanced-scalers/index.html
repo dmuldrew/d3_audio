@@ -299,6 +299,33 @@
         </tbody>
       </table>
     </div>
+
+    <!-- How to Interpret the Audiovisual Results -->
+    <div class="panel" style="margin-top: 1.25rem;">
+      <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span>🎧</span> How to Interpret the Audiovisual Results
+      </h3>
+      <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text); line-height: 1.6;">
+        <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-weight: 700; color: #facc15;">📉 Statistical Confidence ➔ Bit Depth & Digital Grit (`scaleUncertainty`)</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            Statistically robust data points ($p < 0.001$, narrow confidence intervals) render in pristine 16-bit fidelity with pure sinusoidal harmonics. High uncertainty or loose estimates downsample into crunchy 2-bit distortion and grit, making data confidence visceral.
+          </p>
+        </li>
+        <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-weight: 700; color: #38bdf8;">🌌 Z-Depth & Spatial Proximity ➔ Reverb Wetness (`scaleSpatial`)</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            Foreground data points in the $Z$-plane sound dry and up-close ($0.4\text{s}$ decay). As coordinates retreat into deep cluster hierarchies or distant background planes, the acoustic space opens into vast, cavernous reflections ($7.0\text{s}$ decay, $95\%$ wet mix).
+          </p>
+        </li>
+        <li>
+          <div style="font-weight: 700; color: #10b981;">🎼 Multivariate Dimensionality ➔ Polyphonic Chord Color (`scaleChord`)</div>
+          <p style="color: var(--muted); margin-top: 0.25rem;">
+            Rather than listening to isolated single frequencies, 3-dimensional data tuples are voiced as chords. Balanced, synergistic metrics form consonant major triads; unbalanced or competing dimensional vectors trigger tense suspended fourths or diminished chords.
+          </p>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <script type="module" src="app.js"></script>

@@ -236,6 +236,33 @@
           </tbody>
         </table>
       </div>
+
+      <!-- How to Interpret the Audiovisual Results -->
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.25rem;">
+        <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>🎧</span> How to Interpret the Audiovisual Results
+        </h3>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text); line-height: 1.6;">
+          <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-weight: 700; color: #facc15;">📊 Bar Height / Bubble Size ➔ Musical Pitch</div>
+            <p style="color: var(--muted); margin-top: 0.25rem;">
+              As the playhead sweeps across bars from left to right, listen to the melodic contour. Taller bars produce higher musical pitches (up to $C_6$), while shorter bars sound in deep bass registers ($C_3$). Rising melodic runs denote upward trends, while descending leaps highlight sharp contractions.
+            </p>
+          </li>
+          <li style="margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-weight: 700; color: #38bdf8;">🎧 Horizontal Position ($X$) ➔ Stereo Spatial Panning</div>
+            <p style="color: var(--muted); margin-top: 0.25rem;">
+              The $X$-axis maps to the physical stereo field ($-0.9$ full left to $+0.9$ full right). Wearing headphones allows you to localize exactly where along the horizontal timeline a metric event occurs without looking at the screen.
+            </p>
+          </li>
+          <li>
+            <div style="font-weight: 700; color: #10b981;">⚡ Choreography & Visual Audio Synchronization</div>
+            <p style="color: var(--muted); margin-top: 0.25rem;">
+              Visual elements react using sample-accurate audio clock scheduling (<code>Tone.Draw.schedule</code>). Higher note velocities induce more energetic physical deformations (wiggles, 3D flips, pulses, or gravitational bounces) governed by simulated ADSR envelope physics.
+            </p>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 
