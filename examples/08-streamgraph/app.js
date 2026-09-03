@@ -8,30 +8,30 @@ import {
   createSynth
 } from '../../src/index.js';
 
-// 5 Energy streams across 24 hourly time steps
+// 5 Energy streams across 24 hourly time steps (matching table)
 const NUM_HOURS = 24;
-const keys = ["Solar", "Wind", "Hydro", "Nuclear", "Biofuel"];
-const keyColors = ["#f59e0b", "#06b6d4", "#3b82f6", "#a855f7", "#10b981"];
+const keys = ["Fossil", "Nuclear", "Hydro", "Wind", "Solar"];
+const keyColors = ["#f43f5e", "#a855f7", "#38bdf8", "#10b981", "#fbbf24"];
 
-// Chord voicings assigned per layer (Root, 3rd, 5th, 7th, 9th)
-const chordDegrees = ["C3", "E3", "G3", "B3", "D4"];
+// Chord voicings assigned per layer (Bass Root, 5th, Octave, 3rd, 9th)
+const chordDegrees = ["C2", "G2", "C3", "E3", "D4"];
 
 const rawData = [];
 for (let h = 0; h < NUM_HOURS; h++) {
   const t = h / 23;
   rawData.push({
     hour: h,
-    Solar: Math.max(0, Math.sin(t * Math.PI) * 60 + Math.random() * 5),
-    Wind: 25 + Math.sin(t * Math.PI * 3) * 15 + Math.random() * 8,
-    Hydro: 30 + Math.cos(t * Math.PI * 2) * 10 + Math.random() * 4,
-    Nuclear: 45 + Math.random() * 5,
-    Biofuel: 15 + Math.sin(t * Math.PI * 1.5) * 8 + Math.random() * 3
+    Fossil: 40 + Math.cos(t * Math.PI) * 15 + Math.random() * 4,
+    Nuclear: 35 + Math.random() * 3,
+    Hydro: 25 + Math.sin(t * Math.PI * 2) * 10 + Math.random() * 4,
+    Wind: 20 + Math.sin(t * Math.PI * 3) * 15 + Math.random() * 6,
+    Solar: Math.max(0, Math.sin(t * Math.PI) * 60 + Math.random() * 5)
   });
 }
 
 const container = document.getElementById('stream-area');
-const width = container.clientWidth || 700;
-const height = container.clientHeight || 420;
+const width = container ? (container.clientWidth || 700) : 700;
+const height = container ? (container.clientHeight || 420) : 420;
 
 const svg = d3.select(container)
   .append('svg')
@@ -68,19 +68,25 @@ const area = d3.area()
   .curve(d3.curveBasis);
 
 // PolySynth for 5-voice harmonized chords
-const chordSynth = createSynth({
-  type: "polySynth",
-  volume: -3
-});
+let chordSynth = null;
+function getSynth() {
+  if (!chordSynth) {
+    chordSynth = createSynth({
+      type: "polySynth",
+      volume: -2
+    });
+  }
+  return chordSynth;
+}
 
 // Interactive Audio Legend
 const pitchScale = scalePitch().domain([0, 4]).range(["C2", "D4"]).scale("pentatonic");
-const legend = audioLegend()
+const audioLegendWidget = audioLegend()
   .title("Streamgraph Harmonic Chord Voicer Key")
   .pitch(pitchScale, "Stacked Energy Stream Layer (Bass C2 ➔ Treble D4)")
   .gain(scaleGain().domain([0, 100]).range([0.2, 1.0]), "Layer Thickness / Output Power (GW)");
 
-d3.select("#legend-mount").call(legend);
+d3.select("#legend-mount").call(audioLegendWidget);
 
 // Render Stream Layers
 const layerPaths = svg.selectAll('.stream-layer')
@@ -100,17 +106,19 @@ const cursor = svg.append('line')
   .attr('x2', 0)
   .attr('opacity', 0);
 
-// Legend
-const legend = document.getElementById('legend');
-keys.forEach((k, idx) => {
-  const item = document.createElement('div');
-  item.className = 'legend-item';
-  item.innerHTML = `
-    <div class="legend-color" style="background: ${keyColors[idx]};"></div>
-    <span>${k} (${chordDegrees[idx]})</span>
-  `;
-  legend.appendChild(item);
-});
+// DOM Color Legend
+const colorLegendContainer = document.getElementById('legend');
+if (colorLegendContainer) {
+  keys.forEach((k, idx) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `
+      <div class="legend-color" style="background: ${keyColors[idx]};"></div>
+      <span>${k} (${chordDegrees[idx]})</span>
+    `;
+    colorLegendContainer.appendChild(item);
+  });
+}
 
 // Audition function for time column
 async function auditionHour(hourIndex) {
@@ -127,7 +135,8 @@ async function auditionHour(hourIndex) {
   });
 
   if (notesToPlay.length > 0) {
-    chordSynth.triggerAttackRelease(notesToPlay, "8n", undefined, 0.75);
+    const synth = getSynth();
+    synth.triggerAttackRelease(notesToPlay, "8n", undefined, 0.75);
   }
 
   const xPos = xScale(hourIndex);
