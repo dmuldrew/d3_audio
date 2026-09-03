@@ -17,6 +17,15 @@ export class SynthVoice {
     this.init();
   }
 
+  ensureReady() {
+    if (!this.Tone && typeof window !== 'undefined' && window.Tone) {
+      this.Tone = window.Tone;
+    }
+    if (!this.instrument && this.Tone) {
+      this.init();
+    }
+  }
+
   init() {
     if (!this.Tone) {
       if (typeof window !== 'undefined' && window.Tone) {
@@ -26,147 +35,188 @@ export class SynthVoice {
       }
     }
 
-    const masterIn = this.engine.getMasterInput();
+    try {
+      const masterIn = this.engine.getMasterInput();
 
-    // Channel routing: Instrument -> Filter -> Panner -> Volume -> Master
-    this.volumeNode = new this.Tone.Volume(this.options.volume || 0);
-    this.panner = new this.Tone.Panner(this.options.pan || 0);
-    this.filterNode = new this.Tone.Filter(this.options.cutoff || 18000, "lowpass");
+      // Channel routing: Instrument -> Filter -> Panner -> Volume -> Master
+      this.volumeNode = new this.Tone.Volume(this.options.volume || 0);
+      this.panner = new this.Tone.Panner(this.options.pan || 0);
+      this.filterNode = new this.Tone.Filter(this.options.cutoff || 18000, "lowpass");
 
-    this.filterNode.connect(this.panner);
-    this.panner.connect(this.volumeNode);
-    this.volumeNode.connect(masterIn);
+      this.filterNode.connect(this.panner);
+      this.panner.connect(this.volumeNode);
+      if (masterIn) {
+        this.volumeNode.connect(masterIn);
+      } else {
+        this.volumeNode.toDestination();
+      }
 
-    // Optional Reverb Send
-    if (this.engine.reverb && this.options.reverbSend) {
-      const send = new this.Tone.Gain(this.options.reverbSend);
-      this.panner.connect(send);
-      send.connect(this.engine.reverb);
+      this.createInstrument();
+      this.engine.registerVoice(this);
+    } catch (err) {
+      console.warn('SynthVoice init fallback:', err);
     }
-
-    this.createInstrument();
-    this.engine.registerVoice(this);
   }
 
   createInstrument() {
     const Tone = this.Tone;
     if (!Tone) return;
 
-    switch (this.type) {
-      case 'fmSynth':
-        this.instrument = new Tone.PolySynth(Tone.FMSynth, {
-          harmonicity: this.options.harmonicity || 1.5,
-          modulationIndex: this.options.modulationIndex || 3,
-          oscillator: { type: this.options.oscillator || "sine" },
-          envelope: this.options.envelope || { attack: 0.02, decay: 0.2, sustain: 0.3, release: 0.8 },
-          modulation: { type: "square" }
-        }).connect(this.filterNode);
-        break;
+    try {
+      switch (this.type) {
+        case 'fmSynth':
+          this.instrument = new Tone.PolySynth(Tone.FMSynth, {
+            harmonicity: this.options.harmonicity || 1.5,
+            modulationIndex: this.options.modulationIndex || 3,
+            oscillator: { type: this.options.oscillator || "sine" },
+            envelope: this.options.envelope || { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.8 },
+            modulation: { type: "square" }
+          });
+          break;
 
-      case 'amSynth':
-        this.instrument = new Tone.PolySynth(Tone.AMSynth, {
-          harmonicity: this.options.harmonicity || 2,
-          oscillator: { type: this.options.oscillator || "triangle" },
-          envelope: this.options.envelope || { attack: 0.05, decay: 0.3, sustain: 0.5, release: 1.0 }
-        }).connect(this.filterNode);
-        break;
+        case 'amSynth':
+          this.instrument = new Tone.PolySynth(Tone.AMSynth, {
+            harmonicity: this.options.harmonicity || 2,
+            oscillator: { type: this.options.oscillator || "triangle" },
+            envelope: this.options.envelope || { attack: 0.02, decay: 0.3, sustain: 0.5, release: 1.0 }
+          });
+          break;
 
-      case 'membraneSynth':
-        this.instrument = new Tone.MembraneSynth({
-          pitchDecay: 0.05,
-          octaves: 4,
-          oscillator: { type: "sine" },
-          envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.4 }
-        }).connect(this.filterNode);
-        break;
+        case 'membraneSynth':
+          this.instrument = new Tone.MembraneSynth({
+            pitchDecay: 0.05,
+            octaves: 4,
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.4 }
+          });
+          break;
 
-      case 'noiseSynth':
-        this.instrument = new Tone.NoiseSynth({
-          noise: { type: "white" },
-          envelope: { attack: 0.005, decay: 0.15, sustain: 0.0 }
-        }).connect(this.filterNode);
-        break;
+        case 'noiseSynth':
+          this.instrument = new Tone.NoiseSynth({
+            noise: { type: "white" },
+            envelope: { attack: 0.005, decay: 0.15, sustain: 0.0 }
+          });
+          break;
 
-      case 'pluckSynth':
-        this.instrument = new Tone.PluckSynth({
-          attackNoise: 1,
-          dampening: 4000,
-          resonance: 0.92
-        }).connect(this.filterNode);
-        break;
+        case 'pluckSynth':
+          this.instrument = new Tone.PluckSynth({
+            attackNoise: 1,
+            dampening: 4000,
+            resonance: 0.92
+          });
+          break;
 
-      case 'duoSynth':
-        this.instrument = new Tone.PolySynth(Tone.DuoSynth, {
-          vibratoAmount: 0.2,
-          vibratoRate: 5,
-          harmonicity: 1.5
-        }).connect(this.filterNode);
-        break;
+        case 'polySynth':
+        default:
+          this.instrument = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: this.options.oscillator || "triangle" },
+            envelope: this.options.envelope || {
+              attack: 0.02,
+              decay: 0.2,
+              sustain: 0.4,
+              release: 0.8
+            }
+          });
+          break;
+      }
 
-      case 'polySynth':
-      default:
-        this.instrument = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: this.options.oscillator || "triangle" },
-          envelope: this.options.envelope || {
-            attack: 0.02,
-            decay: 0.2,
-            sustain: 0.4,
-            release: 0.8
-          }
-        }).connect(this.filterNode);
-        break;
+      if (this.instrument) {
+        if (this.filterNode) {
+          this.instrument.connect(this.filterNode);
+        } else {
+          this.instrument.toDestination();
+        }
+      }
+    } catch (err) {
+      console.warn('createInstrument fallback to basic PolySynth:', err);
+      if (Tone.PolySynth && Tone.Synth) {
+        this.instrument = new Tone.PolySynth(Tone.Synth).toDestination();
+      }
     }
   }
 
   /**
    * Triggers note attack and release.
-   * @param {string|number} note Musical pitch string (e.g. "C4") or frequency in Hz
-   * @param {string|number} duration Duration e.g. "8n" or seconds
-   * @param {number} time Exact audio context timestamp (scheduled by Tone.Transport)
-   * @param {number} velocity Velocity/gain [0, 1]
-   * @param {object} params Optional per-note overrides { pan, filter }
    */
   triggerAttackRelease(note, duration = "8n", time = undefined, velocity = 0.8, params = {}) {
-    if (!this.instrument) this.init();
+    this.ensureReady();
     if (!this.instrument) return;
 
-    // Apply per-event pan or filter if provided
-    if (params.pan !== undefined && this.panner) {
-      if (time !== undefined) {
-        this.panner.pan.setValueAtTime(Math.max(-1, Math.min(1, params.pan)), time);
-      } else {
-        this.panner.pan.value = Math.max(-1, Math.min(1, params.pan));
+    try {
+      if (params.pan !== undefined && this.panner && this.panner.pan) {
+        if (typeof this.panner.pan.rampTo === 'function') {
+          this.panner.pan.rampTo(Math.max(-1, Math.min(1, params.pan)), 0.02, time);
+        } else {
+          this.panner.pan.value = Math.max(-1, Math.min(1, params.pan));
+        }
       }
-    }
 
-    if (params.filter !== undefined && this.filterNode) {
-      if (time !== undefined) {
-        this.filterNode.frequency.setValueAtTime(params.filter, time);
-      } else {
-        this.filterNode.frequency.value = params.filter;
+      if (params.filter !== undefined && this.filterNode && this.filterNode.frequency) {
+        if (typeof this.filterNode.frequency.rampTo === 'function') {
+          this.filterNode.frequency.rampTo(params.filter, 0.02, time);
+        } else {
+          this.filterNode.frequency.value = params.filter;
+        }
       }
+
+      const t = time !== undefined ? time : (this.Tone ? this.Tone.now() : undefined);
+      const vel = Math.max(0.01, Math.min(1.0, velocity));
+
+      if (this.type === 'noiseSynth') {
+        this.instrument.triggerAttackRelease(duration, t, vel);
+      } else {
+        this.instrument.triggerAttackRelease(note, duration, t, vel);
+      }
+    } catch (e) {
+      // Fallback native Web Audio Oscillator if Tone context failed
+      this.playNativeFallback(note, duration, velocity);
     }
+  }
 
-    const t = time !== undefined ? time : this.Tone.now();
-    const vel = Math.max(0.01, Math.min(1.0, velocity));
+  playNativeFallback(note, duration = "8n", velocity = 0.8) {
+    try {
+      const ctx = this.engine.getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
 
-    if (this.type === 'noiseSynth') {
-      this.instrument.triggerAttackRelease(duration, t, vel);
-    } else {
-      this.instrument.triggerAttackRelease(note, duration, t, vel);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      // Simple frequency estimation
+      let freq = 440;
+      if (typeof note === 'number') freq = note;
+      else if (typeof note === 'string') {
+        const midi = 60; // approximate
+        freq = 440 * Math.pow(2, (midi - 69) / 12);
+      }
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+      const durSec = typeof duration === 'number' ? duration : 0.3;
+      gain.gain.setValueAtTime(velocity * 0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + durSec);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + durSec);
+    } catch (err) {
+      // Ignore
     }
   }
 
   triggerAttack(note, time = undefined, velocity = 0.8) {
-    if (!this.instrument) this.init();
+    this.ensureReady();
     if (!this.instrument) return;
-    const t = time !== undefined ? time : this.Tone.now();
+    const t = time !== undefined ? time : (this.Tone ? this.Tone.now() : undefined);
     this.instrument.triggerAttack(note, t, velocity);
   }
 
   triggerRelease(note = undefined, time = undefined) {
     if (!this.instrument) return;
-    const t = time !== undefined ? time : this.Tone.now();
+    const t = time !== undefined ? time : (this.Tone ? this.Tone.now() : undefined);
     if (this.instrument.releaseAll) {
       this.instrument.releaseAll(t);
     } else if (this.instrument.triggerRelease) {
@@ -176,29 +226,26 @@ export class SynthVoice {
   }
 
   setPan(pan) {
-    if (this.panner) {
+    if (this.panner && this.panner.pan) {
       this.panner.pan.value = Math.max(-1, Math.min(1, pan));
     }
   }
 
   setVolume(volDb) {
-    if (this.volumeNode) {
+    if (this.volumeNode && this.volumeNode.volume) {
       this.volumeNode.volume.value = volDb;
     }
   }
 
   dispose() {
     this.engine.unregisterVoice(this);
-    if (this.instrument) this.instrument.dispose();
-    if (this.filterNode) this.filterNode.dispose();
-    if (this.panner) this.panner.dispose();
-    if (this.volumeNode) this.volumeNode.dispose();
+    if (this.instrument && this.instrument.dispose) this.instrument.dispose();
+    if (this.filterNode && this.filterNode.dispose) this.filterNode.dispose();
+    if (this.panner && this.panner.dispose) this.panner.dispose();
+    if (this.volumeNode && this.volumeNode.dispose) this.volumeNode.dispose();
   }
 }
 
-/**
- * Factory function for synth voices.
- */
 export function createSynth(options = {}, engine = defaultEngine) {
   return new SynthVoice(options, engine);
 }

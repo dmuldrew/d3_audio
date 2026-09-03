@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10. Circular Chord Diagram & Flow Matrix | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #090e1c;
+      --card: #121b30;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1150px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .chord-box {
+      width: 100%;
+      height: 520px;
+      background: #040712;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .chord-ribbon {
+      cursor: pointer;
+      opacity: 0.75;
+      transform-box: fill-box;
+      transform-origin: center center;
+      transition: opacity 0.2s, filter 0.2s;
+    }
+    .chord-ribbon:hover {
+      opacity: 1.0;
+      filter: brightness(1.3) drop-shadow(0 0 10px rgba(56,189,248,0.6));
+    }
+
+    .group-arc {
+      cursor: pointer;
+      stroke: #090e1c;
+      stroke-width: 2px;
+      transform-box: fill-box;
+      transform-origin: center center;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.65rem 1.3rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+
+    .control-group { margin-bottom: 1.25rem; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      background: #080d17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">10. Circular Chord Diagram & Flow Matrix</h1>
+      </div>
+      <div>
+        <span id="chord-status" style="font-family: monospace; font-size: 0.95rem; color: var(--accent); font-weight: 700;">Hover ribbons or cycle flows</span>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="layout-grid">
+        <!-- Chord Diagram SVG -->
+        <div class="chord-box" id="chord-area"></div>
+
+        <!-- Controls Sidebar -->
+        <div>
+          <button id="flow-tour-btn" class="btn">🌊 Cycle Flow Matrix Chords</button>
+
+          <div class="control-group" style="margin-top: 1.25rem;">
+            <label>Harmonic Scale Mode</label>
+            <select id="scale-select">
+              <option value="pentatonic" selected>Pentatonic Major</option>
+              <option value="dorian">Dorian Mode (Lydian feel)</option>
+              <option value="blues">Blues Mode</option>
+              <option value="minor">Natural Minor</option>
+              <option value="wholeTone">Whole Tone Float</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Ribbon Choreography</label>
+            <select id="move-select">
+              <option value="ripple" selected>Ripple (Shockwave Halo)</option>
+              <option value="glow">Glow (Bloom Flash)</option>
+              <option value="wiggle">Wiggle (Wobble)</option>
+              <option value="pulse">Pulse (Scale Bounce)</option>
+              <option value="flip">3D Flip (Perspective)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Flow Cycling Speed</label>
+            <input type="range" id="flow-speed" min="200" max="1000" value="450">
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.8rem; color: var(--muted); line-height: 1.5;">
+            • <strong>Source & Target Arcs</strong> → Dual harmonic pitches.<br>
+            • <strong>Flow Volume</strong> → Note velocity & filter brightness.<br>
+            • <strong>Ribbon Angle</strong> → Spatial stereo panning.<br>
+            • <strong>Interactive Flow</strong> → Triggers bidirectional arpeggios.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

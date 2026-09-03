@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>14. Exoplanet Orbit & Doppler Symphony | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #030712;
+      --card: #0b1220;
+      --accent: #38bdf8;
+      --gold: #fbbf24;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1150px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .space-box {
+      width: 100%;
+      height: 500px;
+      background: radial-gradient(circle at center, #0d1a36 0%, #020612 80%);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .orbit-ring {
+      fill: none;
+      stroke: rgba(148, 163, 184, 0.2);
+      stroke-dasharray: 4 3;
+    }
+    .orbit-ring.aligned {
+      stroke: var(--accent);
+      stroke-width: 2px;
+      filter: drop-shadow(0 0 6px var(--accent));
+    }
+
+    .planet-node {
+      cursor: pointer;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
+      transform-box: fill-box;
+      transform-origin: center center;
+    }
+    .planet-node:hover {
+      filter: drop-shadow(0 0 12px var(--gold));
+    }
+
+    .star-core {
+      fill: #fbbf24;
+      filter: drop-shadow(0 0 25px #fbbf24);
+    }
+
+    .transit-line {
+      stroke: rgba(251, 191, 36, 0.4);
+      stroke-width: 1.5px;
+      stroke-dasharray: 2 4;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.7rem 1.3rem;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+
+    .control-group { margin-bottom: 1.2rem; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      background: #060b17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">14. Exoplanet Orbit & Doppler Symphony</h1>
+      </div>
+      <div>
+        <span id="system-status" style="font-family: monospace; font-size: 0.95rem; color: var(--gold); font-weight: 700;">TRAPPIST-1 Resonance System</span>
+      </div>
+    </header>
+
+    <div class="game-grid">
+      <!-- Space Simulation Canvas -->
+      <div class="panel" style="padding: 1rem;">
+        <div class="space-box" id="space-area"></div>
+      </div>
+
+      <!-- Controls & Educational Lab -->
+      <div class="panel">
+        <button id="toggle-orbit-btn" class="btn">⏸ Pause Planetary Symphony</button>
+
+        <div class="control-group">
+          <label>Planetary System (NASA Archive)</label>
+          <select id="system-select">
+            <option value="trappist1" selected>TRAPPIST-1 (7 Earth-sized Worlds)</option>
+            <option value="kepler90">Kepler-90 (8-Planet Solar Twin)</option>
+            <option value="solarsystem">Our Solar System (Inner to Outer)</option>
+            <option value="hd10180">HD 10180 (Rich Giant System)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Harmonic Scale Mode</label>
+          <select id="scale-select">
+            <option value="pentatonic" selected>Pentatonic Major (Harmonic)</option>
+            <option value="dorian">Dorian Mode (Celestial)</option>
+            <option value="hirajoshi">Japanese Hirajoshi (Deep Space)</option>
+            <option value="wholeTone">Whole Tone Float</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Time Warp Speed: <span id="speed-val">1.0</span>x</label>
+          <input type="range" id="speed-slider" min="0.2" max="3.0" step="0.1" value="1.0">
+        </div>
+
+        <div class="info-card" id="planet-info">
+          <div style="font-weight: 800; font-size: 1.05rem; color: var(--gold); margin-bottom: 0.4rem;" id="planet-title">🪐 Kepler's Third Law in Action</div>
+          <p id="planet-desc" style="font-size: 0.82rem; color: var(--muted); line-height: 1.55;">
+            Planetary orbital periods scale with distance ($T^2 \propto a^3$). Inner planets zip rapidly at high frequencies, while outer planets orbit at slow, resonant sub-bass registers.
+          </p>
+        </div>
+
+        <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--muted); line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.75rem;">
+          • <strong>Orbital Radius ($a$)</strong> → Pitch frequency ($f \propto a^{-3/2}$).<br>
+          • <strong>Planet Radius ($R_p$)</strong> → Note duration & gain.<br>
+          • <strong>Transits ($0^\circ$)</strong> → Central star pulse & harmonic chime.<br>
+          • <strong>Doppler Stereo</strong> → Sound pans L ↔ R as planets orbit.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

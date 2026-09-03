@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06. Force Network & Graph Sonifier | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #070c18;
+      --card: #0f172a;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1150px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+    }
+
+    .network-container {
+      width: 100%;
+      height: 520px;
+      background: #030712;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .link {
+      stroke: rgba(148, 163, 184, 0.25);
+      stroke-width: 1.5px;
+      transition: stroke 0.2s, stroke-width 0.2s;
+    }
+    .link.active {
+      stroke: #38bdf8;
+      stroke-width: 3px;
+      filter: drop-shadow(0 0 4px #38bdf8);
+    }
+
+    .node {
+      cursor: grab;
+      transform-box: fill-box;
+      transform-origin: center center;
+    }
+    .node:active { cursor: grabbing; }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.65rem 1.3rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+    .btn-sec { background: #334155; color: #fff; }
+    .btn-sec:hover { background: #475569; }
+
+    .control-group { margin-bottom: 1.25rem; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      background: #080d17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">06. Force Network & Graph Sonifier</h1>
+      </div>
+      <div>
+        <span id="graph-status" style="font-size: 0.9rem; color: var(--accent); font-weight: 700;">Drag nodes to pluck chords</span>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="layout-grid">
+        <!-- Force Canvas -->
+        <div class="network-container" id="network-area"></div>
+
+        <!-- Controls -->
+        <div>
+          <button id="pulse-walk-btn" class="btn">⚡ Start Graph Impulse Walk</button>
+          <button id="jiggle-btn" class="btn btn-sec">🌀 Agitate Force Physics</button>
+
+          <div class="control-group" style="margin-top: 1.25rem;">
+            <label>Scale Harmony (scalePitch)</label>
+            <select id="scale-select">
+              <option value="pentatonic" selected>Pentatonic Major</option>
+              <option value="blues">Blues Scale</option>
+              <option value="dorian">Dorian Mode</option>
+              <option value="minor">Natural Minor</option>
+              <option value="maj7">Major 7th Arpeggios</option>
+              <option value="insen">Japanese Insen</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Node Choreography</label>
+            <select id="move-select">
+              <option value="wiggle" selected>Wiggle (Elastic Wobble)</option>
+              <option value="ripple">Ripple (Halo Shockwave)</option>
+              <option value="flip">3D Flip (Perspective)</option>
+              <option value="pulse">Pulse (Scale Punch)</option>
+              <option value="glow">Glow (Bloom Burst)</option>
+              <option value="shake">Shake (High Tremor)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Impulse Walk Speed</label>
+            <input type="range" id="walk-speed" min="100" max="600" value="260">
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.8rem; color: var(--muted); line-height: 1.5;">
+            • <strong>Degree / Hubs</strong> → Pitch register (Higher centrality = higher pitch).<br>
+            • <strong>Node X Position</strong> → Stereo spatial pan (L / R).<br>
+            • <strong>Drag & Release</strong> → Plucks note + spring ripple.<br>
+            • <strong>Impulse Walk</strong> → Traverses edges triggering polyphonic arpeggios.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

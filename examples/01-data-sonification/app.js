@@ -7,7 +7,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/dist/d3-audio.js';
+} from '/src/index.js';
 
 // Sample time-series dataset: 16 monthly observations
 const dataset = [
@@ -175,12 +175,37 @@ async function auditionElement(barEl, bubbleEl, d, index) {
 // Timeline event callbacks
 tl.on('step', ({ event }) => {
   const idx = event.index;
+  const d = dataset[idx];
+  const barNode = bars.nodes()[idx];
+  const bubbleNode = bubbles.nodes()[idx];
+
+  // 1. Move Playhead
   const xPos = xScale(idx) + xScale.bandwidth() / 2;
   playhead.style('opacity', 1).attr('x1', xPos).attr('x2', xPos);
 
-  const bubbleEl = bubbles.nodes()[idx];
-  if (bubbleEl) {
-    choreography().movement("pulse").intensity(1.2).duration(0.3)(bubbleEl);
+  // 2. Trigger bar choreography
+  if (barNode) {
+    choreography()
+      .movement(currentMovementType)
+      .intensity(d.magnitude / 1.6)
+      .duration(0.35)(barNode);
+
+    // Bar flash highlight
+    d3.select(barNode)
+      .transition()
+      .duration(50)
+      .attr('fill', '#ffffff')
+      .transition()
+      .duration(300)
+      .attr('fill', d.alert ? '#f43f5e' : '#38bdf8');
+  }
+
+  // 3. Trigger bubble animation
+  if (bubbleNode) {
+    choreography()
+      .movement("pulse")
+      .intensity(d.magnitude / 1.4)
+      .duration(0.32)(bubbleNode);
   }
 });
 

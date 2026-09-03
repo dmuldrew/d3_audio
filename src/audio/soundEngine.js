@@ -11,6 +11,7 @@ export class SoundEngine {
     this.delay = null;
     this.limiter = null;
     this.voices = new Set();
+    this.rawAudioCtx = null;
   }
 
   /**
@@ -20,28 +21,50 @@ export class SoundEngine {
     this.Tone = tone;
   }
 
+  getAudioContext() {
+    if (this.Tone && this.Tone.context && this.Tone.context.rawContext) {
+      return this.Tone.context.rawContext;
+    }
+    if (typeof window !== 'undefined') {
+      if (!this.rawAudioCtx) {
+        const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtxClass) {
+          this.rawAudioCtx = new AudioCtxClass();
+        }
+      }
+      return this.rawAudioCtx;
+    }
+    return null;
+  }
+
   /**
    * Initializes Web Audio context on user gesture.
    */
   async start() {
-    if (!this.Tone) {
-      if (typeof window !== 'undefined' && window.Tone) {
-        this.Tone = window.Tone;
-      } else {
-        console.warn('Tone.js not found. Please load Tone.js before starting SoundEngine.');
-        return false;
-      }
+    if (!this.Tone && typeof window !== 'undefined' && window.Tone) {
+      this.Tone = window.Tone;
     }
 
     try {
-      await this.Tone.start();
-      if (!this.isReady) {
+      if (this.Tone && typeof this.Tone.start === 'function') {
+        await this.Tone.start();
+        if (this.Tone.context && typeof this.Tone.context.resume === 'function') {
+          await this.Tone.context.resume();
+        }
+      }
+
+      const rawCtx = this.getAudioContext();
+      if (rawCtx && rawCtx.state === 'suspended') {
+        await rawCtx.resume();
+      }
+
+      if (!this.isReady && this.Tone) {
         this.initMasterChain();
         this.isReady = true;
       }
       return true;
     } catch (e) {
-      console.error('Failed to start Tone.js audio context:', e);
+      console.warn('AudioContext start notice:', e);
       return false;
     }
   }
@@ -49,40 +72,56 @@ export class SoundEngine {
   initMasterChain() {
     if (!this.Tone) return;
 
-    // Master Limiter to prevent clipping
-    this.limiter = new this.Tone.Limiter(-0.5).toDestination();
+    try {
+      // 1. Master Volume connected to Destination
+      this.masterGain = new this.Tone.Gain(0.9).toDestination();
 
-    // Master Volume / Gain
-    this.masterGain = new this.Tone.Gain(0.85).connect(this.limiter);
+      // 2. Master Filter connected to Master Gain
+      this.masterFilter = new this.Tone.Filter({
+        frequency: 20000,
+        type: "lowpass",
+        rolloff: -12
+      }).connect(this.masterGain);
 
-    // Master Filter (dynamic lowpass / highpass)
-    this.masterFilter = new this.Tone.Filter({
-      frequency: 20000,
-      type: "lowpass",
-      rolloff: -12
-    }).connect(this.masterGain);
+      // 3. Reverb (Send/Return) using Freeverb / JCReverb (100% synchronous, immediate)
+      if (this.Tone.Freeverb) {
+        this.reverb = new this.Tone.Freeverb({
+          roomSize: 0.65,
+          dampening: 3500,
+          wet: 0.12
+        }).connect(this.masterGain);
+      } else if (this.Tone.JCReverb) {
+        this.reverb = new this.Tone.JCReverb({
+          roomSize: 0.5,
+          wet: 0.12
+        }).connect(this.masterGain);
+      }
 
-    // Master Reverb (Send/Return)
-    this.reverb = new this.Tone.Reverb({
-      decay: 2.2,
-      preDelay: 0.01,
-      wet: 0.15
-    }).connect(this.masterGain);
-
-    // Master Delay (Send/Return)
-    this.delay = new this.Tone.FeedbackDelay({
-      delayTime: "8n.",
-      feedback: 0.25,
-      wet: 0.1
-    }).connect(this.masterGain);
+      // 4. Delay (Send/Return)
+      if (this.Tone.FeedbackDelay) {
+        this.delay = new this.Tone.FeedbackDelay({
+          delayTime: "8n.",
+          feedback: 0.2,
+          wet: 0.1
+        }).connect(this.masterGain);
+      }
+    } catch (err) {
+      console.warn('Master chain initialized with fallback to Destination:', err);
+      if (this.Tone.getDestination) {
+        this.masterGain = this.Tone.getDestination();
+        this.masterFilter = this.masterGain;
+      }
+    }
   }
 
   /**
    * Returns master input node for voices to connect to.
    */
   getMasterInput() {
-    if (!this.isReady) this.initMasterChain();
-    return this.masterFilter || this.Tone.getDestination();
+    if (!this.masterGain || !this.masterFilter) {
+      this.initMasterChain();
+    }
+    return this.masterFilter || this.masterGain || (this.Tone ? this.Tone.getDestination() : null);
   }
 
   /**
@@ -90,10 +129,9 @@ export class SoundEngine {
    */
   setVolume(val, isDb = false) {
     if (!this.masterGain) return;
-    if (isDb) {
-      this.masterGain.gain.rampTo(this.Tone.dbToGain(val), 0.05);
-    } else {
-      this.masterGain.gain.rampTo(Math.max(0, Math.min(1, val)), 0.05);
+    if (this.masterGain.gain && typeof this.masterGain.gain.rampTo === 'function') {
+      const gainVal = isDb && this.Tone ? this.Tone.dbToGain(val) : Math.max(0, Math.min(1, val));
+      this.masterGain.gain.rampTo(gainVal, 0.05);
     }
   }
 
@@ -102,8 +140,10 @@ export class SoundEngine {
    */
   setFilter(freq, q = 1) {
     if (!this.masterFilter) return;
-    this.masterFilter.frequency.rampTo(freq, 0.05);
-    this.masterFilter.Q.value = q;
+    if (this.masterFilter.frequency && typeof this.masterFilter.frequency.rampTo === 'function') {
+      this.masterFilter.frequency.rampTo(freq, 0.05);
+      if (this.masterFilter.Q) this.masterFilter.Q.value = q;
+    }
   }
 
   /**
@@ -111,7 +151,9 @@ export class SoundEngine {
    */
   setReverb(wet) {
     if (!this.reverb) return;
-    this.reverb.wet.rampTo(Math.max(0, Math.min(1, wet)), 0.05);
+    if (this.reverb.wet && typeof this.reverb.wet.rampTo === 'function') {
+      this.reverb.wet.rampTo(Math.max(0, Math.min(1, wet)), 0.05);
+    }
   }
 
   /**
@@ -140,11 +182,11 @@ export class SoundEngine {
 
   dispose() {
     this.stopAll();
-    if (this.masterGain) this.masterGain.dispose();
-    if (this.masterFilter) this.masterFilter.dispose();
-    if (this.reverb) this.reverb.dispose();
-    if (this.delay) this.delay.dispose();
-    if (this.limiter) this.limiter.dispose();
+    if (this.masterGain && this.masterGain.dispose) this.masterGain.dispose();
+    if (this.masterFilter && this.masterFilter.dispose) this.masterFilter.dispose();
+    if (this.reverb && this.reverb.dispose) this.reverb.dispose();
+    if (this.delay && this.delay.dispose) this.delay.dispose();
+    if (this.limiter && this.limiter.dispose) this.limiter.dispose();
     this.isReady = false;
   }
 }

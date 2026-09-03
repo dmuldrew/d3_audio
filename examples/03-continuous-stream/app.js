@@ -6,7 +6,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/dist/d3-audio.js';
+} from '/src/index.js';
 
 const container = document.getElementById('chart-area');
 const width = container.clientWidth;

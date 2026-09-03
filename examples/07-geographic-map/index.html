@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>07. Geographic Map & Spatial Audio Sonifier | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #060b16;
+      --card: #0e172a;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1150px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+    }
+
+    .map-container {
+      width: 100%;
+      height: 480px;
+      background: #020610;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .city-pin {
+      cursor: pointer;
+      transform-box: fill-box;
+      transform-origin: center center;
+      transition: filter 0.2s;
+    }
+    .city-pin:hover {
+      filter: brightness(1.3) drop-shadow(0 0 12px #38bdf8);
+    }
+
+    .flight-path {
+      fill: none;
+      stroke: rgba(56, 189, 248, 0.4);
+      stroke-width: 2px;
+      stroke-dasharray: 6 3;
+    }
+
+    .airplane {
+      fill: #f43f5e;
+      filter: drop-shadow(0 0 8px #f43f5e);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.65rem 1.3rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+
+    .control-group { margin-bottom: 1.25rem; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      background: #080d17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">07. Geographic Map & Spatial Audio Sonifier</h1>
+      </div>
+      <div>
+        <span id="map-status" style="font-size: 0.95rem; color: var(--accent); font-family: monospace; font-weight: 700;">Click cities or fly route</span>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="layout-grid">
+        <!-- Map Canvas -->
+        <div class="map-container" id="map-area"></div>
+
+        <!-- Sidebar Controls -->
+        <div>
+          <button id="flight-tour-btn" class="btn">✈ Start Flight Route Tour</button>
+
+          <div class="control-group" style="margin-top: 1.25rem;">
+            <label>Scale Harmony (scalePitch)</label>
+            <select id="scale-select">
+              <option value="pentatonic" selected>Pentatonic Major</option>
+              <option value="dorian">Dorian Mode</option>
+              <option value="blues">Blues Scale</option>
+              <option value="minor">Natural Minor</option>
+              <option value="hirajoshi">Japanese Hirajoshi</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>City Marker Choreography</label>
+            <select id="move-select">
+              <option value="bounce" selected>Bounce (Spring Jump)</option>
+              <option value="ripple">Ripple (Shockwave Halo)</option>
+              <option value="wiggle">Wiggle (Wobble)</option>
+              <option value="flip">3D Flip (Perspective)</option>
+              <option value="glow">Glow (Neon Bloom)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Flight Speed</label>
+            <input type="range" id="flight-speed" min="400" max="1500" value="800">
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.8rem; color: var(--muted); line-height: 1.5;">
+            • <strong>Longitude (X: West ↔ East)</strong> → Full stereo pan [-1.0, +1.0].<br>
+            • <strong>Latitude (Y: South ↕ North)</strong> → Pitch register (C3 ↔ C6).<br>
+            • <strong>Population / Magnitude</strong> → Note velocity & shockwave radius.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

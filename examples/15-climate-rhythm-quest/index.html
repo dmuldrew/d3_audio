@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>15. Climate Spiral & Carbon Rhythm Quest | d3-audio</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="/dist/d3-audio.js"></script>
+  <style>
+    :root {
+      --bg: #070c18;
+      --card: #0f172a;
+      --accent: #38bdf8;
+      --hot: #f43f5e;
+      --cold: #38bdf8;
+      --green: #10b981;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1150px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .nav-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .chart-box {
+      width: 100%;
+      height: 490px;
+      background: #020612;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    svg { width: 100%; height: 100%; }
+
+    .spiral-ring {
+      fill: none;
+      stroke-width: 1.5px;
+      opacity: 0.7;
+      transition: opacity 0.2s, stroke-width 0.2s;
+    }
+    .spiral-ring:hover {
+      opacity: 1;
+      stroke-width: 3px;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      padding: 0.7rem 1.3rem;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .btn:hover { background: #7dd3fc; }
+
+    .btn-scenario {
+      background: #1e293b;
+      color: #f8fafc;
+      font-size: 0.82rem;
+      padding: 0.5rem;
+      margin-bottom: 0.4rem;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .btn-scenario:hover { background: #334155; border-color: var(--accent); }
+    .btn-scenario.active { background: rgba(16, 185, 129, 0.2); border-color: var(--green); color: var(--green); }
+
+    .control-group { margin-bottom: 1.2rem; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      background: #060b17;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem;
+      border-radius: 6px;
+    }
+
+    .hud-stat {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .hud-val { font-family: monospace; font-size: 1.1rem; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <a href="../../index.html" class="nav-link">← Back to Overview</a>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">15. Climate Spiral & Carbon Rhythm Quest</h1>
+      </div>
+      <div>
+        <span id="climate-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">Pre-Industrial Baseline</span>
+      </div>
+    </header>
+
+    <div class="game-grid">
+      <!-- Spiral SVG Canvas -->
+      <div class="panel" style="padding: 1rem;">
+        <div class="chart-box" id="spiral-area"></div>
+      </div>
+
+      <!-- Controls & Climate Action Quest -->
+      <div class="panel">
+        <button id="play-spiral-btn" class="btn">▶ Run Climate Time Machine (1880–2026)</button>
+
+        <div class="hud-stat">
+          <span style="color: var(--muted); font-size: 0.85rem;">Year:</span>
+          <span class="hud-val" id="year-display" style="color: var(--accent);">1880</span>
+        </div>
+        <div class="hud-stat">
+          <span style="color: var(--muted); font-size: 0.85rem;">Temp Anomaly:</span>
+          <span class="hud-val" id="temp-display" style="color: #38bdf8;">-0.16 °C</span>
+        </div>
+        <div class="hud-stat">
+          <span style="color: var(--muted); font-size: 0.85rem;">Atmospheric CO₂:</span>
+          <span class="hud-val" id="co2-display" style="color: #fbbf24;">290 ppm</span>
+        </div>
+
+        <div class="control-group" style="margin-top: 1rem;">
+          <label>Timeline Scrubber (1880 – 2026)</label>
+          <input type="range" id="year-slider" min="1880" max="2026" value="1880">
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <label>Policy & Mitigation Interventions</label>
+          <button class="btn btn-scenario" data-scenario="renewables">⚡ 100% Renewable Grid Transition (-0.4°C)</button>
+          <button class="btn btn-scenario" data-scenario="reforestation">🌲 Global Forest Restoration (-0.3°C)</button>
+          <button class="btn btn-scenario" data-scenario="methane">🛑 Methane Flaring Cut (-0.25°C)</button>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-top: 1rem;">
+          • <strong>NASA GISS Data</strong>: Maps monthly land-ocean temperature anomalies.<br>
+          • <strong>Sonification Harmonic Tension</strong>: Cold anomalies sound in calm major chords ($C_3$); warming spikes introduce dissonant sharp tensions ($F\#_5$).<br>
+          • <strong>Action Scenarios</strong>: Activate mitigation policies to hear the harmonic dissonance resolve into equilibrium!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

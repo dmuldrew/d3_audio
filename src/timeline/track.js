@@ -128,7 +128,10 @@ export class Track {
       const filter = this.filterAccessor(datum, index);
       const sample = this.sampleAccessor(datum, index);
       const moveOpt = this.movementAccessor(datum, index);
-      const targetElement = this.elementAccessor(datum, index);
+      let targetElement = this.elementAccessor(datum, index);
+      if (!targetElement && moveOpt && typeof moveOpt === 'object' && moveOpt.element) {
+        targetElement = moveOpt.element;
+      }
 
       events.push({
         track: this,
@@ -165,7 +168,7 @@ export class Track {
 
     if (event.sample || this.instrumentType === 'sample') {
       const sampleName = event.sample || 'kick';
-      if (this.instrument.trigger) {
+      if (this.instrument && this.instrument.trigger) {
         this.instrument.trigger(sampleName, duration, scheduledTime, velocity, { ...params, pitch: event.pitch });
       }
     } else if (this.instrument && this.instrument.triggerAttackRelease) {
@@ -183,13 +186,16 @@ export class Track {
   }
 
   triggerVisuals(event) {
-    if (!event.element && !event.movement) return;
-
     let targetEl = event.element;
+    let moveConfig = event.movement;
+
+    if (!targetEl && moveConfig && typeof moveConfig === 'object' && moveConfig.element) {
+      targetEl = moveConfig.element;
+    }
+
     if (typeof targetEl === 'function') targetEl = targetEl(event.datum, event.index);
     if (!targetEl) return;
 
-    let moveConfig = event.movement;
     if (typeof moveConfig === 'string') {
       moveConfig = { movement: moveConfig };
     } else if (typeof moveConfig === 'function') {
@@ -197,12 +203,14 @@ export class Track {
     }
 
     const durationSec = typeof event.duration === 'number' ? event.duration : 0.35;
-    const intensity = event.gain !== undefined ? event.gain : 1.0;
+    const intensity = (moveConfig && moveConfig.intensity !== undefined)
+      ? moveConfig.intensity
+      : (event.gain !== undefined ? event.gain : 1.0);
 
     const opts = {
       intensity,
       duration: durationSec,
-      ...moveConfig
+      ...(typeof moveConfig === 'object' ? moveConfig : {})
     };
 
     const choreo = choreography()

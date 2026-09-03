@@ -3,7 +3,7 @@ import {
   choreography,
   defaultEngine,
   createSynth
-} from '/dist/d3-audio.js';
+} from '/src/index.js';
 
 let currentScale = 'pentatonic';
 let currentRoot = 'C';

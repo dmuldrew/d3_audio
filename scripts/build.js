@@ -11,11 +11,10 @@ if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
-// Read all source files in dependency order
-const files = [
+// Concrete source files only (omit index.js re-export files)
+const sourceFiles = [
   'src/musical/notes.js',
   'src/musical/scales.js',
-  'src/musical/index.js',
   'src/scales/scalePitch.js',
   'src/scales/scaleGain.js',
   'src/scales/scaleDuration.js',
@@ -23,7 +22,6 @@ const files = [
   'src/scales/scaleFilter.js',
   'src/scales/scaleSample.js',
   'src/scales/scaleTempo.js',
-  'src/scales/index.js',
   'src/movements/motionEnvelope.js',
   'src/movements/presets/wiggle.js',
   'src/movements/presets/flip.js',
@@ -34,17 +32,33 @@ const files = [
   'src/movements/presets/glow.js',
   'src/movements/presets/squash.js',
   'src/movements/choreography.js',
-  'src/movements/index.js',
   'src/audio/soundEngine.js',
   'src/audio/synthVoice.js',
   'src/audio/samplePlayer.js',
-  'src/audio/index.js',
   'src/timeline/track.js',
-  'src/timeline/timeline.js',
-  'src/timeline/index.js'
+  'src/timeline/timeline.js'
 ];
 
 console.log('Building d3-audio bundle...');
+
+function cleanFileContent(code) {
+  return code
+    // Remove multi-line and single-line import statements
+    .replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?\n?/g, '')
+    .replace(/import\s+['"][^'"]+['"];?\n?/g, '')
+    // Replace export keywords
+    .replace(/export\s+const\s+/g, 'const ')
+    .replace(/export\s+function\s+/g, 'function ')
+    .replace(/export\s+class\s+/g, 'class ')
+    .replace(/export\s+default\s+[^;]+;\n?/g, '')
+    .replace(/export\s+\{[\s\S]*?\};?\n?/g, '')
+    .replace(/export\s+\*\s+from\s+['"][^'"]+['"];?\n?/g, '');
+}
+
+const concatenatedCode = sourceFiles.map(f => {
+  const code = fs.readFileSync(path.join(rootDir, f), 'utf-8');
+  return `// --- ${f} ---\n` + cleanFileContent(code);
+}).join('\n\n');
 
 // Create standalone UMD / Browser bundle
 const bundleContent = `
@@ -60,17 +74,7 @@ const bundleContent = `
 })(this, (function (exports, d3) {
   'use strict';
 
-  ${files.map(f => {
-    const code = fs.readFileSync(path.join(rootDir, f), 'utf-8');
-    // Strip export and import statements for flat UMD scope
-    return code
-      .replace(/import\s+[^;]+;\n?/g, '')
-      .replace(/export\s+const\s+/g, 'const ')
-      .replace(/export\s+function\s+/g, 'function ')
-      .replace(/export\s+class\s+/g, 'class ')
-      .replace(/export\s+\{[^}]+\};\n?/g, '')
-      .replace(/export\s+default\s+[^;]+;\n?/g, '');
-  }).join('\n\n')}
+${concatenatedCode}
 
   // Export functions onto exports object
   exports.scalePitch = scalePitch;
@@ -137,6 +141,15 @@ const bundleContent = `
   Object.defineProperty(exports, '__esModule', { value: true });
 }));
 `;
+
+// Validate JS syntax before writing
+try {
+  new Function(bundleContent);
+  console.log('✓ Bundle syntax verified successfully!');
+} catch (err) {
+  console.error('Bundle syntax validation error:', err);
+  process.exit(1);
+}
 
 fs.writeFileSync(path.join(distDir, 'd3-audio.js'), bundleContent);
 console.log('✓ Created dist/d3-audio.js');

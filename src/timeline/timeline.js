@@ -207,7 +207,13 @@ export class Timeline {
       // Create Tone.Part for this track's events
       const part = new this.Tone.Part((time, event) => {
         track.triggerEvent(event, time, this.Tone);
-        this.emit('step', { event, time, track });
+        if (this.Tone && this.Tone.Draw) {
+          this.Tone.Draw.schedule(() => {
+            this.emit('step', { event, time, track });
+          }, time);
+        } else {
+          this.emit('step', { event, time, track });
+        }
       }, events.map(e => [e.time, e]));
 
       part.start(0);
