@@ -380,20 +380,26 @@ async function auditionHour(hourIndex, forcePlay = false) {
 
 // Mouse / Touch interaction on SVG
 svg
-  .on('pointerdown click', async function(event) {
+  .on('pointerdown touchstart click', async function(event) {
+    if (event.type === 'touchstart') {
+      event.preventDefault();
+    }
     await ensureAudioStarted();
     const [mx] = d3.pointer(event, this);
     const hourIdx = Math.max(0, Math.min(NUM_HOURS - 1, Math.round(xScale.invert(mx))));
     auditionHour(hourIdx, true);
   })
-  .on('pointermove', async function(event) {
+  .on('pointermove touchmove', async function(event) {
+    if (event.type === 'touchmove') {
+      event.preventDefault();
+    }
     const [mx] = d3.pointer(event, this);
     const hourIdx = Math.max(0, Math.min(NUM_HOURS - 1, Math.round(xScale.invert(mx))));
     if (hourIdx !== lastAuditionedHour) {
       auditionHour(hourIdx, false);
     }
   })
-  .on('pointerleave', function() {
+  .on('pointerleave touchend touchcancel', function() {
     if (!isSweeping) {
       cursor.attr('opacity', 0);
       lastAuditionedHour = -1;
@@ -407,8 +413,8 @@ let sweepTimer = null;
 
 const playBtn = document.getElementById('play-stream-btn');
 if (playBtn) {
-  playBtn.addEventListener('click', async (e) => {
-    e.stopPropagation();
+  const toggleSweep = async (e) => {
+    if (e) e.stopPropagation();
     await ensureAudioStarted();
 
     if (isSweeping) {
@@ -428,5 +434,11 @@ if (playBtn) {
         sweepIdx = (sweepIdx + 1) % NUM_HOURS;
       }, 340);
     }
+  };
+
+  playBtn.addEventListener('click', toggleSweep);
+  playBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    toggleSweep(e);
   });
 }

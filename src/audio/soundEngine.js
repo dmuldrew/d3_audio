@@ -38,12 +38,68 @@ export class SoundEngine {
   }
 
   /**
-   * Initializes Web Audio context on user gesture.
+   * Unlocks iOS Web Audio hardware pipelines by playing a silent 1-sample buffer synchronously.
+   */
+  unlockIOS(rawCtx) {
+    if (!rawCtx) return;
+    try {
+      if (rawCtx.state === 'suspended' && typeof rawCtx.resume === 'function') {
+        rawCtx.resume();
+      }
+      if (typeof rawCtx.createBuffer === 'function') {
+        const buffer = rawCtx.createBuffer(1, 1, 22050);
+        const source = rawCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(rawCtx.destination);
+        source.start(0);
+      }
+    } catch (e) {
+      // Non-fatal fallback
+    }
+  }
+
+  /**
+   * Unlocks iPhone hardware Silent/Mute switch by elevating audio session to Playback via HTML5 Audio.
+   */
+  unlockIOSAudioSession() {
+    if (typeof document === 'undefined') return;
+    try {
+      const isIOS = typeof navigator !== 'undefined' && 
+        (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+      if (isIOS) {
+        const audio = document.createElement('audio');
+        audio.setAttribute('playsinline', '');
+        audio.setAttribute('webkit-playsinline', '');
+        audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+        audio.volume = 0.01;
+        const p = audio.play();
+        if (p && typeof p.then === 'function') {
+          p.then(() => {
+            setTimeout(() => {
+              audio.pause();
+              audio.remove();
+            }, 60);
+          }).catch(() => {});
+        }
+      }
+    } catch (e) {
+      // Non-fatal
+    }
+  }
+
+  /**
+   * Initializes Web Audio context on user gesture with iOS resilience.
    */
   async start() {
     if (!this.Tone && typeof window !== 'undefined' && window.Tone) {
       this.Tone = window.Tone;
     }
+
+    // 1. Immediately trigger iOS synchronous unlocking
+    const rawCtx = this.getAudioContext();
+    this.unlockIOS(rawCtx);
+    this.unlockIOSAudioSession();
 
     try {
       if (this.Tone && typeof this.Tone.start === 'function') {
@@ -53,9 +109,18 @@ export class SoundEngine {
         }
       }
 
-      const rawCtx = this.getAudioContext();
       if (rawCtx && rawCtx.state === 'suspended') {
         await rawCtx.resume();
+      }
+
+      // 2. Prevent mobile WebKit audio buffer underruns
+      if (this.Tone && this.Tone.context) {
+        const isIOS = typeof navigator !== 'undefined' && 
+          (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+        if (isIOS && this.Tone.context.lookAhead < 0.06) {
+          this.Tone.context.lookAhead = 0.08;
+        }
       }
 
       if (!this.isReady && this.Tone) {
