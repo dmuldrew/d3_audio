@@ -224,10 +224,10 @@
                 <td><code>scalePitch().domain([10,35]).range(['G4','C2'])</code> — Shallow crust quakes produce high resonant chimes; deep mantle quakes produce low sub-bass rumbles.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Magnitude ($M_w$)</td>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Magnitude (Mw)</td>
                 <td>7.0 – 9.5</td>
                 <td>Gain: 0.55 – 1.0</td>
-                <td><code>scaleGain().domain([7.0,9.5]).range([0.55,1.0])</code> — Exponential energy ($E \propto 10^{1.5M}$) drives punchy acoustic kick velocity and volume.</td>
+                <td><code>scaleGain().domain([7.0,9.5]).range([0.55,1.0])</code> — Exponential energy (E ∝ 10<sup>1.5M</sup>) drives punchy acoustic kick velocity and volume.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Longitude / Fault</td>
@@ -237,7 +237,7 @@
               </tr>
               <tr>
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Energy Arc Area</td>
-                <td>$E = 10^{(M-6)\times 0.8}$</td>
+                <td>E = 10<sup>(M-6) × 0.8</sup></td>
                 <td>Pie Slice Angle</td>
                 <td><code>d3.pie().value(...)</code> — Arc angle width scaled logarithmically to seismic joules released.</td>
               </tr>

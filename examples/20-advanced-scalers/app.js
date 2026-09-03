@@ -1,4 +1,4 @@
-// 21. Advanced Scalers & Multivariate Sound Lab
+// 20. Advanced Scalers & Multivariate Sound Lab
 // Demonstrating scaleUncertainty(), scaleSpatial(), scaleEcho(), and scaleChord()
 import {
   scaleUncertainty,

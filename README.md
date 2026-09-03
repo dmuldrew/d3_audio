@@ -3,21 +3,29 @@
 > **Audio-Visual Data Sonification and Rhythmic Choreography for D3.js and Tone.js**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-82%20passed-brightgreen.svg)](#-unit-tests--verification)
+[![Tests](https://img.shields.io/badge/tests-130%20passed-brightgreen.svg)](#-unit-tests--verification)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ed.svg)](#-running-with-docker)
 [![D3 Compatible](https://img.shields.io/badge/D3-v7%2B-F9A03C.svg)](https://d3js.org/)
-[![Tone.js](https://img.shields.io/badge/Tone.js-v15%2B-black.svg)](https://tonejs.github.io/)
+[![Tone.js](https://img.shields.io/badge/Tone.js-v14%2B-black.svg)](https://tonejs.github.io/)
 
-`d3-audio` is a modular, idiomatic D3 library that bridges data visualization with Web Audio synthesis and rhythmic screen choreography. It introduces **D3-style audio scalers** that map data to musical pitches, frequencies, filter cutoffs, and drum samples—analogous to how D3 scales map data to visual dimensions—while driving **rhythmic physical movements** (wiggles, 3D flips, pulses, bounces, shakes, ripples, glows, and squash & stretch) synchronized frame-accurately to Tone.js timelines.
+**What if you could *hear* your data the same way you see it?**
+
+Think of a hospital heart monitor beeping in tempo with a pulse, a car's parking sensors beeping faster as you back closer to an obstacle, or a microwave chiming when food is hot. We all use sound every day to understand what is happening without having to stare at a screen.
+
+`d3-audio` brings this power to web data visualization. Just as tools like **D3.js** turn numbers into bar heights, circles, and line graphs on your screen, `d3-audio` translates those same numbers into musical notes, rhythms, volume, and stereo sound—while keeping on-screen animations moving in perfect lockstep with the audio.
 
 ---
 
 ## 📑 Table of Contents
 
+- [What is Data Sonification? (A Plain-English Intro)](#-what-is-data-sonification-a-plain-english-intro)
 - [Conceptual Model & Architecture](#-conceptual-model--architecture)
 - [Principles of Data Sonification](#-principles-of-data-sonification)
 - [Continuous, Ordinal, and Categorical Data Sonification](#-continuous-ordinal-and-categorical-data-sonification)
 - [Musical Tension, Release & Energy Dynamics](#-musical-tension-release--energy-dynamics)
+- [Ethical Sonification Guidelines](#-ethical-sonification-guidelines--preventing-data-misrepresentation)
+- [Cognitive Channels for Data Encoding](#-cognitive-channels-for-data-encoding)
+- [Ecosystem, Prior Art & Academic References](#-ecosystem-prior-art--academic-references)
 - [Key Features](#-key-features)
 - [Quickstart Guide](#-quickstart-guide)
 - [Interactive Demo Applications](#-interactive-demo-applications)
@@ -31,6 +39,11 @@
   - [`scaleSample()`](#scalesample)
   - [`scaleTempo()`](#scaletempo)
   - [`scaleTension()`](#scaletension)
+  - [`scaleRhythm()`](#scalerhythm)
+  - [`scaleUncertainty()`](#scaleuncertainty)
+  - [`scaleSpatial()`](#scalespatial)
+  - [`scaleEcho()`](#scaleecho)
+  - [`scaleChord()`](#scalechord)
 - [Rhythmic Movements & Choreography](#-rhythmic-movements--choreography)
   - [Movement Presets](#movement-presets)
   - [`choreography()` Engine](#choreography-engine)
@@ -46,193 +59,142 @@
 
 ---
 
+## 🎧 What is Data Sonification? (A Plain-English Intro)
+
+**Data sonification** is the practice of turning information into sound.
+
+When you look at a traditional bar chart, your eyes translate the height of each bar into a number—taller means more, shorter means less. With data sonification, your ears do the exact same thing:
+
+* **Lower numbers** sound like deep, low notes (like a cello or bass).
+* **Higher numbers** sound like bright, high notes (like a chime or flute).
+* **Sudden spikes** can sound like a crisp drum click or an increase in volume.
+* **Groups or categories** (like departments, countries, or animal species) can sound like distinct musical instruments playing together in harmony.
+
+### Why Turn Data into Sound?
+
+1. **Accessibility for Everyone**: Not everyone can easily read complex visual dashboards. For blind, low-vision, or neurodivergent analysts, traditional screen readers have to read raw spreadsheets cell-by-cell ("A1: 12.3, A2: 15.8, A3: 19.4..."), which is exhausting and slow. With sonification, an analyst can hear an entire 10-year trend or catch a dramatic drop in just two seconds.
+2. **Eyes-Free Multitasking**: Your eyes can only focus on one screen at a time, but your ears can listen to the environment while you do other things. A server administrator, healthcare worker, or trader can listen to an ambient background audio stream and immediately notice when something changes pitch or rhythm.
+3. **Catching What Your Eyes Miss**: The human ear is extraordinarily sensitive to rhythm, timing, and repetition. In a complex or crowded visual chart with dozens of crisscrossing lines, subtle periodic patterns or tiny wobbles get lost in visual clutter—yet your ears can spot a slight syncopation or missed beat instantly.
+4. **Emotional Impact & Storytelling**: Numbers on a page can feel abstract and dry. Hearing a century of climate warming or biodiversity loss accelerate into tense, dissonant tones creates a memorable human connection that resonates far beyond a silent report.
+
+---
+
 ## 🧠 Conceptual Model & Architecture
 
-In traditional D3 visualizations, continuous or discrete data values are transformed into visual attributes like position, radius, color, or opacity:
+In traditional visual charts, you create a "scale" that maps numbers to screen pixels:
 
-$$\text{Data Domain} \xrightarrow{\text{D3 Visual Scale}} \text{Visual Range (pixels, RGB, coordinates)}$$
+> **Data (0 to 100)** → *Visual Scale* → **Screen Pixels (0px to 500px)**
 
-`d3-audio` extends this paradigm to the auditory and kinetic dimensions:
+`d3-audio` adds a parallel bridge that maps those same numbers to sounds and synchronized motion:
 
-$$\text{Data Domain} \xrightarrow{\text{D3 Audio Scaler}} \text{Sonic Range (Pitch, Gain, Pan, Cutoff, Drum Samples)}$$
-$$\text{Data Event} \xrightarrow{\text{Tone.js Timeline} + \text{Tone.Draw}} \text{Synchronized Rhythmic Choreography (Wiggles, Flips, Pulses)}$$
+> **Data (0 to 100)** → *Audio Scaler* → **Musical Notes (C3 to C6)**  
+> **Data Event** → *Timeline Sync* → **Screen Motion (Wiggles, Bounces, Pulses)**
 
 ```mermaid
 flowchart TD
     subgraph Data Layer
-        D[Dataset / Stream]
+        D["Your Data (Numbers, Tables, Time-Series)"]
     end
 
-    subgraph D3 Audio Scalers
-        SP[scalePitch]
-        SG[scaleGain]
-        SD[scaleDuration]
-        SPan[scalePan]
-        SF[scaleFilter]
-        SS[scaleSample]
+    subgraph Audio Scalers ["d3-audio Scalers (The Translators)"]
+        SP["scalePitch (Pitch / Frequency)"]
+        SG["scaleGain (Volume / Loudness)"]
+        SD["scaleDuration (Note Length)"]
+        SPan["scalePan (Left / Right Stereo)"]
+        SF["scaleFilter (Tone Brightness)"]
+        SS["scaleSample (Drums & Clicks)"]
     end
 
-    subgraph Conductor & Timeline
-        TL[timeline / Transport]
-        TR1[Track 1: Melodic]
-        TR2[Track 2: Drums]
+    subgraph Orchestration ["Conductor & Timeline"]
+        TL["Timeline & Transport"]
+        TR1["Track 1: Melodic Voices"]
+        TR2["Track 2: Rhythm & Percussion"]
     end
 
-    subgraph Audio Synthesis
-        Synth[PolySynth / FM / AM]
-        Drums[Synthesized Soundbank]
-        FX[Master Filter / Reverb / Delay / Limiter]
-        Speakers((Audio Output))
-    end
-
-    subgraph Visual Choreography
-        TD[Tone.Draw Synchronizer]
-        Choreo[choreography]
-        DOM[DOM / SVG Elements: Wiggle, Flip, Pulse, Bounce]
+    subgraph Output ["What You Experience"]
+        Speakers["🔊 Speakers & Headphones (Synthesizers & Drums)"]
+        Screen["👁️ Screen Animation (Wiggles, Pulses, Flips in Sync)"]
     end
 
     D --> SP & SG & SD & SPan & SF & SS
     SP & SG & SD & SPan --> TR1
     SS & SG --> TR2
     TR1 & TR2 --> TL
-    TL -->|Audio Clock| Synth & Drums --> FX --> Speakers
-    TL -->|Hardware Lockstep| TD --> Choreo --> DOM
+    TL -->|Audio Playback| Speakers
+    TL -->|Visual Frame Lock| Screen
 ```
 
 ---
 
 ## 📜 Principles of Data Sonification
 
-Inspired by foundational research and practice in data musicology (including Daniel Muldrew's *"Transforming Data Into Music"*):
+Data sonification is grounded in foundational principles of auditory display and psychoacoustics:
 
 ### 1. Mapping Data to Sound
-$$\text{Data} + \text{Known Mapping} = \textbf{Meaning}$$
-$$\text{Data} + \text{Cryptic Mapping} = \textbf{Noise / Junk}$$
+> **Data + Clear Mapping = Meaning**  
+> **Data + Unexplained Sounds = Noise**
 
-Just as an unlabeled visual chart produces confusion, sonification without an explicit mapping key is merely noise. A listener must understand *which* physical or musical property corresponds to *which* data dimension. `d3-audio` provides the `audioLegend()` component to make auditory mappings as explicit and interactive as visual axis ticks.
+Just as an unlabeled visual chart produces confusion, sound without an explanation is merely noise. A listener needs to know *what* they are hearing: *"Does higher pitch mean more sales, or higher risk?"*
+
+`d3-audio` includes an interactive **`audioLegend()`** widget. Just like a color legend on a map, an Audio Legend displays the rules of the sonification and lets users click to audition each sound before playing the full visualization.
 
 ### 2. The "Stay Close to the Data" Rule
 > *"Stay close to the data... otherwise it's art!"*
 
-Artistic sonification allows arbitrary aesthetic choices. Analytical sonification demands faithfulness to the data: relative intervals, ratios, and categorical distinctions must be audibly preserved so that a blind or eyes-free user can reconstruct the underlying dataset directly from the sound.
-
-### 3. Why Turn Data Into Sound?
-* **Accessibility (a11y)**: Empowers blind and vision-impaired analysts to explore high-dimensional data, distributions, and trends without relying on visual charts or slow screen-reader tabular readouts.
-* **Dual-Channel Perception**: Combining sight and sound dramatically accelerates pattern recognition and cognitive retention, revealing subtle periodic cycles or outliers that visual clutter obscures.
-* **Eyes-Free & Ambient Telemetry**: Monitoring production server health, financial trading volatility, or medical patient vitals while the user is visually occupied with other tasks.
-* **Emotional Resonance & Behavioral Motivation**: Audio connects emotionally. Applications sonifying personal health metrics (sleep regularity, fitness, carbon footprints) can use harmonic consonance as positive reinforcement and dissonance to encourage corrective habits.
+Music can take creative liberties, but **data sonification is an analytical tool**. If sales double, the pitch or volume should audibly reflect that doubling. If the data is calm, the sound should be calm; if the data is volatile, the sound should reflect that volatility. Maintaining mathematical fidelity ensures that anyone listening can accurately understand the real-world story behind the numbers.
 
 ---
 
 ## 📊 Continuous, Ordinal, and Categorical Data Sonification
 
-Choosing the right auditory dimension depends strictly on the statistical data type of your variable:
+In data analysis, different types of data require different visual charts. In data sonification, they require different kinds of sound:
 
-| Data Variable Type | Visual Attribute | Auditory Attribute (`d3-audio` Scaler) |
-|---|---|---|
-| **Continuous / Quantitative** | Position (X, Y) | Sound Frequency / Pitch (`scalePitch`) |
-| **Continuous / Quantitative** | Luminosity / Opacity | Sound Loudness (`scaleGain`) |
-| **Continuous / Quantitative** | Color Temperature | Timbre / Filter Brightness (`scaleFilter`) |
-| **Continuous / Quantitative** | Horizontal Position | Stereo Spatial Panning (`scalePan`) |
-| **Continuous / Quantitative** | Width / Size | Note Duration (`scaleDuration`) |
-| **Ordinal (Ranked Hierarchy)** | Grid Order / Step Rank | Diatonic Scale Degrees (`scalePitch`) |
-| **Ordinal (Ranked Hierarchy)** | Concentric Octave Tiers | Octave Register ($C_3 \rightarrow C_4 \rightarrow C_5$) |
-| **Ordinal (Ranked Hierarchy)** | Threat / Severity Level | Harmonic Tension (`scaleTension`) |
-| **Categorical (Unranked Classes)** | Color Hue (Red, Blue) | Instrument Timbre / Synthesizer Voice |
-| **Categorical (Unranked Classes)** | Visual Texture / Shape | Percussion Sample (`scaleSample`) |
-| **Categorical (Unranked Classes)** | Category Clusters | Modal Key Center / Scale Mode |
+| Data Type | Everyday Analogy | Best Visual Element | Best Auditory Element (`d3-audio` Scaler) |
+|---|---|---|---|
+| **Continuous (Smooth Numbers)** | Thermometer temperature, vehicle speed, stock price | Line height, bar length | **Pitch & Frequency** (`scalePitch`), **Volume** (`scaleGain`), **Left/Right Pan** (`scalePan`) |
+| **Ordinal (Ranked Steps)** | Gold/Silver/Bronze medals, spicy hot-sauce tiers, survey stars (1 to 5) | Ordered rows, brightness tiers | **Musical Scale Steps** (`scalePitch` quantized to Do-Re-Mi), **Harmonic Tension** (`scaleTension`) |
+| **Categorical (Unranked Groups)** | Fruit types (Apples, Oranges, Pears), departments, countries | Distinct colors (Red, Blue, Green) | **Instrument Timbres** (Piano vs. Marimba vs. Flute), **Drum Hits** (`scaleSample`) |
 
-### Continuous Data (Quantitative Ranges)
-* **Definition**: Numeric values with infinite smooth gradations (e.g. temperatures, stock prices, velocities, geographical coordinates, chemical hydropathy).
-* **Sonic Mappings**: Smooth frequency sweeps, continuous dB gain scaling, stereo panning ($-1$ Left to $+1$ Right), and lowpass filter cutoffs ($200\text{ Hz}$ to $10,000\text{ Hz}$).
-* **Best Scalers**: `scalePitch().quantize(false)`, `scaleGain()`, `scaleFilter()`, `scalePan()`, `scaleDuration()`.
+### 1. Continuous Data: "Smoothly Sliding Values"
+* **What it is**: Quantities that can vary smoothly by fractions—like temperature rising from 68.1°F to 72.4°F, or water pressure rising.
+* **How to sonify it**: Use continuous pitch glides, rising volume, or stereo panning (panning from left to right as a timeline advances).
+* **Tools**: `scalePitch().quantize(false)`, `scaleGain()`, `scalePan()`, `scaleFilter()`.
 
-### Ordinal Data (Ranked Categories)
-* **Definition**: Discrete classes that possess a strict, meaningful sequence or hierarchy (e.g. IUCN conservation risk levels, customer satisfaction $1\dots5$, earthquake magnitude classes, educational tiers).
-* **Sonic Mappings**: Quantized musical scale degrees (e.g. Root $\rightarrow$ 2nd $\rightarrow$ 3rd $\rightarrow$ 5th $\rightarrow$ 6th in Pentatonic), discrete octave shifts, and progression through harmonic tension tiers.
-* **Best Scalers**: `scalePitch().quantize(true)`, `scaleTension()`.
+### 2. Ordinal Data: "Climbing Steps"
+* **What it is**: Values that have a strict, meaningful order, but aren't necessarily exact measurements—such as Olympic medals, threat levels (Low, Moderate, High, Severe), or customer satisfaction ratings.
+* **How to sonify it**: Use ascending musical steps (like climbing a major or pentatonic musical scale: C, D, E, G, A), octave registers, or progression from calm chords to tense chords.
+* **Tools**: `scalePitch().quantize(true)`, `scaleTension()`.
 
-### Categorical Data (Unranked Discrete Groups)
-* **Definition**: Discrete categories with **no intrinsic numerical ranking** (e.g. 20 amino acid biochemical families, DNA base pairs A/T/C/G, wildlife taxonomic kingdoms, vehicle fleet dispatch categories, server cluster regions).
-* **Sonic Mappings**:
-  * **Instrument Timbre**: Assigning fundamentally different synthesis engines or physical acoustic models (e.g. Plucked Kalimba for herbivores, Resonant FM Lead for carnivores, Sub Horn for apex predators, Woodblock click for glycine hinges).
-  * **Acoustic Percussion Soundbanks**: Using discrete percussion hits via `scaleSample()` (Kick, Snare, Hi-hat, Bell, Clap, Blip).
-  * **Modal Signatures**: Modulating musical modes across categories (e.g. Dorian mode for rainforests, Lydian mode for ocean reefs, Hirajoshi for arctic tundra).
-* ⚠️ **Critical Sonification Pitfall**: **Never map non-ranked categories to a single continuous pitch scale!** High notes psychoacoustically imply "greater than" or "higher priority." Mapping categorical variables (such as hair color or department names) to ascending pitches creates false perceived hierarchies. Use distinct instrument timbres, sample hits, or spatial pan positions instead.
+### 3. Categorical Data: "Distinct Buckets"
+* **What it is**: Discrete categories that have **no natural higher-or-lower ranking**—like product categories, departments (Sales, Engineering, Support), or animal species.
+* **How to sonify it**: Assign each category a completely distinct **instrument voice** or percussion hit:
+  * Department A → Warm Piano
+  * Department B → Bright Marimba
+  * Department C → Acoustic Guitar
+* ⚠️ **The Golden Rule of Sonification**: **Never map unranked categories to higher and lower pitches!** The human brain naturally hears higher notes as "higher", "better", or "more important." If you play Marketing on a low note and Engineering on a high note, listeners will perceive an unintended hierarchy. Always use different instrument sounds or stereo positions for categories!
 
 ---
 
 ## ⚡ Musical Tension, Release & Energy Dynamics
 
-Volatile time series, risk anomalies, and system alerts benefit from psychoacoustic tension/release cycles:
+In movie scores, a composer builds suspense with tense, eerie chords before resolving into a peaceful, stable melody. In data sonification, you can use that exact same psychological response to communicate risk, volatility, and equilibrium:
 
-* **Tension**: Analogous to the windup of a mechanical spring. Created by harmonic dissonance (tritones, minor 2nds, diminished 7ths), accelerating tempo, rising register, or microtonal detuning.
-* **Release**: The return to equilibrium and harmonic stability (consonant major triads, perfect 5ths, octaves) when metrics return within normal operating bounds.
-* **Musical Energy**:
-  $$\text{Energy} = \text{Loudness (Gain)} \times \text{Speed (BPM)}$$
-  As volatility surges, increasing both loudness and tempo magnifies user urgency without requiring visual attention.
-* **`scaleTension()`**: Coordinates harmonic chord voicing, filter cutoff, detuning cents, and tempo multipliers from a single continuous risk metric.
+* **Tension (Instability & Risk)**: Created using dissonant harmonic intervals (notes that intentionally clash, like a tritone), faster tempos, or distorted textures. Use this when a metric breaches safety thresholds, or when market volatility surges.
+* **Release (Stability & Resolution)**: Returning to smooth, pleasant harmonies (like major chords) when metrics return to normal operating boundaries.
+* **Energy**: Combining loudness with tempo:
+  > **Perceived Energy = Loudness × Speed (Tempo)**
+* **`scaleTension()`**: A unified scaler that coordinates harmonic dissonance, filter brightness, and playback speed from a single risk or volatility number.
 
 ---
 
 ## ⚖️ Ethical Sonification Guidelines & Preventing Data Misrepresentation
 
-While sonification offers remarkable communicative power, it also introduces unique psychoacoustic and perceptual vulnerabilities. Analysts must design sonifications carefully to avoid unintentionally misleading the listener:
+Sound has a direct line to human emotion. Because of that, sound designers have a responsibility to present data honestly:
 
-### 1. The "Cherry-Picked Scale" Hazard
-* **The Problem**: Selecting a universally consonant scale like **Pentatonic Major** guarantees that *any* data sequence—even completely random white noise or chaotic market volatility—will sound pleasing, melodic, and calm.
-* **The Risk**: Dangerously masks real system instability, erratic anomalies, or high variance that *should* sound jarring or dissonant.
-* **The Solution**: For volatile or error-prone metrics, pair anomalous values with dissonant harmonic intervals (e.g. tritones via `scaleTension()`) or microtonal detuning rather than forcing all data into euphonic musical scales.
-
-### 2. Cultural Key & Tonal Bias
-* **The Problem**: In Western psychoacoustics, minor chords are culturally conditioned to sound *"sad, dark, or dangerous"*, while major chords sound *"happy, cheerful, or safe"*.
-* **The Risk**: Mapping neutral, non-evaluative categories (e.g. demographic groups, geopolitical regions, or competing product lines) to minor vs. major keys injects implicit emotional bias into the data.
-* **The Solution**: Reserve major/minor shifts strictly for genuine positive/negative delta indicators (e.g. profit vs. loss). For neutral categories, differentiate via distinct acoustic instrument timbres (`pluckSynth` vs `fmSynth`) rather than positive/negative affective tonalities.
-
-### 3. Psychoacoustic Non-Linearity (Fletcher-Munson Curves)
-* **The Problem**: Human hearing is not flat across frequencies. The human ear is dramatically more sensitive to frequencies between $2,000\text{ Hz} - 4,000\text{ Hz}$ than to sub-bass ($60\text{ Hz}$) or high treble ($12,000\text{ Hz}$).
-* **The Risk**: Two data points possessing identical mathematical amplitudes will be perceived with vastly different loudness simply because one is pitched at $3\text{ kHz}$ and the other at $100\text{ Hz}$.
-* **The Solution**: Use ISO 226 equal-loudness weighting or calibrate `scaleGain()` to boost lower and extreme higher frequencies so all registers are perceived with balanced prominence.
-
-### 4. Temporal Masking (Acoustic Blurring)
-* **The Problem**: When events are triggered faster than $\sim 20\text{ notes/second}$ (sub-50ms intervals), the human auditory cortex experiences *temporal masking*—individual note onsets smear into an continuous acoustic drone.
-* **The Risk**: Isolated statistical outliers or brief transient spikes become completely imperceptible to the ear.
-* **The Solution**: Maintain event durations $\ge 60\text{ ms}$ for discrete inspections, or introduce transient percussion clicks (`drums.trigger("blip")`) to pierce through dense rapid streams.
-
----
-
-## 🚲 Case Study Walkthrough: The Pronto Bike Share Commuter Symphony
-
-Inspired by the award-winning *Pronto Data Challenge* sonification by Daniel Muldrew:
-
-### The Dataset
-* 871 MB of Seattle municipal bike share telemetry, capturing minute-by-minute bicycle availability across 50 urban docking stations throughout 2015.
-
-### The Auditory Blueprint
-1. **Station $\Longleftrightarrow$ Instrument Timbre**: Each urban station category is assigned an acoustic voice:
-   * **Downtown Financial District**: Crystalline FM Bell Synthesizer (desk work hub).
-   * **University District**: Marimba Pluck Synthesizer (student commute hub).
-   * **Waterfront Pier 69**: Bright Brass Lead (leisure and ferry transit).
-   * **Capitol Hill Residential**: Deep Sub-Bass (residential origin).
-2. **Midnight Calibration & Polyphonic Voicing**: To allow all 4 stations to be played **at the exact same time** while remaining 100% individually distinguishable without frequency masking or unison clutter, each station anchors to its own non-overlapping octave register:
-   * **Downtown Financial**: Soprano Register ($C_5 = \text{MIDI } 72$)
-   * **University District**: Alto Register ($C_4 = \text{MIDI } 60$, Middle C)
-   * **Waterfront Pier 69**: Tenor Register ($C_3 = \text{MIDI } 48$)
-   * **Capitol Hill Residential**: Bass Register ($C_2 = \text{MIDI } 36$)
-3. **Relative Delta Step**: $\pm 1$ bicycle dock change $= \pm 1$ semitone step relative to its anchor:
-   * Net bike checkouts drain the station and lower the pitch ($C \rightarrow B \rightarrow A$).
-   * Net bike returns fill the docks and raise the pitch ($C \rightarrow C\# \rightarrow D$).
-4. **Time Compression Equation**:
-   $$\text{15-Minute Interval} \Longleftrightarrow \text{1 Music Beat (0.5s)}$$
-   $$\text{1 Hour} \Longleftrightarrow \text{1 Measure (4 beats = 2.0s)}$$
-   $$\text{1 Full Day (24 Hours)} \Longleftrightarrow \text{24 Measures (48.0s total)}$$
-
-### The Commuter Discovery
-Listening to the sonification immediately reveals the rhythmic counterpoint of an urban economy without reading a single spreadsheet:
-* **Weekday (April 1st)**: Sharp 8:00 AM rush where residential docks drain in a low bass plunge while downtown financial docks surge into high treble bells, reversing at 5:30 PM.
-* **Holiday (July 4th)**: Morning rushes are completely silent; instead, a massive slow afternoon wave flows toward the waterfront pier, followed by an evening post-fireworks cascade.
-
-Explore this live in **[Demo 19: Pronto Bike Share Commuter Symphony](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/19-pronto-bike-commuter/index.html)**.
+1. **Beware the "Sugarcoated Scale"**: If you map chaotic, failing system metrics onto a universally sweet pentatonic scale (the notes of a pleasant lullaby), the disaster will sound cheerful and calm! When data is bad or volatile, allow it to sound tense or dissonant.
+2. **Watch Cultural Biases in Chords**: In Western culture, minor chords often feel "sad" or "mysterious," while major chords feel "happy." Avoid using minor chords for neutral groups (like regions or demographic categories) unless you are truly representing a positive vs. negative change (like profits vs. losses).
+3. **Equal Loudness Across Registers**: Human ears hear middle pitches (like human speech, around 2,000 to 4,000 Hz) much louder than deep bass or ultra-high treble. Calibrate volume so high notes don't deafen the listener while low bass notes fade into inaudibility.
+4. **Don't Overcrowd the Ears**: Triggering more than 20 notes per second causes individual sounds to blend together into an indistinct buzz. Keep events spaced so each data point can be clearly heard.
 
 ---
 
@@ -256,6 +218,8 @@ Different auditory attributes engage different neurological processing pathways.
 `d3-audio` builds upon pioneering work in the fields of auditory display, sound art, and algorithmic musicology:
 
 * **Pioneering Sonification Projects**:
+  * **Timo Bingmann** (*"The Sound of Sorting — A Sorting Algorithm Visualization and Audibilization Tool"*, 2013, Panthema / Karlsruhe Institute of Technology): The landmark open-source tool and audibilization study demonstrating the acoustic signatures of Quicksort, Mergesort, Radix Sort, and other comparison algorithms by mapping array values to musical pitch and memory access indices to stereo panning.
+  * **Ronald M. Baecker** (*"Sorting Out Sorting"*, 1981, ACM SIGGRAPH / University of Toronto): The foundational 30-minute educational color sound film that pioneered computer-assisted sorting algorithm audio-visual demonstration.
   * **Brian Foo** (*Data-Driven DJ*): Landmark sonification mapping median household income inequality along the NYC Subway F-Train line to musical arrangements.
   * **Dr. Mark Ballora** (Penn State University): Scientific acoustic data sonification of tropical storms, including the physiological and atmospheric parameters of *Hurricane Sandy*.
   * **Johannes Kreidler** (*Charts Music*): Algorithmic stock market crash melodies mapping 2008 Lehman Brothers, General Motors, and Bank of America declines into acoustic chamber instruments.
@@ -389,10 +353,9 @@ Or open [http://localhost:3000](http://localhost:3000) in your browser.
 | **16. Galton Board & Plinko Statistics** | [`/examples/16-galton-board-plinko/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/16-galton-board-plinko/index.html) | Interactive Central Limit Theorem pinball where binomial random drops play acoustic marimba chimes and accumulate into a singing Gaussian bell curve. |
 | **17. Protein & DNA Folding Sonifier** | [`/examples/17-protein-dna-sonifier/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/17-protein-dna-sonifier/index.html) | Macromolecular ribbon folding with 20 amino acid categorical timbres, Kyte-Doolittle hydropathy spatial panning, and interactive audio legend. |
 | **18. Categorical Ecosystem Food Web** | [`/examples/18-ecosystem-taxonomy/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/18-ecosystem-taxonomy/index.html) | Categorical trophic level timbres (Producers, Herbivores, Carnivores, Apex, Decomposers), biome modes, and IUCN conservation risk tension scaling. |
-| **19. Pronto Bike Share Commuter Symphony** | [`/examples/19-pronto-bike-commuter/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/19-pronto-bike-commuter/index.html) | The canonical 24-hour Seattle commuter sonification comparing April 1st weekday rush hours with July 4th holiday leisure waves using delta semitones from Middle C. |
-| **20. The Sound of Sorting Algorithms** | [`/examples/20-sound-of-sorting/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/20-sound-of-sorting/index.html) | Auditory computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort with stereo memory array panning. |
-| **21. Advanced Scalers & Multivariate Sound Lab** | [`/examples/21-advanced-scalers/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/21-advanced-scalers/index.html) | Interactive testbed for statistical confidence bit-crushing (16➔2b), 3D spatial room reverb, network latency feedback echo, and multivariate harmonic triad voicings. |
-| **22. Euclidean Polyrhythms & Groove Engine** | [`/examples/22-euclidean-rhythms/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/22-euclidean-rhythms/index.html) | Bjorklund algorithm polyrhythm visualizer with rotating concentric clockwork radar, multi-track server load sonification, and authentic world rhythm presets. |
+| **19. The Sound of Sorting Algorithms** | [`/examples/19-sound-of-sorting/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/19-sound-of-sorting/index.html) | Auditory computer science laboratory sonifying Quicksort, Mergesort, Radix Sort LSD, Bubble Sort, and Insertion Sort with stereo memory array panning (citing Timo Bingmann's *The Sound of Sorting*, 2013). |
+| **20. Advanced Scalers & Multivariate Sound Lab** | [`/examples/20-advanced-scalers/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/20-advanced-scalers/index.html) | Interactive testbed for statistical confidence bit-crushing (16➔2b), 3D spatial room reverb, network latency feedback echo, and multivariate harmonic triad voicings. |
+| **21. Euclidean Polyrhythms & Groove Engine** | [`/examples/21-euclidean-rhythms/`](file:///Users/dmuldrew/Documents/GitHub/d3_audio/examples/21-euclidean-rhythms/index.html) | Bjorklund algorithm polyrhythm visualizer with rotating concentric clockwork radar, multi-track server load sonification, and authentic world rhythm presets. |
 
 ---
 
@@ -573,10 +536,10 @@ tension.pitch(85); // Note string
 ---
 
 ### `scaleUncertainty()` / `scaleCrush()`
-Maps statistical uncertainty, $p$-values, confidence interval widths, or data missingness to `Tone.BitCrusher` bit reduction ($16\text{ bits}$ down to $2\text{ bits}$) and lo-fi saturation grit.
+Maps statistical uncertainty, p-values, confidence interval widths, or missing data to `Tone.BitCrusher` bit reduction (16 bits down to 2 bits) and lo-fi saturation grit.
 
-* **Pristine / High Confidence ($p \approx 0$)**: $16\text{ bits}$, pure acoustic tone with $0\%$ grit.
-* **Heavy Uncertainty / Noisy ($p \approx 1$)**: $2\text{ to } 4\text{ bits}$, heavily bit-crushed, lo-fi digital crunch.
+* **Pristine / High Confidence (p near 0)**: 16 bits, pure acoustic tone with 0% grit.
+* **Heavy Uncertainty / Noisy (p near 1)**: 2 to 4 bits, heavily bit-crushed, lo-fi digital crunch.
 
 ```javascript
 const uncertainty = d3Audio.scaleUncertainty()
@@ -595,8 +558,8 @@ synth.triggerAttackRelease("C4", "8n", undefined, 0.8, { crusher: res });
 ### `scaleSpatial()` / `scaleReverb()`
 Maps 3D Z-depth, distance from camera, geographic distance from an epicenter, or cluster hierarchy to reverberant acoustic space (`Tone.Reverb` / `Tone.Freeverb`).
 
-* **Near / Foreground**: Dry, intimate, in-your-face ($5\%$ wet, $0.4\text{s}$ decay).
-* **Far / Background**: Cavernous, deeply reverberant ($95\%$ wet, $7.0\text{s}$ decay).
+* **Near / Foreground**: Dry, intimate, in-your-face (5% wet, 0.4s decay).
+* **Far / Background**: Cavernous, deeply reverberant (95% wet, 7.0s decay).
 
 ```javascript
 const spatial = d3Audio.scaleSpatial()
@@ -639,7 +602,7 @@ const result = chord({
 ---
 
 ### `scaleRhythm()` & `euclideanRhythm()`
-Computes **Euclidean rhythms** using the **Bjorklund algorithm**, evenly distributing $k$ active pulses across $n$ subdivisions (e.g. $E(3, 8) = \text{Tresillo}$, $E(5, 16) = \text{Cinquillo}$). Maps continuous data density or event rates into grooving polyrhythms and Tone.js timing offsets.
+Computes **Euclidean rhythms** using the **Bjorklund algorithm**, evenly distributing active pulses across time subdivisions (e.g. E(3, 8) = Tresillo, E(5, 16) = Cinquillo). Maps continuous data density or event rates into grooving polyrhythms and Tone.js timing offsets.
 
 ```javascript
 // Standalone Bjorklund algorithm:
@@ -680,10 +643,10 @@ d3.select("#my-chart-box").call(accessibleChart({
 
 ## 🌍 World Musical Scales & Microtonality
 
-`d3-audio` includes authentic non-Western musical scale systems and quarter-tone microtonality ($\pm 50\text{ cents}$ / half-flats):
-* **Middle Eastern Maqams**: `maqamBayati` (with $E\sim$ quarter-tone), `maqamRast`, `maqamHijaz`, `maqamSaba`.
+`d3-audio` includes authentic non-Western musical scale systems and quarter-tone microtonality (±50 cents / half-flats):
+* **Middle Eastern Maqams**: `maqamBayati` (with E~ quarter-tone), `maqamRast`, `maqamHijaz`, `maqamSaba`.
 * **Indian Classical Ragas**: `ragaBhairav` (Komal Re, Komal Dha), `ragaTodi` (Tivra Ma), `ragaYaman` (Lydian), `ragaKafi` (Dorian).
-* **Fractional Note Parsing**: `parseNote("E~4")` parses to exact fractional MIDI $63.5$ and exact $320.24\text{ Hz}$ frequency.
+* **Fractional Note Parsing**: `parseNote("E~4")` parses to exact fractional MIDI 63.5 and exact 320.24 Hz frequency.
 
 ---
 
@@ -1305,14 +1268,14 @@ docker run --rm -v "$PWD":/app -w /app node:20-alpine node test/run-tests.js
 
 ## 🔮 Future Features & Technical Roadmap
 
-Inspired by ongoing development and the garage project proposals in *"Transforming Data Into Music"*:
+Planned capabilities and technical enhancements for the d3-audio roadmap:
 
 ### 1. Standard MIDI File Export (`Timeline.exportMidi()`)
 * **Rationale**: MIDI is the digital universal sheet music format.
 * **Capability**: Add native client-side export to standard `.mid` files (Type 0 and Type 1) so analysts and musicians can download their data sonification and import it directly into Digital Audio Workstations (DAWs) like Ableton Live, Logic Pro, GarageBand, FL Studio, or notation tools like MuseScore.
 
 ### 2. ISO 226 / Fletcher-Munson Equal-Loudness Normalization
-* **Rationale**: Compensate for human auditory non-linearities where mid-treble ($2\text{ kHz} - 4\text{ kHz}$) sounds dramatically louder than sub-bass or high air frequencies.
+* **Rationale**: Compensate for human auditory non-linearities where mid-treble (2 kHz to 4 kHz) sounds dramatically louder than sub-bass or high air frequencies.
 * **Capability**: Add `.equalLoudness(true)` to `scalePitch()` and `scaleGain()` to automatically normalize perceived phon/sone loudness across all octave registers.
 
 ### 3. Microsoft PowerBI & Observable Custom Visual Plugins

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>20. The Sound of Sorting Algorithms | d3-audio</title>
+  <title>19. The Sound of Sorting Algorithms | d3-audio</title>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
   <script src="../../dist/d3-audio.js"></script>
@@ -122,7 +122,10 @@
     <header>
       <div>
         <a href="../../index.html" class="nav-link">← Back to Overview</a>
-        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">20. The Sound of Sorting Algorithms</h1>
+        <h1 style="font-size: 1.8rem; margin-top: 0.3rem;">19. The Sound of Sorting Algorithms</h1>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem;">
+          Citing <strong>Timo Bingmann's</strong> landmark <em>"The Sound of Sorting"</em> (2013) &amp; <strong>Ronald M. Baecker's</strong> <em>"Sorting Out Sorting"</em> (ACM SIGGRAPH 1981)
+        </p>
       </div>
       <div style="display: flex; gap: 0.75rem; align-items: center;">
         <button id="btn-audio-activate" class="btn-enable-audio" style="background: #f59e0b; color: #030712; font-weight: 800; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s;">🔊 Enable Audio</button>
@@ -146,7 +149,7 @@
             <span>🔢</span> How Memory & Algorithms are Transformed Into Sound
           </h3>
           <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.8rem;">
-            Inspired by the classic "Sound of Sorting" and "Radix Sort Redux" demonstrations.
+            Based on the landmark audibilization work of <strong>Timo Bingmann</strong> (<em>"The Sound of Sorting — A Sorting Algorithm Visualization and Audibilization Tool"</em>, 2013, Panthema / Karlsruhe Institute of Technology) and <strong>Ronald M. Baecker</strong> (<em>"Sorting Out Sorting"</em>, ACM SIGGRAPH 1981).
           </p>
           <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; color: var(--muted); text-align: left;">
             <thead>
@@ -160,31 +163,31 @@
             <tbody>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Array Element Value</td>
-                <td>1 to N ($N = 40$)</td>
+                <td>1 to N (N = 40)</td>
                 <td>Pitch: C3 ➔ C6</td>
                 <td><code>scalePitch().domain([1, N]).range(['C3','C6'])</code> — Higher array values sound in high registers; sorted arrays produce smooth rising scales.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Memory Array Index</td>
-                <td>Index $0$ to $N-1$</td>
+                <td>Index 0 to N-1</td>
                 <td>Pan: -0.85 ➔ +0.85</td>
                 <td><code>scalePan().domain([0, N-1]).range([-0.85, 0.85])</code> — Memory operations pan left-to-right matching physical array position.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Comparison Event</td>
-                <td>$A[i] > A[j]$ Check</td>
+                <td>A[i] &gt; A[j] Check</td>
                 <td>Marimba / Pluck Chime</td>
                 <td>Acoustic chime sounding the two elements being compared in rapid succession.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Swap / Write Event</td>
-                <td>$\text{swap}(A[i], A[j])$</td>
+                <td>swap(A[i], A[j])</td>
                 <td>Percussive Click</td>
                 <td>Acoustic transient click confirming in-place array mutation.</td>
               </tr>
               <tr>
                 <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Complexity Signature</td>
-                <td>$O(n \log n)$ vs $O(n^2)$</td>
+                <td>O(n log n) vs O(n²)</td>
                 <td>Acoustic Structure</td>
                 <td>Quicksort and Mergesort produce structured logarithmic arpeggios; Radix Sort sounds bucketed passes; Bubble Sort produces noisy random scatter.</td>
               </tr>

@@ -176,28 +176,28 @@
             </thead>
             <tbody>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Orbital Radius ($a$)</td>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Orbital Semi-Major Axis (a)</td>
                 <td>0.01 – 30.0 AU</td>
                 <td>Pitch: C6 ➔ C2</td>
-                <td><strong>Kepler's 3rd Law</strong>: $T^2 \propto a^3 \Rightarrow f \propto a^{-1.5}$. Close, fast-orbiting planets chime at high frequencies; distant gas giants produce deep orbital bass tones.</td>
+                <td><strong>Kepler's 3rd Law</strong>: T² ∝ a³. Close, fast-orbiting inner planets chime at high frequencies; distant gas giants produce deep orbital bass tones.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Doppler Orbit ($X$)</td>
-                <td>$[-\text{Radius}, +\text{Radius}]$</td>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Doppler Orbit (X)</td>
+                <td>[-Radius, +Radius]</td>
                 <td>Stereo Pan: -0.9 ➔ +0.9</td>
                 <td><code>scalePan().domain([-R, R]).range([-0.9, 0.9])</code> — Planets orbiting toward the observer pan Left, crossing Center, and receding to the Right.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Planetary Radius ($R_\oplus$)</td>
-                <td>0.7 – 11.2 $R_\oplus$</td>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Planetary Radius</td>
+                <td>0.7 – 11.2 Earth Radii</td>
                 <td>Velocity Gain: 0.4 ➔ 1.0</td>
                 <td><code>scaleGain().domain([0.7, 12]).range([0.4, 1.0])</code> — Larger planetary bodies generate fuller acoustic amplitude and wider visual transit ripples.</td>
               </tr>
               <tr>
-                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Transit Event ($0^\circ$)</td>
+                <td style="padding: 0.45rem 0; font-weight: 700; color: #fff;">Transit Event (0°)</td>
                 <td>Stellar Conjunction</td>
                 <td>Harmonic Transit Chime</td>
-                <td>When orbital angle crosses $\theta = 0^\circ$ (12 o'clock), the host star pulses with a kinetic ripple and sounds a harmonic bell.</td>
+                <td>When orbital angle crosses 0° (12 o'clock), the host star pulses with a kinetic ripple and sounds a harmonic bell.</td>
               </tr>
             </tbody>
           </table>

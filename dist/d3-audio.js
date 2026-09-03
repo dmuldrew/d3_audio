@@ -1598,7 +1598,7 @@ function scaleRhythm() {
 /**
  * audioLegend: Interactive D3 Visual-Auditory Legend Widget.
  *
- * Implements the core principle from "Transforming Data Into Music":
+ * Implements the core principle of data sonification:
  * "Data + Known Mapping = Meaning. Communicate your data mapping to the user
  *  just like you would label a graph!"
  */

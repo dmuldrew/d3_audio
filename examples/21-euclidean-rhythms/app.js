@@ -1,4 +1,4 @@
-// 22. Euclidean Polyrhythms & Algorithmic Groove Engine
+// 21. Euclidean Polyrhythms & Algorithmic Groove Engine
 import {
   scaleRhythm,
   euclideanRhythm,
