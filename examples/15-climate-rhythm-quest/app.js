@@ -177,38 +177,46 @@ function renderSpiralUpTo(yearIdx) {
   }
 
   if (projPoints.length > 1) {
-    let projColor = '#f43f5e'; // Default Worst-Case
-    if (currentMode === 'sandbox') {
-      const netLast = projPoints[projPoints.length - 1].netA;
-      projColor = netLast <= 1.5 ? '#10b981' : (netLast <= 2.0 ? '#f59e0b' : '#f43f5e');
-    } else {
-      if (activeScenario === 'ssp245') projColor = '#f59e0b';
-      if (activeScenario === 'ssp126') projColor = '#10b981';
-    }
-
     spiralGroup.append('path')
       .datum(projPoints)
       .attr('class', 'spiral-ring spiral-projected')
       .attr('d', line)
-      .attr('stroke', projColor)
+      .attr('stroke', '#facc15')
       .attr('stroke-dasharray', '5 3')
-      .attr('stroke-width', 3)
-      .attr('filter', 'drop-shadow(0 0 6px rgba(255,255,255,0.4))');
+      .attr('stroke-width', 2.2)
+      .attr('opacity', 0.85);
   }
 
-  // Active glowing yellow trail directly following the rotating needle tip
-  if (points.length > 1) {
-    const activeTrail = points.slice(-Math.min(points.length, 14));
-    spiralGroup.append('path')
-      .datum(activeTrail)
-      .attr('class', 'needle-trail')
-      .attr('d', line)
-      .attr('fill', 'none')
-      .attr('stroke', '#fef08a')
-      .attr('stroke-width', 3.5)
-      .attr('stroke-linecap', 'round')
-      .attr('opacity', 0.95)
-      .attr('filter', 'drop-shadow(0 0 8px rgba(250, 204, 21, 0.85))');
+  // Gradual illuminated active trailing head blending smoothly into the spiral
+  if (points.length > 2) {
+    const tailLen = Math.min(points.length - 1, 24);
+    const tailPoints = points.slice(-tailLen - 1);
+    const trailGroup = spiralGroup.append('g').attr('class', 'needle-trail-group');
+
+    for (let j = 0; j < tailPoints.length - 1; j++) {
+      const t = (j + 1) / (tailPoints.length - 1); // 0 at tail start, 1 at needle tip
+      const seg = [tailPoints[j], tailPoints[j + 1]];
+      
+      // Smooth progressive ease for color and width bloom towards the tip
+      const easeT = Math.pow(t, 1.8);
+      const segColor = d3.interpolateRgb('#facc15', '#fffbeb')(easeT);
+      const segWidth = 2.2 + easeT * 1.3; // Starts at 2.2px (seamless match with base spiral), peaks at 3.5px
+      const segOpacity = 0.85 + easeT * 0.15;
+
+      const p = trailGroup.append('path')
+        .datum(seg)
+        .attr('d', line)
+        .attr('fill', 'none')
+        .attr('stroke', segColor)
+        .attr('stroke-width', segWidth)
+        .attr('stroke-linecap', 'round')
+        .attr('opacity', segOpacity);
+
+      if (t > 0.65) {
+        const glowStrength = (t - 0.65) / 0.35;
+        p.attr('filter', `drop-shadow(0 0 ${glowStrength * 7}px rgba(250, 204, 21, ${glowStrength * 0.8}))`);
+      }
+    }
   }
 
   const lastPt = points[points.length - 1];
