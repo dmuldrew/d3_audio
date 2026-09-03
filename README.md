@@ -144,12 +144,12 @@ Just as an unlabeled visual chart produces confusion, sound without an explanati
 ### 2. The Golden Rule of Sonification: Stay Close to the Data!
 > *Stay close to the data... otherwise it's art!*
 
-Music can take creative liberties, but **data sonification is an analytical tool**. Just as a data journalist or graphic designer must maintain visual fidelity in charts and graphs, a sound designer must maintain auditory fidelity:
+Music takes creative liberties, but **data sonification is an analytical tool**. Every rule of visual chart integrity has a direct auditory counterpart:
 
-* **Truncated Y-Axes vs. Distorted Pitch Ranges**: In visual graphics, starting a bar chart's vertical axis at 95 instead of 0 creates a misleading optical illusion—a tiny 1% difference looks like a catastrophic collapse. In audio sonification, cramming a narrow 1% change across three wild octaves commits the exact same deception. The audio range must reflect the true proportional magnitude of the shift.
-* **Bubble Area vs. Loudness & Decibels**: In visual charts, scaling a bubble's *radius* instead of its *area* accidentally squares the perceived difference (making a 2x increase look 4x bigger). In sound, human ears perceive loudness logarithmically, not linearly. Using properly calibrated decibel curves (`scaleGain.db()`) ensures that a doubling in data sounds like a true doubling in intensity, rather than an overwhelming distortion.
-* **Visual "Chartjunk" vs. Auditory "Audiojunk"**: Edward Tufte coined the term *chartjunk* for decorative 3D bevels, fake drop shadows, and visual clutter that distract from the numbers. In audio sonification, gratuitous reverb, sweeping delay effects, and ornamental musical flourishes that don't represent data are auditory chartjunk. Every sound a listener hears should correspond to an actual data dimension.
-* **The Reconstruction Test**: When someone looks at an honest scatterplot, they can read the axis labels and reconstruct the underlying table of numbers. An honest sonification passes the exact same test: a listener, guided by a clear audio legend, should be able to hear whether values are rising, falling, accelerating, or holding steady, and reconstruct the true trend in their mind.
+* **Truncated Y-Axis ➔ Exaggerated Pitch**: Starting a bar chart at 90 exaggerates a 1% blip into a huge spike; stretching a narrow metric across three wild octaves creates the same deception. Keep pitch spans proportional to real data changes.
+* **Bubble Size vs. Volume Calibration**: In visual charts, accidentally scaling a circle's radius instead of its area makes a 2× increase look 4× bigger. In audio, human hearing perceives volume logarithmically rather than linearly. Always calibrate loudness using decibels (`scaleGain.db()`) so volume changes sound mathematically honest.
+* **Visual Chartjunk ➔ Auditory "Audiojunk"**: Edward Tufte's *chartjunk* (decorative 3D bevels and visual clutter) has an audio cousin: gratuitous reverb, echo, and synth flourishes that obscure real numbers. Every sound must represent an actual data point.
+* **Reading the Axes ➔ The Reconstruction Test**: If someone looks at an honest visual chart, they can read the axes and reconstruct the numbers. An honest sonification passes the same test: a listener, guided by an audio legend, can reconstruct the underlying trend from sound alone.
 
 ### 3. Categorical Integrity: Avoiding False Pitch Hierarchies
 > **Never map unranked categories to higher and lower pitches.**
