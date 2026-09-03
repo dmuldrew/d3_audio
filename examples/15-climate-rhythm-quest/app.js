@@ -134,11 +134,18 @@ function getNetAnomaly(rec) {
   return +a.toFixed(2);
 }
 
-// Current needle / spiral trace
+// Current needle / radial line trace
 let currentYearIndex = 0;
 const needle = g.append('line')
-  .attr('stroke', '#ffffff')
+  .attr('stroke', '#facc15')
   .attr('stroke-width', 2.5)
+  .attr('opacity', 0);
+
+const needleDot = g.append('circle')
+  .attr('r', 4.5)
+  .attr('fill', '#facc15')
+  .attr('stroke', '#070c18')
+  .attr('stroke-width', 1.5)
   .attr('opacity', 0);
 
 function renderSpiralUpTo(yearIdx) {
@@ -197,7 +204,12 @@ function renderSpiralUpTo(yearIdx) {
       .attr('opacity', 1)
       .attr('x1', 0).attr('y1', 0)
       .attr('x2', lastPt.x).attr('y2', lastPt.y)
-      .attr('stroke', colorScale(lastPt.netA));
+      .attr('stroke', '#facc15');
+
+    needleDot
+      .attr('opacity', 1)
+      .attr('cx', lastPt.x)
+      .attr('cy', lastPt.y);
   }
 }
 
