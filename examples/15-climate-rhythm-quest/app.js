@@ -123,15 +123,44 @@ d3.select("#legend-mount").call(legend);
 
 const spiralGroup = g.append('g');
 
+const POLICY_OFFSETS_2100 = {
+  renewables: { temp: 0.80, co2: 200 },
+  reforestation: { temp: 0.60, co2: 140 },
+  methane: { temp: 0.50, co2: 90 },
+  industry: { temp: 0.70, co2: 170 }
+};
+
+function getPolicyProgress(year) {
+  if (year <= 2026) return 0;
+  const t = (year - 2026) / (2100 - 2026);
+  // Realistic progressive ramp: adoption starts smoothly at 2027, scales over decades, and stabilizes
+  return Math.pow(t, 1.25);
+}
+
 function getNetAnomaly(rec) {
   let a = rec.anomaly;
   if (currentMode === 'sandbox' && rec.year > 2026) {
-    if (activePolicies.has('renewables')) a -= 0.40;
-    if (activePolicies.has('reforestation')) a -= 0.30;
-    if (activePolicies.has('methane')) a -= 0.25;
-    if (activePolicies.has('industry')) a -= 0.35;
+    const progress = getPolicyProgress(rec.year);
+    let totalTempOffset = 0;
+    activePolicies.forEach(pol => {
+      if (POLICY_OFFSETS_2100[pol]) totalTempOffset += POLICY_OFFSETS_2100[pol].temp;
+    });
+    a -= totalTempOffset * progress;
   }
   return +a.toFixed(2);
+}
+
+function getNetCO2(rec) {
+  let co2 = rec.co2;
+  if (currentMode === 'sandbox' && rec.year > 2026) {
+    const progress = getPolicyProgress(rec.year);
+    let totalCO2Offset = 0;
+    activePolicies.forEach(pol => {
+      if (POLICY_OFFSETS_2100[pol]) totalCO2Offset += POLICY_OFFSETS_2100[pol].co2;
+    });
+    co2 -= Math.round(totalCO2Offset * progress);
+  }
+  return Math.max(280, co2);
 }
 
 // Current needle / radial line trace
@@ -261,8 +290,9 @@ function renderSpiralUpTo(yearIdx) {
 // Sonify Climate Year
 function sonifyYear(rec) {
   const netA = getNetAnomaly(rec);
+  const netCO2 = getNetCO2(rec);
   const note = pitchScale(netA);
-  const cutoff = filterScale(rec.co2);
+  const cutoff = filterScale(netCO2);
   const vel = Math.min(1.0, 0.4 + Math.max(0, netA) * 0.12);
 
   // Increase FM modulation index with severe warming (+1.5°C+) to introduce auditory tension & alarm
@@ -293,16 +323,18 @@ function sonifyYear(rec) {
         cornerSub.style.color = "#38bdf8";
       }
     } else if (currentMode === 'sandbox') {
-      const offset = (activePolicies.has('renewables') ? 0.4 : 0) +
-        (activePolicies.has('reforestation') ? 0.3 : 0) +
-        (activePolicies.has('methane') ? 0.25 : 0) +
-        (activePolicies.has('industry') ? 0.35 : 0);
-      yearTag.innerText = offset > 0 ? `Policy Sandbox (-${offset.toFixed(2)}°C Offset)` : "Sandbox (Worst-Case Baseline)";
-      yearTag.style.background = offset > 0 ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)";
-      yearTag.style.color = offset > 0 ? "#10b981" : "#f43f5e";
+      const progress = getPolicyProgress(rec.year);
+      let totalTempOffset = 0;
+      activePolicies.forEach(pol => {
+        if (POLICY_OFFSETS_2100[pol]) totalTempOffset += POLICY_OFFSETS_2100[pol].temp;
+      });
+      const activeOffset = totalTempOffset * progress;
+      yearTag.innerText = activeOffset > 0 ? `Policy Sandbox (-${activeOffset.toFixed(2)}°C in ${rec.year})` : "Sandbox (Worst-Case Baseline)";
+      yearTag.style.background = activeOffset > 0 ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)";
+      yearTag.style.color = activeOffset > 0 ? "#10b981" : "#f43f5e";
       if (cornerSub) {
-        cornerSub.innerText = offset > 0 ? `Sandbox (-${offset.toFixed(2)}°C)` : "Sandbox (Baseline)";
-        cornerSub.style.color = offset > 0 ? "#10b981" : "#f43f5e";
+        cornerSub.innerText = activeOffset > 0 ? `Sandbox (-${activeOffset.toFixed(2)}°C)` : "Sandbox (Baseline)";
+        cornerSub.style.color = activeOffset > 0 ? "#10b981" : "#f43f5e";
       }
     } else {
       let scName = "SSP5-8.5 (Worst-Case)";
@@ -321,7 +353,7 @@ function sonifyYear(rec) {
 
   document.getElementById('temp-display').innerText = `${netA >= 0 ? '+' : ''}${netA.toFixed(2)} °C`;
   document.getElementById('temp-display').style.color = colorScale(netA);
-  document.getElementById('co2-display').innerText = `${rec.co2} ppm`;
+  document.getElementById('co2-display').innerText = `${netCO2} ppm`;
 
   const badge = document.getElementById('climate-badge');
   if (netA >= 3.0) {
