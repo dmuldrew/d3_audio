@@ -276,12 +276,22 @@ function sonifyYear(rec) {
   synthTone.triggerAttackRelease(note, "8n", undefined, vel, { filter: cutoff });
 
   document.getElementById('year-display').innerText = rec.year;
+
+  // Upper Right Animation Corner Year Sync
+  const cornerYear = document.getElementById('corner-year-text');
+  const cornerSub = document.getElementById('corner-year-sub');
+  if (cornerYear) cornerYear.innerText = rec.year;
+
   const yearTag = document.getElementById('year-tag');
   if (yearTag) {
     if (rec.year <= 2026) {
       yearTag.innerText = "Historical Observed (NASA GISS)";
       yearTag.style.background = "rgba(56, 189, 248, 0.15)";
       yearTag.style.color = "#38bdf8";
+      if (cornerSub) {
+        cornerSub.innerText = "Historical Observed";
+        cornerSub.style.color = "#38bdf8";
+      }
     } else if (currentMode === 'sandbox') {
       const offset = (activePolicies.has('renewables') ? 0.4 : 0) +
         (activePolicies.has('reforestation') ? 0.3 : 0) +
@@ -290,6 +300,10 @@ function sonifyYear(rec) {
       yearTag.innerText = offset > 0 ? `Policy Sandbox (-${offset.toFixed(2)}°C Offset)` : "Sandbox (Worst-Case Baseline)";
       yearTag.style.background = offset > 0 ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)";
       yearTag.style.color = offset > 0 ? "#10b981" : "#f43f5e";
+      if (cornerSub) {
+        cornerSub.innerText = offset > 0 ? `Sandbox (-${offset.toFixed(2)}°C)` : "Sandbox (Baseline)";
+        cornerSub.style.color = offset > 0 ? "#10b981" : "#f43f5e";
+      }
     } else {
       let scName = "SSP5-8.5 (Worst-Case)";
       let scColor = "#f43f5e";
@@ -298,6 +312,10 @@ function sonifyYear(rec) {
       yearTag.innerText = `Projected: ${scName}`;
       yearTag.style.background = `${scColor}22`;
       yearTag.style.color = scColor;
+      if (cornerSub) {
+        cornerSub.innerText = `IPCC ${scName.split(' ')[0]}`;
+        cornerSub.style.color = scColor;
+      }
     }
   }
 
