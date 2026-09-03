@@ -23,7 +23,13 @@ const sourceFiles = [
   'src/scales/scaleSample.js',
   'src/scales/scaleTempo.js',
   'src/scales/scaleTension.js',
+  'src/scales/scaleUncertainty.js',
+  'src/scales/scaleSpatial.js',
+  'src/scales/scaleEcho.js',
+  'src/scales/scaleChord.js',
+  'src/scales/scaleRhythm.js',
   'src/ui/audioLegend.js',
+  'src/ui/accessibleChart.js',
   'src/movements/motionEnvelope.js',
   'src/movements/presets/wiggle.js',
   'src/movements/presets/flip.js',
@@ -34,9 +40,11 @@ const sourceFiles = [
   'src/movements/presets/glow.js',
   'src/movements/presets/squash.js',
   'src/movements/choreography.js',
+  'src/movements/audioTransition.js',
   'src/audio/soundEngine.js',
   'src/audio/synthVoice.js',
   'src/audio/samplePlayer.js',
+  'src/audio/granularScrubber.js',
   'src/timeline/track.js',
   'src/timeline/timeline.js'
 ];
@@ -87,7 +95,18 @@ ${concatenatedCode}
   exports.scaleSample = scaleSample;
   exports.scaleTempo = scaleTempo;
   exports.scaleTension = scaleTension;
+  exports.scaleUncertainty = scaleUncertainty;
+  exports.scaleCrush = scaleCrush;
+  exports.scaleSpatial = scaleSpatial;
+  exports.scaleReverb = scaleReverb;
+  exports.scaleEcho = scaleEcho;
+  exports.scaleDelay = scaleDelay;
+  exports.scaleChord = scaleChord;
+  exports.scaleHarmony = scaleHarmony;
+  exports.scaleRhythm = scaleRhythm;
+  exports.euclideanRhythm = euclideanRhythm;
   exports.audioLegend = audioLegend;
+  exports.accessibleChart = accessibleChart;
   exports.SUBDIVISIONS = SUBDIVISIONS;
 
   exports.Timeline = Timeline;
@@ -107,6 +126,8 @@ ${concatenatedCode}
   exports.ripple = ripple;
   exports.glow = glow;
   exports.squash = squash;
+  exports.audioTransition = audioTransition;
+  exports.audioRamp = audioRamp;
 
   exports.SoundEngine = SoundEngine;
   exports.defaultEngine = defaultEngine;
@@ -114,6 +135,8 @@ ${concatenatedCode}
   exports.createSynth = createSynth;
   exports.SamplePlayer = SamplePlayer;
   exports.createSamplePlayer = createSamplePlayer;
+  exports.GranularScrubber = GranularScrubber;
+  exports.createGranularScrubber = createGranularScrubber;
 
   exports.parseNote = parseNote;
   exports.midiToNote = midiToNote;
@@ -138,6 +161,12 @@ ${concatenatedCode}
       window.d3.scaleSample = scaleSample;
       window.d3.scaleTempo = scaleTempo;
       window.d3.scaleTension = scaleTension;
+      window.d3.scaleUncertainty = scaleUncertainty;
+      window.d3.scaleSpatial = scaleSpatial;
+      window.d3.scaleEcho = scaleEcho;
+      window.d3.scaleChord = scaleChord;
+      window.d3.scaleRhythm = scaleRhythm;
+      window.d3.accessibleChart = accessibleChart;
       window.d3.audioLegend = audioLegend;
       window.d3.choreography = choreography;
       window.d3.timeline = timeline;

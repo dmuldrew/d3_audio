@@ -38,12 +38,37 @@ export class SynthVoice {
     try {
       const masterIn = this.engine.getMasterInput();
 
-      // Channel routing: Instrument -> Filter -> Panner -> Volume -> Master
+      // Channel routing: Instrument -> Filter -> (Effects: Crusher, Delay, Reverb) -> Panner -> Volume -> Master
       this.volumeNode = new this.Tone.Volume(this.options.volume || 0);
       this.panner = new this.Tone.Panner(this.options.pan || 0);
       this.filterNode = new this.Tone.Filter(this.options.cutoff || 18000, "lowpass");
 
-      this.filterNode.connect(this.panner);
+      let lastNode = this.filterNode;
+
+      if (this.options.crusher && this.Tone.BitCrusher) {
+        this.crusherNode = new this.Tone.BitCrusher(this.options.crusher.bits || 8);
+        this.crusherNode.wet.value = this.options.crusher.wet !== undefined ? this.options.crusher.wet : 1;
+        lastNode.connect(this.crusherNode);
+        lastNode = this.crusherNode;
+      }
+
+      if (this.options.delay && this.Tone.FeedbackDelay) {
+        this.delayNode = new this.Tone.FeedbackDelay(this.options.delay.delayTime || 0.25, this.options.delay.feedback || 0.3);
+        this.delayNode.wet.value = this.options.delay.wet !== undefined ? this.options.delay.wet : 0.3;
+        lastNode.connect(this.delayNode);
+        lastNode = this.delayNode;
+      }
+
+      if (this.options.reverb && this.Tone.Freeverb) {
+        this.reverbNode = new this.Tone.Freeverb();
+        this.reverbNode.dampening = 3000;
+        this.reverbNode.roomSize.value = 0.7;
+        this.reverbNode.wet.value = this.options.reverb.wet !== undefined ? this.options.reverb.wet : 0.3;
+        lastNode.connect(this.reverbNode);
+        lastNode = this.reverbNode;
+      }
+
+      lastNode.connect(this.panner);
       this.panner.connect(this.volumeNode);
       if (masterIn) {
         this.volumeNode.connect(masterIn);
@@ -157,6 +182,24 @@ export class SynthVoice {
         } else {
           this.filterNode.frequency.value = params.filter;
         }
+      }
+
+      if (params.crusher !== undefined && this.crusherNode) {
+        if (typeof params.crusher === 'number') this.crusherNode.bits.value = params.crusher;
+        else if (params.crusher.bits) this.crusherNode.bits.value = params.crusher.bits;
+        if (params.crusher.wet !== undefined) this.crusherNode.wet.value = params.crusher.wet;
+      }
+      if (params.delay !== undefined && this.delayNode) {
+        if (typeof params.delay === 'number') this.delayNode.wet.value = params.delay;
+        else {
+          if (params.delay.delayTime) this.delayNode.delayTime.value = params.delay.delayTime;
+          if (params.delay.feedback) this.delayNode.feedback.value = params.delay.feedback;
+          if (params.delay.wet !== undefined) this.delayNode.wet.value = params.delay.wet;
+        }
+      }
+      if (params.reverb !== undefined && this.reverbNode) {
+        if (typeof params.reverb === 'number') this.reverbNode.wet.value = params.reverb;
+        else if (params.reverb.wet !== undefined) this.reverbNode.wet.value = params.reverb.wet;
       }
 
       const t = time !== undefined ? time : (this.Tone ? this.Tone.now() : undefined);

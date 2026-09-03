@@ -7,23 +7,33 @@ const NOTE_NAMES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', '
 
 const NOTE_OFFSETS = {
   'C': 0, 'B#': 0,
+  'C+': 0.5, 'C~': 0.5,
   'C#': 1, 'DB': 1, 'Db': 1,
+  'D~': 1.5, 'Dd': 1.5, 'Ed': 3.5, 'E~': 3.5,
   'D': 2,
+  'D+': 2.5,
   'D#': 3, 'EB': 3, 'Eb': 3,
   'E': 4, 'FB': 4, 'Fb': 4,
+  'E+': 4.5,
   'F': 5, 'E#': 5,
+  'F+': 5.5,
   'F#': 6, 'GB': 6, 'Gb': 6,
+  'G~': 6.5, 'Gd': 6.5,
   'G': 7,
+  'G+': 7.5,
   'G#': 8, 'AB': 8, 'Ab': 8,
+  'A~': 8.5, 'Ad': 8.5, 'Bd': 10.5, 'B~': 10.5,
   'A': 9,
+  'A+': 9.5,
   'A#': 10, 'BB': 10, 'Bb': 10,
   'B': 11, 'CB': 11, 'Cb': 11
 };
 
 /**
- * Parses note string (e.g. "C4", "F#3", "Bb5", "A-1") into pitch components.
+ * Parses note string (e.g. "C4", "F#3", "Bb5", "E~4", "Ed4") into pitch components.
+ * Supports quarter-tone microtonal symbols: ~ or d (half-flat, -50 cents) and + (half-sharp, +50 cents).
  * @param {string|number} note 
- * @returns {{ name: string, octave: number, midi: number, frequency: number }}
+ * @returns {{ name: string, octave: number, midi: number, frequency: number, note: string, cents?: number }}
  */
 export function parseNote(note) {
   if (typeof note === 'number') {
@@ -33,15 +43,15 @@ export function parseNote(note) {
     throw new Error(`Invalid note input: ${note}`);
   }
 
-  const match = note.trim().match(/^([A-Ga-g][#b]?)(-?\d+)$/);
+  const match = note.trim().match(/^([A-Ga-g][#bd~+]?)(-?\d+)$/);
   if (!match) {
-    throw new Error(`Cannot parse note string: "${note}". Expected format like "C4", "F#3", "Bb5".`);
+    throw new Error(`Cannot parse note string: "${note}". Expected format like "C4", "F#3", "Bb5", "E~4".`);
   }
 
   const [, rawName, rawOctave] = match;
-  const name = rawName.charAt(0).toUpperCase() + (rawName.charAt(1) || '');
+  const name = rawName.charAt(0).toUpperCase() + (rawName.slice(1));
   const octave = parseInt(rawOctave, 10);
-  const semitoneOffset = NOTE_OFFSETS[name];
+  const semitoneOffset = NOTE_OFFSETS[name] !== undefined ? NOTE_OFFSETS[name] : NOTE_OFFSETS[name.toUpperCase()];
 
   if (semitoneOffset === undefined) {
     throw new Error(`Unknown note name: "${name}"`);
@@ -79,15 +89,29 @@ export function frequencyToMidi(freq) {
  * @returns {{ name: string, octave: number, midi: number, frequency: number, note: string }}
  */
 export function midiToNote(midi, preferSharps = true) {
+  const isMicrotone = Math.abs(midi - Math.round(midi)) > 0.15;
   const roundedMidi = Math.round(midi);
-  const semitone = ((roundedMidi % 12) + 12) % 12;
-  const octave = Math.floor(roundedMidi / 12) - 1;
+  const semitone = ((Math.floor(midi) % 12) + 12) % 12;
+  const octave = Math.floor(midi / 12) - 1;
   const nameTable = preferSharps ? NOTE_NAMES_SHARP : NOTE_NAMES_FLAT;
-  const name = nameTable[semitone];
-  const note = `${name}${octave}`;
+  let name = nameTable[semitone];
+  let note = `${name}${octave}`;
+
+  if (isMicrotone) {
+    const fraction = midi - Math.floor(midi);
+    if (Math.abs(fraction - 0.5) < 0.15) {
+      name = `${name}~`;
+      note = `${nameTable[semitone]}~${octave}`;
+    }
+  } else {
+    name = nameTable[((roundedMidi % 12) + 12) % 12];
+    note = `${name}${Math.floor(roundedMidi / 12) - 1}`;
+  }
+
+  const cents = Math.round((midi - roundedMidi) * 100);
   const frequency = midiToFrequency(midi);
 
-  return { name, octave, midi, frequency, note };
+  return { name, octave, midi, frequency, cents, note };
 }
 
 /**

@@ -21,23 +21,33 @@ const NOTE_NAMES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', '
 
 const NOTE_OFFSETS = {
   'C': 0, 'B#': 0,
+  'C+': 0.5, 'C~': 0.5,
   'C#': 1, 'DB': 1, 'Db': 1,
+  'D~': 1.5, 'Dd': 1.5, 'Ed': 3.5, 'E~': 3.5,
   'D': 2,
+  'D+': 2.5,
   'D#': 3, 'EB': 3, 'Eb': 3,
   'E': 4, 'FB': 4, 'Fb': 4,
+  'E+': 4.5,
   'F': 5, 'E#': 5,
+  'F+': 5.5,
   'F#': 6, 'GB': 6, 'Gb': 6,
+  'G~': 6.5, 'Gd': 6.5,
   'G': 7,
+  'G+': 7.5,
   'G#': 8, 'AB': 8, 'Ab': 8,
+  'A~': 8.5, 'Ad': 8.5, 'Bd': 10.5, 'B~': 10.5,
   'A': 9,
+  'A+': 9.5,
   'A#': 10, 'BB': 10, 'Bb': 10,
   'B': 11, 'CB': 11, 'Cb': 11
 };
 
 /**
- * Parses note string (e.g. "C4", "F#3", "Bb5", "A-1") into pitch components.
+ * Parses note string (e.g. "C4", "F#3", "Bb5", "E~4", "Ed4") into pitch components.
+ * Supports quarter-tone microtonal symbols: ~ or d (half-flat, -50 cents) and + (half-sharp, +50 cents).
  * @param {string|number} note 
- * @returns {{ name: string, octave: number, midi: number, frequency: number }}
+ * @returns {{ name: string, octave: number, midi: number, frequency: number, note: string, cents?: number }}
  */
 function parseNote(note) {
   if (typeof note === 'number') {
@@ -47,15 +57,15 @@ function parseNote(note) {
     throw new Error(`Invalid note input: ${note}`);
   }
 
-  const match = note.trim().match(/^([A-Ga-g][#b]?)(-?\d+)$/);
+  const match = note.trim().match(/^([A-Ga-g][#bd~+]?)(-?\d+)$/);
   if (!match) {
-    throw new Error(`Cannot parse note string: "${note}". Expected format like "C4", "F#3", "Bb5".`);
+    throw new Error(`Cannot parse note string: "${note}". Expected format like "C4", "F#3", "Bb5", "E~4".`);
   }
 
   const [, rawName, rawOctave] = match;
-  const name = rawName.charAt(0).toUpperCase() + (rawName.charAt(1) || '');
+  const name = rawName.charAt(0).toUpperCase() + (rawName.slice(1));
   const octave = parseInt(rawOctave, 10);
-  const semitoneOffset = NOTE_OFFSETS[name];
+  const semitoneOffset = NOTE_OFFSETS[name] !== undefined ? NOTE_OFFSETS[name] : NOTE_OFFSETS[name.toUpperCase()];
 
   if (semitoneOffset === undefined) {
     throw new Error(`Unknown note name: "${name}"`);
@@ -93,15 +103,29 @@ function frequencyToMidi(freq) {
  * @returns {{ name: string, octave: number, midi: number, frequency: number, note: string }}
  */
 function midiToNote(midi, preferSharps = true) {
+  const isMicrotone = Math.abs(midi - Math.round(midi)) > 0.15;
   const roundedMidi = Math.round(midi);
-  const semitone = ((roundedMidi % 12) + 12) % 12;
-  const octave = Math.floor(roundedMidi / 12) - 1;
+  const semitone = ((Math.floor(midi) % 12) + 12) % 12;
+  const octave = Math.floor(midi / 12) - 1;
   const nameTable = preferSharps ? NOTE_NAMES_SHARP : NOTE_NAMES_FLAT;
-  const name = nameTable[semitone];
-  const note = `${name}${octave}`;
+  let name = nameTable[semitone];
+  let note = `${name}${octave}`;
+
+  if (isMicrotone) {
+    const fraction = midi - Math.floor(midi);
+    if (Math.abs(fraction - 0.5) < 0.15) {
+      name = `${name}~`;
+      note = `${nameTable[semitone]}~${octave}`;
+    }
+  } else {
+    name = nameTable[((roundedMidi % 12) + 12) % 12];
+    note = `${name}${Math.floor(roundedMidi / 12) - 1}`;
+  }
+
+  const cents = Math.round((midi - roundedMidi) * 100);
   const frequency = midiToFrequency(midi);
 
-  return { name, octave, midi, frequency, note };
+  return { name, octave, midi, frequency, cents, note };
 }
 
 /**
@@ -179,6 +203,20 @@ const SCALE_INTERVALS = {
   doubleHarmonic: [0, 1, 4, 5, 7, 8, 11],
   hungarianMinor: [0, 2, 3, 6, 7, 8, 11],
   egyptian: [0, 2, 5, 7, 10],
+
+  // Middle Eastern Maqams (using quarter-tone / 50-cent fractional semitones)
+  maqamBayati: [0, 1.5, 3, 5, 7, 8, 10],   // 2nd degree is half-flat (150 cents)
+  maqamRast: [0, 2, 3.5, 5, 7, 9, 10.5],  // 3rd and 7th degrees are half-flat
+  maqamHijaz: [0, 1, 4, 5, 7, 8, 10],     // Phrygian dominant
+  maqamSaba: [0, 1.5, 2.5, 4, 7, 8, 10],  // Expressive double half-flat intervals
+
+  // Indian Classical Ragas
+  ragaBhairav: [0, 1, 4, 5, 7, 8, 11],    // Morning raga (Komal Re, Komal Dha)
+  ragaTodi: [0, 1, 3, 6, 7, 8, 11],       // Intense meditative morning raga (Tivra Ma)
+  ragaYaman: [0, 2, 4, 6, 7, 9, 11],      // Evening raga (Kalyan thaat, Lydian)
+  ragaKafi: [0, 2, 3, 5, 7, 9, 10],       // Late night raga (Kafi thaat, Dorian)
+  ragaBhairavi: [0, 1, 3, 5, 7, 8, 10],   // Concluding devotional raga (Phrygian)
+  ragaBilawal: [0, 2, 4, 5, 7, 9, 11],    // Base shuddha thaat (Major)
 
   // Chords / Arpeggio subsets
   triadMajor: [0, 4, 7],
@@ -1104,6 +1142,451 @@ function scaleTension() {
 }
 
 
+// --- src/scales/scaleUncertainty.js ---
+/**
+ * scaleUncertainty: D3-idiomatic scaler mapping statistical uncertainty, p-values,
+ * standard error, or missingness to Tone.BitCrusher bit reduction (16 bits down to 2 bits)
+ * and lo-fi saturation grit.
+ *
+ * High confidence data sounds crystalline and pure (16 bits, 0 grit);
+ * High uncertainty / noisy data sounds lo-fi, crunchy, and bit-crushed (2-4 bits, high grit).
+ */
+function scaleUncertainty() {
+  let domain = [0, 1]; // e.g. 0 = 0% error / p=0 (certain), 1 = 100% error / p=1 (uncertain)
+  let bitRange = [16, 2]; // 16 bits (high fidelity) to 2 bits (extreme crush)
+  let gritRange = [0, 1];
+  let wetRange = [0, 1];
+  let clamp = true;
+
+  function scaler(x) {
+    if (x === undefined || x === null || isNaN(x)) return { bits: 4, grit: 0.8, wet: 0.8, label: "Unknown / Missing" };
+
+    const minD = domain[0];
+    const maxD = domain[1];
+    let norm = (x - minD) / (maxD - minD || 1);
+    if (clamp) norm = Math.max(0, Math.min(1, norm));
+
+    const bits = Math.round(bitRange[0] + norm * (bitRange[1] - bitRange[0]));
+    const grit = gritRange[0] + norm * (gritRange[1] - gritRange[0]);
+    const wet = wetRange[0] + norm * (wetRange[1] - wetRange[0]);
+
+    let label = "Pristine";
+    if (bits <= 4) label = "Heavy Bit-Crushed (Uncertain)";
+    else if (bits <= 8) label = "Lo-Fi Grain (Moderate Error)";
+    else if (bits <= 12) label = "Subtle Grit (Low Error)";
+
+    return {
+      bits: Math.max(1, Math.min(16, bits)),
+      grit: Math.max(0, Math.min(1, grit)),
+      wet: Math.max(0, Math.min(1, wet)),
+      norm,
+      label
+    };
+  }
+
+  scaler.domain = function(d) {
+    return arguments.length ? ((domain = d.slice()), scaler) : domain.slice();
+  };
+
+  scaler.bits = function(r) {
+    return arguments.length ? ((bitRange = r.slice()), scaler) : bitRange.slice();
+  };
+
+  scaler.range = function(r) {
+    return arguments.length ? ((bitRange = r.slice()), scaler) : bitRange.slice();
+  };
+
+  scaler.clamp = function(c) {
+    return arguments.length ? ((clamp = Boolean(c)), scaler) : clamp;
+  };
+
+  /**
+   * Helper to create or configure a Tone.BitCrusher node with current scaled values.
+   */
+  scaler.createNode = function(Tone, val) {
+    if (!Tone || !Tone.BitCrusher) return null;
+    const res = scaler(val);
+    const node = new Tone.BitCrusher(res.bits);
+    node.wet.value = res.wet;
+    return node;
+  };
+
+  return scaler;
+}
+
+const scaleCrush = scaleUncertainty;
+
+
+// --- src/scales/scaleSpatial.js ---
+/**
+ * scaleSpatial: D3-idiomatic audio scaler mapping Z-axis depth, distance from camera,
+ * geographic distance to an epicenter, or cluster hierarchy to reverberant acoustic space.
+ *
+ * Foreground / near elements sound dry, direct, and intimate;
+ * Background / far elements sound cavernous with long acoustic decay and diffuse wet mix.
+ */
+function scaleSpatial() {
+  let domain = [0, 100]; // e.g. 0 = near / center, 100 = far / peripheral
+  let wetRange = [0.05, 0.95]; // wet mix
+  let decayRange = [0.4, 7.0]; // reverb decay time in seconds
+  let clamp = true;
+
+  function scaler(x) {
+    if (x === undefined || x === null || isNaN(x)) return { wet: 0.5, decay: 2.5, norm: 0.5 };
+
+    const minD = domain[0];
+    const maxD = domain[1];
+    let norm = (x - minD) / (maxD - minD || 1);
+    if (clamp) norm = Math.max(0, Math.min(1, norm));
+
+    const wet = wetRange[0] + norm * (wetRange[1] - wetRange[0]);
+    const decay = decayRange[0] + norm * (decayRange[1] - decayRange[0]);
+
+    return {
+      wet: Math.round(wet * 1000) / 1000,
+      decay: Math.round(decay * 100) / 100,
+      preDelay: Math.round((0.01 + norm * 0.08) * 1000) / 1000,
+      norm
+    };
+  }
+
+  scaler.domain = function(d) {
+    return arguments.length ? ((domain = d.slice()), scaler) : domain.slice();
+  };
+
+  scaler.range = function(r) {
+    return arguments.length ? ((wetRange = r.slice()), scaler) : wetRange.slice();
+  };
+
+  scaler.decay = function(d) {
+    return arguments.length ? ((decayRange = d.slice()), scaler) : decayRange.slice();
+  };
+
+  scaler.clamp = function(c) {
+    return arguments.length ? ((clamp = Boolean(c)), scaler) : clamp;
+  };
+
+  scaler.createNode = function(Tone, val) {
+    if (!Tone || !Tone.Freeverb) return null;
+    const res = scaler(val);
+    const node = new Tone.Freeverb();
+    node.dampening = 3000;
+    node.roomSize.value = Math.min(0.95, res.norm * 0.85 + 0.1);
+    node.wet.value = res.wet;
+    return node;
+  };
+
+  return scaler;
+}
+
+const scaleReverb = scaleSpatial;
+
+
+// --- src/scales/scaleEcho.js ---
+/**
+ * scaleEcho: D3-idiomatic audio scaler mapping time-series latency, moving-average windows,
+ * network ping, or historical memory to Tone.FeedbackDelay parameters.
+ */
+function scaleEcho() {
+  let domain = [0, 1000]; // e.g. milliseconds of ping or data lag
+  let delayRange = [0.06, 0.65]; // seconds of delay time
+  let feedbackRange = [0.1, 0.7]; // repeat feedback
+  let clamp = true;
+
+  function scaler(x) {
+    if (x === undefined || x === null || isNaN(x)) return { delayTime: 0.25, feedback: 0.3, wet: 0.4 };
+
+    const minD = domain[0];
+    const maxD = domain[1];
+    let norm = (x - minD) / (maxD - minD || 1);
+    if (clamp) norm = Math.max(0, Math.min(1, norm));
+
+    const delayTime = delayRange[0] + norm * (delayRange[1] - delayRange[0]);
+    const feedback = feedbackRange[0] + norm * (feedbackRange[1] - feedbackRange[0]);
+    const wet = Math.min(0.85, 0.15 + norm * 0.7);
+
+    return {
+      delayTime: Math.round(delayTime * 1000) / 1000,
+      feedback: Math.round(feedback * 100) / 100,
+      wet: Math.round(wet * 100) / 100,
+      norm
+    };
+  }
+
+  scaler.domain = function(d) {
+    return arguments.length ? ((domain = d.slice()), scaler) : domain.slice();
+  };
+
+  scaler.range = function(r) {
+    return arguments.length ? ((delayRange = r.slice()), scaler) : delayRange.slice();
+  };
+
+  scaler.feedback = function(f) {
+    return arguments.length ? ((feedbackRange = f.slice()), scaler) : feedbackRange.slice();
+  };
+
+  scaler.clamp = function(c) {
+    return arguments.length ? ((clamp = Boolean(c)), scaler) : clamp;
+  };
+
+  scaler.createNode = function(Tone, val) {
+    if (!Tone || !Tone.FeedbackDelay) return null;
+    const res = scaler(val);
+    const node = new Tone.FeedbackDelay(res.delayTime, res.feedback);
+    node.wet.value = res.wet;
+    return node;
+  };
+
+  return scaler;
+}
+
+const scaleDelay = scaleEcho;
+
+
+// --- src/scales/scaleChord.js ---
+
+const CHORD_FORMULAS = {
+  major: [0, 4, 7],
+  minor: [0, 3, 7],
+  maj7: [0, 4, 7, 11],
+  min7: [0, 3, 7, 10],
+  dom7: [0, 4, 7, 10],
+  dim: [0, 3, 6],
+  dim7: [0, 3, 6, 9],
+  halfDim7: [0, 3, 6, 10],
+  aug: [0, 4, 8],
+  sus4: [0, 5, 7],
+  sus2: [0, 2, 7],
+  add9: [0, 4, 7, 14],
+  ninth: [0, 4, 7, 10, 14]
+};
+
+/**
+ * scaleChord: Multi-variate harmonic scaler mapping multidimensional data records
+ * into musically voiced chords (triads, 7ths, 9ths, suspended, altered).
+ */
+function scaleChord() {
+  let rootNote = "C3";
+  let defaultQuality = "major";
+  let voicing = "close"; // "close", "open", "drop2"
+  let inversion = 0; // 0 = root position, 1 = 1st inversion, 2 = 2nd inversion
+
+  function scaler(input) {
+    let currentRoot = rootNote;
+    let quality = defaultQuality;
+
+    if (Array.isArray(input)) {
+      if (typeof input[0] === 'string') currentRoot = input[0];
+      if (input[1] && CHORD_FORMULAS[input[1]]) quality = input[1];
+    } else if (typeof input === 'object' && input !== null) {
+      if (input.root) currentRoot = input.root;
+      if (input.quality && CHORD_FORMULAS[input.quality]) quality = input.quality;
+      if (input.inversion !== undefined) inversion = input.inversion;
+      if (input.voicing) voicing = input.voicing;
+    } else if (typeof input === 'string') {
+      if (CHORD_FORMULAS[input]) quality = input;
+      else currentRoot = input;
+    }
+
+    const intervals = (CHORD_FORMULAS[quality] || CHORD_FORMULAS.major).slice();
+    const rootParsed = parseNote(currentRoot);
+    const rootMidi = rootParsed.midi;
+
+    let chordMidis = intervals.map(semitones => rootMidi + semitones);
+
+    // Apply inversion
+    if (inversion > 0 && chordMidis.length > 1) {
+      for (let i = 0; i < (inversion % chordMidis.length); i++) {
+        chordMidis[i] += 12;
+      }
+      chordMidis.sort((a, b) => a - b);
+    }
+
+    // Apply open voicing / drop 2
+    if (voicing === "open" && chordMidis.length >= 3) {
+      // drop 2nd note down an octave or raise 3rd note up an octave
+      chordMidis[1] += 12;
+      chordMidis.sort((a, b) => a - b);
+    } else if (voicing === "drop2" && chordMidis.length >= 4) {
+      // drop 2nd highest note down an octave
+      const idx = chordMidis.length - 2;
+      chordMidis[idx] -= 12;
+      chordMidis.sort((a, b) => a - b);
+    }
+
+    const notes = chordMidis.map(m => midiToNote(m).note);
+    const frequencies = chordMidis.map(m => midiToNote(m).frequency);
+
+    return {
+      root: currentRoot,
+      quality,
+      notes,
+      midis: chordMidis,
+      frequencies,
+      toString: () => notes.join('-')
+    };
+  }
+
+  scaler.root = function(r) {
+    return arguments.length ? ((rootNote = r), scaler) : rootNote;
+  };
+
+  scaler.quality = function(q) {
+    return arguments.length ? ((defaultQuality = q), scaler) : defaultQuality;
+  };
+
+  scaler.voicing = function(v) {
+    return arguments.length ? ((voicing = v), scaler) : voicing;
+  };
+
+  scaler.inversion = function(inv) {
+    return arguments.length ? ((inversion = inv), scaler) : inversion;
+  };
+
+  scaler.formulas = () => Object.keys(CHORD_FORMULAS);
+
+  return scaler;
+}
+
+const scaleHarmony = scaleChord;
+
+
+// --- src/scales/scaleRhythm.js ---
+/**
+ * Computes a Euclidean Rhythm using the Bjorklund algorithm.
+ * Evenly distributes `pulses` across `steps` subdivisions.
+ *
+ * @param {number} pulses Number of active onsets (k)
+ * @param {number} steps Total subdivisions in cycle (n)
+ * @returns {number[]} Binary array of length `steps` (e.g. [1, 0, 0, 1, 0, 0, 1, 0])
+ */
+function euclideanRhythm(pulses, steps) {
+  pulses = Math.round(Math.max(0, Math.min(steps, pulses)));
+  steps = Math.round(Math.max(1, steps));
+
+  if (pulses === 0) return new Array(steps).fill(0);
+  if (pulses >= steps) return new Array(steps).fill(1);
+
+  let pattern = [];
+  let counts = [];
+  let remainders = [];
+  let divisor = steps - pulses;
+  remainders.push(pulses);
+  let level = 0;
+
+  while (true) {
+    counts.push(Math.floor(divisor / remainders[level]));
+    remainders.push(divisor % remainders[level]);
+    divisor = remainders[level];
+    level++;
+    if (remainders[level] <= 1) break;
+  }
+
+  counts.push(divisor);
+
+  function build(l) {
+    if (l === -1) {
+      pattern.push(0);
+    } else if (l === -2) {
+      pattern.push(1);
+    } else {
+      for (let i = 0; i < counts[l]; i++) {
+        build(l - 1);
+      }
+      if (remainders[l] !== 0) {
+        build(l - 2);
+      }
+    }
+  }
+
+  build(level);
+
+  // Return exactly `steps` length
+  const result = pattern.slice(0, steps);
+  // Ensure the rhythm starts on a pulse (1) if any pulses exist
+  const firstOne = result.indexOf(1);
+  if (firstOne > 0) {
+    return result.slice(firstOne).concat(result.slice(0, firstOne));
+  }
+  return result;
+}
+
+/**
+ * scaleRhythm: D3-idiomatic rhythm scaler mapping continuous data density,
+ * event counts, or activity levels to Euclidean rhythm patterns and Tone.js timing offsets.
+ */
+function scaleRhythm() {
+  let domain = [0, 100];
+  let totalSteps = 16;
+  let pulseRange = [1, 16];
+  let clamp = true;
+  let subdivision = "16n"; // "16n", "8n"
+
+  function scaler(x) {
+    if (x === undefined || x === null || isNaN(x)) x = domain[0];
+
+    const minD = domain[0];
+    const maxD = domain[1];
+    let norm = (x - minD) / (maxD - minD || 1);
+    if (clamp) norm = Math.max(0, Math.min(1, norm));
+
+    const pulses = Math.round(pulseRange[0] + norm * (pulseRange[1] - pulseRange[0]));
+    const pattern = euclideanRhythm(pulses, totalSteps);
+
+    // Build Tone.js timeline events
+    const events = [];
+    pattern.forEach((hit, idx) => {
+      if (hit) {
+        // e.g. "0:0:0", "0:0:1", "0:0:2", etc. for 16th subdivisions
+        const quarter = Math.floor(idx / 4);
+        const sixteenth = idx % 4;
+        events.push({
+          step: idx,
+          time: `0:${quarter}:${sixteenth}`,
+          stepTime: idx * (1 / totalSteps)
+        });
+      }
+    });
+
+    return {
+      pulses,
+      steps: totalSteps,
+      pattern,
+      density: pulses / totalSteps,
+      events,
+      isHit: (stepIdx) => Boolean(pattern[stepIdx % totalSteps]),
+      toString: () => pattern.map(h => (h ? 'x' : '.')).join('')
+    };
+  }
+
+  scaler.domain = function(d) {
+    return arguments.length ? ((domain = d.slice()), scaler) : domain.slice();
+  };
+
+  scaler.steps = function(s) {
+    return arguments.length ? ((totalSteps = Math.max(1, Math.round(s))), scaler) : totalSteps;
+  };
+
+  scaler.range = function(r) {
+    return arguments.length ? ((pulseRange = r.slice()), scaler) : pulseRange.slice();
+  };
+
+  scaler.pulses = function(r) {
+    return arguments.length ? ((pulseRange = r.slice()), scaler) : pulseRange.slice();
+  };
+
+  scaler.subdivision = function(sub) {
+    return arguments.length ? ((subdivision = sub), scaler) : subdivision;
+  };
+
+  scaler.clamp = function(c) {
+    return arguments.length ? ((clamp = Boolean(c)), scaler) : clamp;
+  };
+
+  return scaler;
+}
+
+
 // --- src/ui/audioLegend.js ---
 
 /**
@@ -1352,6 +1835,163 @@ function audioLegend() {
   };
 
   return legend;
+}
+
+
+// --- src/ui/accessibleChart.js ---
+
+/**
+ * accessibleChart: Turnkey D3 component for universal accessibility (a11y) sonification.
+ * Enables blind and low-vision users to explore any D3 visualization via keyboard navigation,
+ * real-time ARIA live speech announcements, and synchronized auditory earcons.
+ *
+ * Keyboard Shortcuts:
+ * - ArrowRight: Move to next data point
+ * - ArrowLeft: Move to previous data point
+ * - Home: Jump to first data point
+ * - End: Jump to last data point
+ * - Spacebar: Play / Pause continuous chart sonification
+ */
+function accessibleChart(options = {}) {
+  const data = options.data || [];
+  const getX = options.x || ((d, i) => d.x !== undefined ? d.x : i);
+  const getY = options.y || ((d) => d.y !== undefined ? d.y : (typeof d === 'number' ? d : 0));
+  const getLabel = options.label || ((d, i, total) => `Point ${i + 1} of ${total}: ${getX(d, i)}, Value ${getY(d)}`);
+  const onPoint = options.onPoint || null;
+
+  let synth = options.synth || null;
+  let pitchScale = options.pitchScale || null;
+  let currentIndex = 0;
+  let isPlaying = false;
+  let playInterval = null;
+
+  // Compute min/max for pitch scale and earcons
+  const yValues = data.map(d => getY(d)).filter(v => !isNaN(v));
+  const minY = yValues.length ? Math.min(...yValues) : 0;
+  const maxY = yValues.length ? Math.max(...yValues) : 100;
+
+  if (!pitchScale) {
+    pitchScale = scalePitch().domain([minY, maxY]).range(["C3", "C6"]).scale("pentatonic");
+  }
+
+  function chart(selection) {
+    selection.each(function() {
+      const node = this;
+      node.setAttribute('tabindex', '0');
+      node.setAttribute('role', 'application');
+      node.setAttribute('aria-roledescription', 'Sonified Data Visualization');
+      node.setAttribute('aria-label', options.title || 'Interactive Accessible Data Chart. Use left and right arrow keys to explore points, spacebar to play.');
+
+      // Inject ARIA Live Region for screen readers
+      let liveRegion = node.querySelector('.d3-audio-sr-live');
+      if (!liveRegion) {
+        liveRegion = document.createElement('div');
+        liveRegion.className = 'd3-audio-sr-live';
+        liveRegion.setAttribute('aria-live', 'polite');
+        liveRegion.setAttribute('aria-atomic', 'true');
+        liveRegion.style.position = 'absolute';
+        liveRegion.style.width = '1px';
+        liveRegion.style.height = '1px';
+        liveRegion.style.padding = '0';
+        liveRegion.style.margin = '-1px';
+        liveRegion.style.overflow = 'hidden';
+        liveRegion.style.clip = 'rect(0, 0, 0, 0)';
+        liveRegion.style.whiteSpace = 'nowrap';
+        liveRegion.style.border = '0';
+        node.appendChild(liveRegion);
+      }
+
+      function ensureSynth() {
+        if (!synth) {
+          synth = createSynth({ type: "polySynth", volume: -2 });
+        }
+      }
+
+      function sonifyIndex(idx) {
+        if (!data || data.length === 0) return;
+        idx = Math.max(0, Math.min(data.length - 1, idx));
+        currentIndex = idx;
+
+        ensureSynth();
+        defaultEngine.start();
+
+        const item = data[idx];
+        const val = getY(item);
+        const note = pitchScale(val);
+
+        // Special earcon cues
+        if (val === maxY && val !== minY) {
+          // Max peak earcon: rapid two-note ascending chime
+          synth.triggerAttackRelease(note, "16n", undefined, 0.9);
+        } else if (val === minY && val !== maxY) {
+          // Min low earcon: low percussive note
+          synth.triggerAttackRelease(note, "8n", undefined, 0.85);
+        } else {
+          synth.triggerAttackRelease(note, "16n", undefined, 0.75);
+        }
+
+        // Screen reader announcement
+        const announcement = getLabel(item, idx, data.length);
+        if (liveRegion) {
+          liveRegion.innerText = announcement;
+        }
+
+        if (typeof onPoint === 'function') {
+          onPoint(item, idx, note);
+        }
+      }
+
+      function togglePlay() {
+        if (isPlaying) {
+          clearInterval(playInterval);
+          isPlaying = false;
+          if (liveRegion) liveRegion.innerText = "Chart sonification paused.";
+        } else {
+          isPlaying = true;
+          if (currentIndex >= data.length - 1) currentIndex = 0;
+          playInterval = setInterval(() => {
+            sonifyIndex(currentIndex);
+            currentIndex++;
+            if (currentIndex >= data.length) {
+              clearInterval(playInterval);
+              isPlaying = false;
+              if (liveRegion) liveRegion.innerText = "End of chart data.";
+            }
+          }, options.interval || 250);
+        }
+      }
+
+      // Keyboard Event Listener
+      node.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          sonifyIndex(currentIndex + 1);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          sonifyIndex(currentIndex - 1);
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          sonifyIndex(0);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          sonifyIndex(data.length - 1);
+        } else if (e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault();
+          togglePlay();
+        }
+      });
+    });
+  }
+
+  chart.data = function(d) {
+    return arguments.length ? ((options.data = d), chart) : data;
+  };
+
+  chart.index = function(i) {
+    return arguments.length ? ((currentIndex = i), chart) : currentIndex;
+  };
+
+  return chart;
 }
 
 
@@ -1978,6 +2618,81 @@ function choreography() {
 }
 
 
+// --- src/movements/audioTransition.js ---
+/**
+ * audioTransition & audioRamp: D3 Transition Audio Bridge.
+ * Synchronizes D3's requestAnimationFrame animated transitions with Tone.js AudioParams.
+ *
+ * Enables smooth glissando pitch sweeps, volume fades, and filter cutoff sweeps
+ * running at the exact same easing and duration as SVG visual elements.
+ */
+
+/**
+ * Ramps a Tone.js AudioParam or Synth parameter smoothly over a duration.
+ * @param {object} target Tone.js param (e.g. synth.frequency or synth.volume)
+ * @param {number} targetValue Target numerical value
+ * @param {object} options { duration: 0.5, ramp: "linear"|"exponential", time?: number }
+ */
+function audioRamp(target, targetValue, options = {}) {
+  if (!target) return;
+  const duration = options.duration !== undefined ? options.duration : 0.5;
+  const rampType = options.ramp || "linear";
+
+  try {
+    // If target has direct Tone.js rampTo method
+    if (typeof target.rampTo === 'function') {
+      target.rampTo(targetValue, duration);
+    } else if (target.value !== undefined) {
+      // AudioParam or Tone.Signal
+      if (rampType === "exponential" && targetValue > 0.0001 && typeof target.exponentialRampTo === 'function') {
+        target.exponentialRampTo(targetValue, duration);
+      } else if (typeof target.linearRampTo === 'function') {
+        target.linearRampTo(targetValue, duration);
+      } else {
+        target.value = targetValue;
+      }
+    }
+  } catch (err) {
+    // Fallback direct assignment
+    try {
+      if (typeof target === 'function') target(targetValue);
+      else if (target.value !== undefined) target.value = targetValue;
+    } catch (_) {}
+  }
+}
+
+/**
+ * D3 Transition Helper: .call(audioTransition(synth, options))
+ * Hooks into D3 transition lifecycle (start, tween, end) to ramp audio parameters.
+ */
+function audioTransition(synthOrParam, options = {}) {
+  return function(transition) {
+    transition.each(function() {
+      // Extract transition duration in seconds
+      const durationMs = transition.duration ? transition.duration() : 500;
+      const durationSec = durationMs / 1000;
+
+      if (synthOrParam) {
+        if (options.frequency !== undefined) {
+          const freqTarget = synthOrParam.frequency || (synthOrParam.instrument && synthOrParam.instrument.frequency);
+          if (freqTarget) audioRamp(freqTarget, options.frequency, { duration: durationSec, ramp: "exponential" });
+        }
+        if (options.volume !== undefined) {
+          const volTarget = synthOrParam.volume || (synthOrParam.volumeNode && synthOrParam.volumeNode.volume);
+          if (volTarget) audioRamp(volTarget, options.volume, { duration: durationSec, ramp: "linear" });
+        }
+        if (options.cutoff !== undefined && synthOrParam.filterNode) {
+          audioRamp(synthOrParam.filterNode.frequency, options.cutoff, { duration: durationSec, ramp: "exponential" });
+        }
+        if (options.pan !== undefined && synthOrParam.panner) {
+          audioRamp(synthOrParam.panner.pan, options.pan, { duration: durationSec, ramp: "linear" });
+        }
+      }
+    });
+  };
+}
+
+
 // --- src/audio/soundEngine.js ---
 /**
  * SoundEngine: Audio context lifecycle manager, master effects chain, and routing bus.
@@ -2215,12 +2930,37 @@ class SynthVoice {
     try {
       const masterIn = this.engine.getMasterInput();
 
-      // Channel routing: Instrument -> Filter -> Panner -> Volume -> Master
+      // Channel routing: Instrument -> Filter -> (Effects: Crusher, Delay, Reverb) -> Panner -> Volume -> Master
       this.volumeNode = new this.Tone.Volume(this.options.volume || 0);
       this.panner = new this.Tone.Panner(this.options.pan || 0);
       this.filterNode = new this.Tone.Filter(this.options.cutoff || 18000, "lowpass");
 
-      this.filterNode.connect(this.panner);
+      let lastNode = this.filterNode;
+
+      if (this.options.crusher && this.Tone.BitCrusher) {
+        this.crusherNode = new this.Tone.BitCrusher(this.options.crusher.bits || 8);
+        this.crusherNode.wet.value = this.options.crusher.wet !== undefined ? this.options.crusher.wet : 1;
+        lastNode.connect(this.crusherNode);
+        lastNode = this.crusherNode;
+      }
+
+      if (this.options.delay && this.Tone.FeedbackDelay) {
+        this.delayNode = new this.Tone.FeedbackDelay(this.options.delay.delayTime || 0.25, this.options.delay.feedback || 0.3);
+        this.delayNode.wet.value = this.options.delay.wet !== undefined ? this.options.delay.wet : 0.3;
+        lastNode.connect(this.delayNode);
+        lastNode = this.delayNode;
+      }
+
+      if (this.options.reverb && this.Tone.Freeverb) {
+        this.reverbNode = new this.Tone.Freeverb();
+        this.reverbNode.dampening = 3000;
+        this.reverbNode.roomSize.value = 0.7;
+        this.reverbNode.wet.value = this.options.reverb.wet !== undefined ? this.options.reverb.wet : 0.3;
+        lastNode.connect(this.reverbNode);
+        lastNode = this.reverbNode;
+      }
+
+      lastNode.connect(this.panner);
       this.panner.connect(this.volumeNode);
       if (masterIn) {
         this.volumeNode.connect(masterIn);
@@ -2334,6 +3074,24 @@ class SynthVoice {
         } else {
           this.filterNode.frequency.value = params.filter;
         }
+      }
+
+      if (params.crusher !== undefined && this.crusherNode) {
+        if (typeof params.crusher === 'number') this.crusherNode.bits.value = params.crusher;
+        else if (params.crusher.bits) this.crusherNode.bits.value = params.crusher.bits;
+        if (params.crusher.wet !== undefined) this.crusherNode.wet.value = params.crusher.wet;
+      }
+      if (params.delay !== undefined && this.delayNode) {
+        if (typeof params.delay === 'number') this.delayNode.wet.value = params.delay;
+        else {
+          if (params.delay.delayTime) this.delayNode.delayTime.value = params.delay.delayTime;
+          if (params.delay.feedback) this.delayNode.feedback.value = params.delay.feedback;
+          if (params.delay.wet !== undefined) this.delayNode.wet.value = params.delay.wet;
+        }
+      }
+      if (params.reverb !== undefined && this.reverbNode) {
+        if (typeof params.reverb === 'number') this.reverbNode.wet.value = params.reverb;
+        else if (params.reverb.wet !== undefined) this.reverbNode.wet.value = params.reverb.wet;
       }
 
       const t = time !== undefined ? time : (this.Tone ? this.Tone.now() : undefined);
@@ -2747,6 +3505,127 @@ class SamplePlayer {
 
 function createSamplePlayer(options = {}, engine = defaultEngine) {
   return new SamplePlayer(options, engine);
+}
+
+
+// --- src/audio/granularScrubber.js ---
+
+/**
+ * GranularScrubber: High-performance audio scrubber utilizing Tone.GrainPlayer.
+ * Allows click-free, pitch-stable micro-grain scrubbing across time series,
+ * audio files, or synthesized telemetry waveforms.
+ */
+class GranularScrubber {
+  constructor(options = {}, engine = defaultEngine) {
+    this.engine = engine;
+    this.Tone = engine.Tone || (typeof window !== 'undefined' ? window.Tone : null);
+    this.options = options;
+    this.grainPlayer = null;
+    this.buffer = null;
+    this.isPlaying = false;
+    this.currentPosition = 0; // 0 to 1
+
+    this.init();
+  }
+
+  init() {
+    if (!this.Tone) {
+      if (typeof window !== 'undefined' && window.Tone) {
+        this.Tone = window.Tone;
+      } else {
+        return;
+      }
+    }
+
+    try {
+      const Tone = this.Tone;
+      // If a URL was provided, load it; otherwise create synthetic continuous harmonic buffer
+      if (this.options.url) {
+        this.grainPlayer = new Tone.GrainPlayer({
+          url: this.options.url,
+          grainSize: this.options.grainSize || 0.05,
+          overlap: this.options.overlap || 0.02,
+          loop: true,
+          playbackRate: this.options.playbackRate || 1.0
+        }).toDestination();
+      } else {
+        // Generate a 4-second synthetic multi-harmonic rich soundscape buffer
+        const rawCtx = Tone.context.rawContext;
+        if (rawCtx) {
+          const sampleRate = rawCtx.sampleRate || 44100;
+          const length = sampleRate * 4;
+          const audioBuffer = rawCtx.createBuffer(2, length, sampleRate);
+
+          for (let ch = 0; ch < 2; ch++) {
+            const data = audioBuffer.getChannelData(ch);
+            for (let i = 0; i < length; i++) {
+              const t = i / sampleRate;
+              // Evolving harmonic frequency sweep from 130 Hz (C3) to 523 Hz (C5)
+              const f = 130 + (i / length) * 393;
+              const s1 = Math.sin(2 * Math.PI * f * t);
+              const s2 = 0.5 * Math.sin(2 * Math.PI * (f * 1.5) * t + (ch * 0.2));
+              const s3 = 0.25 * Math.sin(2 * Math.PI * (f * 2.0) * t);
+              data[i] = (s1 + s2 + s3) * 0.25;
+            }
+          }
+
+          this.buffer = new Tone.ToneAudioBuffer(audioBuffer);
+          this.grainPlayer = new Tone.GrainPlayer({
+            buffer: this.buffer,
+            grainSize: this.options.grainSize || 0.05,
+            overlap: this.options.overlap || 0.02,
+            loop: true,
+            playbackRate: this.options.playbackRate || 1.0
+          }).toDestination();
+        }
+      }
+    } catch (err) {
+      console.warn('GranularScrubber init fallback:', err);
+    }
+  }
+
+  /**
+   * Scrub to a normalized position between 0.0 and 1.0.
+   * @param {number} position 0 to 1
+   */
+  scrub(position) {
+    this.currentPosition = Math.max(0, Math.min(1, position));
+    if (this.grainPlayer && this.grainPlayer.buffer) {
+      const dur = this.grainPlayer.buffer.duration;
+      if (dur > 0) {
+        const offset = this.currentPosition * dur;
+        try {
+          // Modulate scrub playback offset without pitch shifts
+          this.grainPlayer.scrubOffset = offset;
+        } catch (_) {}
+      }
+    }
+    return this;
+  }
+
+  start() {
+    if (this.grainPlayer && !this.isPlaying) {
+      try {
+        this.grainPlayer.start();
+        this.isPlaying = true;
+      } catch (_) {}
+    }
+    return this;
+  }
+
+  stop() {
+    if (this.grainPlayer && this.isPlaying) {
+      try {
+        this.grainPlayer.stop();
+        this.isPlaying = false;
+      } catch (_) {}
+    }
+    return this;
+  }
+}
+
+function createGranularScrubber(options, engine) {
+  return new GranularScrubber(options, engine);
 }
 
 
@@ -3309,7 +4188,18 @@ function timeline(options = {}, engine = defaultEngine) {
   exports.scaleSample = scaleSample;
   exports.scaleTempo = scaleTempo;
   exports.scaleTension = scaleTension;
+  exports.scaleUncertainty = scaleUncertainty;
+  exports.scaleCrush = scaleCrush;
+  exports.scaleSpatial = scaleSpatial;
+  exports.scaleReverb = scaleReverb;
+  exports.scaleEcho = scaleEcho;
+  exports.scaleDelay = scaleDelay;
+  exports.scaleChord = scaleChord;
+  exports.scaleHarmony = scaleHarmony;
+  exports.scaleRhythm = scaleRhythm;
+  exports.euclideanRhythm = euclideanRhythm;
   exports.audioLegend = audioLegend;
+  exports.accessibleChart = accessibleChart;
   exports.SUBDIVISIONS = SUBDIVISIONS;
 
   exports.Timeline = Timeline;
@@ -3329,6 +4219,8 @@ function timeline(options = {}, engine = defaultEngine) {
   exports.ripple = ripple;
   exports.glow = glow;
   exports.squash = squash;
+  exports.audioTransition = audioTransition;
+  exports.audioRamp = audioRamp;
 
   exports.SoundEngine = SoundEngine;
   exports.defaultEngine = defaultEngine;
@@ -3336,6 +4228,8 @@ function timeline(options = {}, engine = defaultEngine) {
   exports.createSynth = createSynth;
   exports.SamplePlayer = SamplePlayer;
   exports.createSamplePlayer = createSamplePlayer;
+  exports.GranularScrubber = GranularScrubber;
+  exports.createGranularScrubber = createGranularScrubber;
 
   exports.parseNote = parseNote;
   exports.midiToNote = midiToNote;
@@ -3360,6 +4254,12 @@ function timeline(options = {}, engine = defaultEngine) {
       window.d3.scaleSample = scaleSample;
       window.d3.scaleTempo = scaleTempo;
       window.d3.scaleTension = scaleTension;
+      window.d3.scaleUncertainty = scaleUncertainty;
+      window.d3.scaleSpatial = scaleSpatial;
+      window.d3.scaleEcho = scaleEcho;
+      window.d3.scaleChord = scaleChord;
+      window.d3.scaleRhythm = scaleRhythm;
+      window.d3.accessibleChart = accessibleChart;
       window.d3.audioLegend = audioLegend;
       window.d3.choreography = choreography;
       window.d3.timeline = timeline;

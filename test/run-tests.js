@@ -2,6 +2,7 @@ import { testMusical } from './test-musical.js';
 import { testScales } from './test-scales.js';
 import { testMovements } from './test-movements.js';
 import { testTimeline } from './test-timeline.js';
+import { testAdvanced } from './test-advanced.js';
 
 let passed = 0;
 let failed = 0;
@@ -46,17 +47,20 @@ async function runAll() {
   console.log('       d3-audio Unit Test Suite         ');
   console.log('========================================\n');
 
-  console.log('\x1b[36m[1/4] Testing Musical Theory & Conversions...\x1b[0m');
+  console.log('\x1b[36m[1/5] Testing Musical Theory & Conversions...\x1b[0m');
   testMusical();
 
-  console.log('\n\x1b[36m[2/4] Testing D3-like Audio Scalers...\x1b[0m');
+  console.log('\n\x1b[36m[2/5] Testing D3-like Audio Scalers...\x1b[0m');
   testScales();
 
-  console.log('\n\x1b[36m[3/4] Testing Rhythmic Movements & Envelopes...\x1b[0m');
+  console.log('\n\x1b[36m[3/5] Testing Rhythmic Movements & Envelopes...\x1b[0m');
   testMovements();
 
-  console.log('\n\x1b[36m[4/4] Testing Timeline & Track Orchestration...\x1b[0m');
+  console.log('\n\x1b[36m[4/5] Testing Timeline & Track Orchestration...\x1b[0m');
   testTimeline();
+
+  console.log('\n\x1b[36m[5/5] Testing Advanced Scalers, Theory & a11y...\x1b[0m');
+  testAdvanced();
 
   console.log('\n----------------------------------------');
   if (failed === 0) {

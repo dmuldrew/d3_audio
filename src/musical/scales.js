@@ -41,6 +41,20 @@ export const SCALE_INTERVALS = {
   hungarianMinor: [0, 2, 3, 6, 7, 8, 11],
   egyptian: [0, 2, 5, 7, 10],
 
+  // Middle Eastern Maqams (using quarter-tone / 50-cent fractional semitones)
+  maqamBayati: [0, 1.5, 3, 5, 7, 8, 10],   // 2nd degree is half-flat (150 cents)
+  maqamRast: [0, 2, 3.5, 5, 7, 9, 10.5],  // 3rd and 7th degrees are half-flat
+  maqamHijaz: [0, 1, 4, 5, 7, 8, 10],     // Phrygian dominant
+  maqamSaba: [0, 1.5, 2.5, 4, 7, 8, 10],  // Expressive double half-flat intervals
+
+  // Indian Classical Ragas
+  ragaBhairav: [0, 1, 4, 5, 7, 8, 11],    // Morning raga (Komal Re, Komal Dha)
+  ragaTodi: [0, 1, 3, 6, 7, 8, 11],       // Intense meditative morning raga (Tivra Ma)
+  ragaYaman: [0, 2, 4, 6, 7, 9, 11],      // Evening raga (Kalyan thaat, Lydian)
+  ragaKafi: [0, 2, 3, 5, 7, 9, 10],       // Late night raga (Kafi thaat, Dorian)
+  ragaBhairavi: [0, 1, 3, 5, 7, 8, 10],   // Concluding devotional raga (Phrygian)
+  ragaBilawal: [0, 2, 4, 5, 7, 9, 11],    // Base shuddha thaat (Major)
+
   // Chords / Arpeggio subsets
   triadMajor: [0, 4, 7],
   triadMinor: [0, 3, 7],

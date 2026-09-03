@@ -783,6 +783,7 @@
         <li><a href="#scalers-lab">Scalers Lab</a></li>
         <li><a href="#csv-sandbox">Drop & Sonify CSV</a></li>
         <li><a href="#ab-test">Ethical A/B Test</a></li>
+        <li><a href="#accessible-chart">Accessible a11y</a></li>
         <li><a href="#api-cheatsheet">API Cheat Sheet</a></li>
         <li><a href="#principles">Principles</a></li>
         <li><a href="#quickstart">Quickstart</a></li>
@@ -976,6 +977,105 @@
             </div>
           </div>
         </div>
+
+        <!-- 5. scaleUncertainty() -->
+        <div class="scaler-box">
+          <div>
+            <h4>
+              <span>scaleUncertainty()</span>
+              <span id="uncertainty-out" class="output-badge">16 bits (Pristine)</span>
+            </h4>
+            <p>Maps statistical confidence, p-values, or missingness to bit depth (16 ➔ 2 bits) & lo-fi grit.</p>
+          </div>
+          <div class="scaler-controls">
+            <div class="control-row">
+              <label>Uncertainty / Error (0.00–1.00):</label>
+              <input type="range" id="uncertainty-slider" min="0" max="1" step="0.05" value="0">
+            </div>
+            <div class="control-row">
+              <label>Audio Fidelity:</label>
+              <span id="uncertainty-desc" style="font-size: 0.8rem; font-family: monospace; color: var(--accent);">16 bits | 0% Grit (Pristine Tone)</span>
+            </div>
+            <button id="btn-test-uncertainty" class="btn-audition">🔊 Audition Bit-Crush</button>
+          </div>
+        </div>
+
+        <!-- 6. scaleRhythm() & euclideanRhythm() -->
+        <div class="scaler-box">
+          <div>
+            <h4>
+              <span>scaleRhythm()</span>
+              <span id="rhythm-out" class="output-badge">E(5, 16) Cinquillo</span>
+            </h4>
+            <p>Computes Euclidean rhythms (Bjorklund algorithm) mapping data density into polyrhythms.</p>
+          </div>
+          <div class="scaler-controls">
+            <div class="control-row">
+              <label>Active Pulses (k: 1–16):</label>
+              <input type="range" id="rhythm-pulses" min="1" max="16" value="5">
+            </div>
+            <div class="control-row">
+              <label>Rhythm Pattern:</label>
+              <span id="rhythm-pattern-out" style="font-size: 0.8rem; font-family: monospace; color: var(--gold); letter-spacing: 2px;">x..x..x..x.x....</span>
+            </div>
+            <button id="btn-test-rhythm" class="btn-audition">🔊 Audition Euclidean Groove</button>
+          </div>
+        </div>
+
+        <!-- 7. scaleChord() -->
+        <div class="scaler-box">
+          <div>
+            <h4>
+              <span>scaleChord()</span>
+              <span id="chord-badge" class="output-badge">C3 Maj7</span>
+            </h4>
+            <p>Multivariate harmonic scaler converting multidimensional data records into voiced chords.</p>
+          </div>
+          <div class="scaler-controls">
+            <div class="control-row">
+              <label>Chord Quality:</label>
+              <select id="chord-quality-select" style="width: 100%; background: #090d16; border: 1px solid var(--card-border); color: #fff; padding: 0.35rem; border-radius: 6px;">
+                <option value="maj7" selected>Major 7th (Dreamy / Calm)</option>
+                <option value="min7">Minor 7th (Moody / Contemplative)</option>
+                <option value="sus4">Suspended 4th (Open / Unresolved)</option>
+                <option value="dim7">Diminished 7th (Tense / Alarm)</option>
+                <option value="add9">Add 9 (Expansive / Hopeful)</option>
+              </select>
+            </div>
+            <div class="control-row">
+              <label>Voiced Notes:</label>
+              <span id="chord-notes-out" style="font-size: 0.8rem; font-family: monospace; color: var(--accent);">C3-E3-G3-B3</span>
+            </div>
+            <button id="btn-test-chord" class="btn-audition">🔊 Audition Chord Voicing</button>
+          </div>
+        </div>
+
+        <!-- 8. World Scales & Microtonality -->
+        <div class="scaler-box">
+          <div>
+            <h4>
+              <span>World Modes & Microtones</span>
+              <span id="world-badge" class="output-badge">Maqam Bayati</span>
+            </h4>
+            <p>Authentic quarter-tone intervals (half-flats -50c) and classical Indian Raga systems.</p>
+          </div>
+          <div class="scaler-controls">
+            <div class="control-row">
+              <label>Select World System:</label>
+              <select id="world-scale-select" style="width: 100%; background: #090d16; border: 1px solid var(--card-border); color: #fff; padding: 0.35rem; border-radius: 6px;">
+                <option value="maqamBayati" selected>Maqam Bayati (Quarter-tone E~)</option>
+                <option value="maqamRast">Maqam Rast (Quarter-tone E~ & B~)</option>
+                <option value="ragaBhairav">Raga Bhairav (Morning Devotional)</option>
+                <option value="ragaTodi">Raga Todi (Meditative Tension)</option>
+              </select>
+            </div>
+            <div class="control-row">
+              <label>Scale Degrees:</label>
+              <span id="world-scale-notes" style="font-size: 0.78rem; font-family: monospace; color: var(--accent2);">D3 - E~3 - F3 - G3 - A3 - Bb3 - C4</span>
+            </div>
+            <button id="btn-test-world" class="btn-audition">🔊 Audition Microtonal Scale</button>
+          </div>
+        </div>
       </div>
 
       <!-- Live Choreography Tester -->
@@ -1013,20 +1113,20 @@
 
       <div class="sandbox-dropzone" id="csv-dropzone">
         <p style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">
-          Drag & Drop any .CSV file here, or click to browse
+          📁 Drag & Drop any .CSV file here, or click to browse
         </p>
         <p style="font-size: 0.85rem; color: var(--text-muted);">
           All processing is 100% clientside inside your browser. No data ever leaves your computer.
         </p>
         <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display: none;">
+      </div>
 
-        <div class="preset-chips">
-          <span style="font-size: 0.78rem; color: var(--text-muted); align-self: center;">Or load a preset:</span>
-          <button class="preset-btn" data-preset="sp500">📈 S&P 500 Market Volatility</button>
-          <button class="preset-btn" data-preset="earthquake">🌍 USGS Earthquake Swarm</button>
-          <button class="preset-btn" data-preset="climate">🌡️ NASA Climate Anomaly</button>
-          <button class="preset-btn" data-preset="ecg">💓 ECG Arrhythmia Rhythm</button>
-        </div>
+      <div class="preset-chips" style="margin: 0.85rem 0 1.25rem 0;">
+        <span style="font-size: 0.82rem; color: var(--text-muted); align-self: center; font-weight: 600;">Or load a built-in dataset:</span>
+        <button class="preset-btn" data-preset="sp500">📈 S&P 500 Market Volatility</button>
+        <button class="preset-btn" data-preset="earthquake">🌍 USGS Earthquake Swarm</button>
+        <button class="preset-btn" data-preset="climate">🌡️ NASA Climate Anomaly</button>
+        <button class="preset-btn" data-preset="ecg">💓 ECG Arrhythmia Rhythm</button>
       </div>
 
       <!-- Sandbox Controls & Preview Chart -->
@@ -1204,7 +1304,47 @@
       </div>
     </section>
 
-    <!-- SECTION 4: 20 Interactive Demo Applications -->
+    <!-- SECTION 4: Universal Accessible Chart Sonifier (a11y) -->
+    <section class="section-card" id="accessible-chart">
+      <h2 class="section-title">
+        <span>♿</span>
+        <span>Universal Accessible Chart Sonifier (a11y)</span>
+      </h2>
+      <p class="section-desc">
+        A 1-line turn-key D3 component (<code>d3.select('#chart').call(d3Audio.accessibleChart({...}))</code>) that empowers blind and low-vision users to explore visualizations using <strong>keyboard arrow keys</strong>, <strong>screen reader ARIA live updates</strong>, and <strong>synchronized pitch & min/max earcons</strong>.
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; align-items: start;">
+        <div style="background: rgba(0,0,0,0.4); border: 2px solid var(--accent); border-radius: 12px; padding: 1.25rem; outline: none; cursor: pointer;" id="a11y-chart-box" tabindex="0">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 0.85rem; font-weight: 700; color: #fff;">⌨️ Interactive Chart Area (Click & press ⬅️ ➡️ Arrow Keys or Spacebar)</span>
+            <span id="a11y-focus-badge" style="font-size: 0.75rem; background: rgba(56,189,248,0.2); color: var(--accent); padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700;">Click to Focus</span>
+          </div>
+          <svg id="a11y-svg" viewBox="0 0 600 220" style="width: 100%; height: 220px; overflow: visible;"></svg>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="font-size: 0.95rem; color: var(--gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>📢</span> Simulated Screen Reader Speech
+          </h4>
+          <div id="a11y-speech-log" style="background: #030712; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.85rem; font-family: monospace; font-size: 0.8rem; color: #38bdf8; min-height: 85px; line-height: 1.5;">
+            "Interactive Accessible Data Chart. Press Right Arrow to begin inspecting data points, Spacebar to play full melody."
+          </div>
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <button id="btn-a11y-prev" class="btn" style="flex: 1; padding: 0.45rem; font-size: 0.8rem;">⬅️ Prev</button>
+            <button id="btn-a11y-play" class="btn" style="flex: 1; padding: 0.45rem; font-size: 0.8rem;">▶ Play Full</button>
+            <button id="btn-a11y-next" class="btn" style="flex: 1; padding: 0.45rem; font-size: 0.8rem;">Next ➡️</button>
+          </div>
+          <div style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+            • <strong>ArrowRight / Left</strong>: Navigates point by point.<br>
+            • <strong>High Chime Earcon</strong>: Fires automatically on Peak Maximum ($96).<br>
+            • <strong>Low Thud Earcon</strong>: Fires automatically on Lowest Minimum ($18).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: 20 Interactive Demo Applications -->
     <section class="section-card" id="demos">
       <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
         <div>
@@ -1800,6 +1940,131 @@ console.log("Audio Context state:", defaultEngine.state);</div>
           </div>
           <button class="btn-copy">📋 Copy Snippet</button>
         </div>
+
+        <!-- scaleUncertainty -->
+        <div class="api-card" data-cat="scalers" data-name="scaleUncertainty">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleUncertainty()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps statistical uncertainty, p-values, or error margins to Tone.BitCrusher bit reduction (16 to 2 bits) and lo-fi saturation grit.</p>
+            <div class="api-snippet">const uncertainty = scaleUncertainty()
+  .domain([0, 1]) // 0 = certain, 1 = uncertain
+  .range([16, 2]); // bits
+const { bits, grit, wet } = uncertainty(pValue);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleSpatial -->
+        <div class="api-card" data-cat="scalers" data-name="scaleSpatial">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleSpatial()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps 3D Z-depth, epicenter distance, or cluster hierarchy to reverberant acoustic space (wet/dry decay and spatial pre-delay).</p>
+            <div class="api-snippet">const spatial = scaleSpatial().domain([0, 100]);
+const { wet, decay } = spatial(zDistance);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleEcho -->
+        <div class="api-card" data-cat="scalers" data-name="scaleEcho">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleEcho()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Maps moving-average windows, network latency, or memory inertia to Tone.FeedbackDelay parameters.</p>
+            <div class="api-snippet">const echo = scaleEcho().domain([0, 1000]);
+const { delayTime, feedback } = echo(latencyMs);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleChord -->
+        <div class="api-card" data-cat="scalers" data-name="scaleChord">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleChord()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Multivariate harmonic scaler converting multidimensional data records into voiced chords (triads, 7ths, 9ths, sus, dim) with inversion and drop-2 voicing.</p>
+            <div class="api-snippet">const chord = scaleChord();
+const { notes, frequencies } = chord({
+  root: "C3",
+  quality: "maj7",
+  voicing: "open"
+});</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- scaleRhythm -->
+        <div class="api-card" data-cat="scalers" data-name="scaleRhythm">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">scaleRhythm()</span>
+              <span class="api-category">Scalers</span>
+            </div>
+            <p class="api-desc">Computes Euclidean rhythms using the Bjorklund algorithm, mapping continuous data density into polyrhythmic patterns and Tone.js timing offsets.</p>
+            <div class="api-snippet">const rhythm = scaleRhythm().domain([0, 100]).steps(16);
+const { pattern, events } = rhythm(activityLevel);</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- audioTransition -->
+        <div class="api-card" data-cat="movements" data-name="audioTransition">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">audioTransition()</span>
+              <span class="api-category">Choreography</span>
+            </div>
+            <p class="api-desc">Direct D3 transition bridge ramping audio parameters (frequency glissando, volume fades, filter sweeps) synchronized with SVG visual animations.</p>
+            <div class="api-snippet">d3.select(".dot")
+  .transition()
+  .duration(800)
+  .attr("cy", y(val))
+  .call(audioTransition(synth, { frequency: pitch(val) }));</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- GranularScrubber -->
+        <div class="api-card" data-cat="audio" data-name="GranularScrubber">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">createGranularScrubber()</span>
+              <span class="api-category">Audio & Synths</span>
+            </div>
+            <p class="api-desc">Tone.GrainPlayer wrapper enabling click-free, pitch-stable micro-grain scrubbing across continuous telemetry charts or audio buffers.</p>
+            <div class="api-snippet">const scrubber = createGranularScrubber();
+scrubber.start();
+scrubber.scrub(normalizedX); // 0.0 to 1.0</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
+
+        <!-- accessibleChart -->
+        <div class="api-card" data-cat="ui" data-name="accessibleChart">
+          <div>
+            <div class="api-card-header">
+              <span class="api-name">accessibleChart()</span>
+              <span class="api-category">UI & Legends</span>
+            </div>
+            <p class="api-desc">Turnkey D3 accessible (a11y) sonifier component providing keyboard arrow navigation, screen-reader ARIA live updates, and min/max earcons.</p>
+            <div class="api-snippet">d3.select("#chart-container").call(accessibleChart({
+  data: dataset,
+  x: d => d.date,
+  y: d => d.value
+}));</div>
+          </div>
+          <button class="btn-copy">📋 Copy Snippet</button>
+        </div>
       </div>
     </section>
 
@@ -2157,6 +2422,120 @@ console.log("Audio Context state:", defaultEngine.state);</div>
         });
       });
 
+      // scaleUncertainty
+      const uncScale = d3Audio.scaleUncertainty().domain([0, 1]);
+      const uncSlider = document.getElementById('uncertainty-slider');
+      const uncOut = document.getElementById('uncertainty-out');
+      const uncDesc = document.getElementById('uncertainty-desc');
+      let crusherSynth = null;
+
+      function updateUncertaintyDisplay() {
+        const val = +uncSlider.value;
+        const res = uncScale(val);
+        uncOut.innerText = `${res.bits} bits (${res.label})`;
+        uncDesc.innerText = `${res.bits} bits | ${Math.round(res.grit * 100)}% Grit (${res.label})`;
+      }
+      uncSlider.addEventListener('input', updateUncertaintyDisplay);
+
+      document.getElementById('btn-test-uncertainty').addEventListener('click', async () => {
+        await d3Audio.defaultEngine.start();
+        const val = +uncSlider.value;
+        const res = uncScale(val);
+        if (!crusherSynth) {
+          crusherSynth = d3Audio.createSynth({
+            type: "fmSynth",
+            volume: -2,
+            crusher: { bits: res.bits, wet: res.wet }
+          });
+        }
+        crusherSynth.triggerAttackRelease("C4", "4n", undefined, 0.8, { crusher: res });
+      });
+
+      // scaleRhythm & euclideanRhythm
+      const rPulses = document.getElementById('rhythm-pulses');
+      const rOut = document.getElementById('rhythm-out');
+      const rPatternOut = document.getElementById('rhythm-pattern-out');
+      let rhythmTimer = null;
+
+      function updateRhythmDisplay() {
+        const k = +rPulses.value;
+        const pattern = d3Audio.euclideanRhythm(k, 16);
+        rOut.innerText = `E(${k}, 16) Pulses`;
+        rPatternOut.innerText = pattern.map(h => (h ? 'x' : '.')).join('');
+      }
+      rPulses.addEventListener('input', updateRhythmDisplay);
+
+      document.getElementById('btn-test-rhythm').addEventListener('click', async () => {
+        await d3Audio.defaultEngine.start();
+        const k = +rPulses.value;
+        const pattern = d3Audio.euclideanRhythm(k, 16);
+        let step = 0;
+        clearInterval(rhythmTimer);
+        rhythmTimer = setInterval(() => {
+          if (pattern[step]) {
+            drums.trigger("bell", "16n", undefined, 0.8);
+          } else if (step % 4 === 0) {
+            drums.trigger("kick", "16n", undefined, 0.4);
+          }
+          step++;
+          if (step >= 16) {
+            clearInterval(rhythmTimer);
+          }
+        }, 125);
+      });
+
+      // scaleChord
+      const chordScaler = d3Audio.scaleChord();
+      const chordSel = document.getElementById('chord-quality-select');
+      const chordBadge = document.getElementById('chord-badge');
+      const chordNotesOut = document.getElementById('chord-notes-out');
+
+      function updateChordDisplay() {
+        const quality = chordSel.value;
+        const res = chordScaler({ root: "C3", quality });
+        chordBadge.innerText = `C3 ${quality.toUpperCase()}`;
+        chordNotesOut.innerText = res.notes.join('-');
+      }
+      chordSel.addEventListener('change', updateChordDisplay);
+
+      document.getElementById('btn-test-chord').addEventListener('click', async () => {
+        const p = await getPoly();
+        const res = chordScaler({ root: "C3", quality: chordSel.value });
+        p.triggerAttackRelease(res.notes, "2n", undefined, 0.8);
+      });
+
+      // World Scales & Microtones
+      const worldSel = document.getElementById('world-scale-select');
+      const worldBadge = document.getElementById('world-badge');
+      const worldNotesOut = document.getElementById('world-scale-notes');
+
+      const worldScaleDefs = {
+        maqamBayati: { root: "D3", name: "D3 - E~3 - F3 - G3 - A3 - Bb3 - C4", mode: "maqamBayati" },
+        maqamRast: { root: "C3", name: "C3 - D3 - E~3 - F3 - G3 - A3 - B~3", mode: "maqamRast" },
+        ragaBhairav: { root: "C3", name: "C3 - Db3 - E3 - F3 - G3 - Ab3 - B3", mode: "ragaBhairav" },
+        ragaTodi: { root: "C3", name: "C3 - Db3 - Eb3 - F#3 - G3 - Ab3 - B3", mode: "ragaTodi" }
+      };
+
+      function updateWorldDisplay() {
+        const key = worldSel.value;
+        const def = worldScaleDefs[key];
+        worldBadge.innerText = key;
+        worldNotesOut.innerText = def.name;
+      }
+      worldSel.addEventListener('change', updateWorldDisplay);
+
+      document.getElementById('btn-test-world').addEventListener('click', async () => {
+        const fm = await getFM();
+        const key = worldSel.value;
+        const def = worldScaleDefs[key];
+        const notes = d3Audio.generateScaleNotes(def.root, "C5", def.mode, def.root.charAt(0)).slice(0, 8);
+        notes.forEach((nt, idx) => {
+          setTimeout(() => {
+            fm.triggerAttackRelease(nt.frequency, "8n", undefined, 0.75);
+          }, idx * 160);
+        });
+      });
+
       // ==========================================
       // 4. INSTANT "DROP & SONIFY" CSV SANDBOX
       // ==========================================
@@ -2304,7 +2683,8 @@ console.log("Audio Context state:", defaultEngine.state);</div>
 
       // Preset Buttons
       document.querySelectorAll('.preset-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
           const p = btn.getAttribute('data-preset');
           if (sampleDatasets[p]) loadDatasetIntoSandbox(sampleDatasets[p]);
         });
@@ -2313,7 +2693,10 @@ console.log("Audio Context state:", defaultEngine.state);</div>
       // Drag & Drop File Loader
       const dropzone = document.getElementById('csv-dropzone');
       const fileInput = document.getElementById('csv-file-input');
-      dropzone.addEventListener('click', () => fileInput.click());
+      dropzone.addEventListener('click', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.closest('.preset-btn')) return;
+        fileInput.click();
+      });
 
       dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -2535,6 +2918,111 @@ console.log("Audio Context state:", defaultEngine.state);</div>
         btnPlayEthical.innerText = "▶ Play Track B (Ethical Tension)";
         abStatus.innerText = "Audition complete";
         playhead.style('opacity', 0);
+      });
+
+      // ==========================================
+      // 5. UNIVERSAL ACCESSIBLE CHART SONIFIER (a11y)
+      // ==========================================
+      const a11yDataset = [
+        { month: "Jan", val: 35 }, { month: "Feb", val: 48 }, { month: "Mar", val: 96 },
+        { month: "Apr", val: 72 }, { month: "May", val: 55 }, { month: "Jun", val: 84 },
+        { month: "Jul", val: 40 }, { month: "Aug", val: 18 }, { month: "Sep", val: 62 },
+        { month: "Oct", val: 78 }, { month: "Nov", val: 68 }, { month: "Dec", val: 90 }
+      ];
+
+      const a11ySvg = d3.select("#a11y-svg");
+      const a11yW = 600, a11yH = 220, a11yM = { top: 25, right: 25, bottom: 35, left: 45 };
+      const a11yInnerW = a11yW - a11yM.left - a11yM.right;
+      const a11yInnerH = a11yH - a11yM.top - a11yM.bottom;
+
+      const a11yG = a11ySvg.append('g').attr('transform', `translate(${a11yM.left}, ${a11yM.top})`);
+      const a11yX = d3.scalePoint().domain(a11yDataset.map(d => d.month)).range([0, a11yInnerW]).padding(0.3);
+      const a11yY = d3.scaleLinear().domain([0, 105]).range([a11yInnerH, 0]);
+
+      // Axes
+      a11yG.append('g').attr('transform', `translate(0, ${a11yInnerH})`)
+        .call(d3.axisBottom(a11yX))
+        .attr('color', '#64748b');
+      a11yG.append('g')
+        .call(d3.axisLeft(a11yY).ticks(4))
+        .attr('color', '#64748b');
+
+      // Line & Area
+      const a11yArea = d3.area().x(d => a11yX(d.month)).y0(a11yInnerH).y1(d => a11yY(d.val)).curve(d3.curveMonotoneX);
+      const a11yLine = d3.line().x(d => a11yX(d.month)).y(d => a11yY(d.val)).curve(d3.curveMonotoneX);
+
+      a11yG.append('path').datum(a11yDataset).attr('fill', 'rgba(56, 189, 248, 0.12)').attr('d', a11yArea);
+      a11yG.append('path').datum(a11yDataset).attr('fill', 'none').attr('stroke', '#38bdf8').attr('stroke-width', 2.5).attr('d', a11yLine);
+
+      // Data Points
+      a11yG.selectAll('.a11y-dot')
+        .data(a11yDataset)
+        .enter()
+        .append('circle')
+        .attr('cx', d => a11yX(d.month))
+        .attr('cy', d => a11yY(d.val))
+        .attr('r', 4.5)
+        .attr('fill', '#090d16')
+        .attr('stroke', '#38bdf8')
+        .attr('stroke-width', 2);
+
+      // Playhead Indicator Dot
+      const a11yCursor = a11yG.append('circle')
+        .attr('r', 8)
+        .attr('fill', '#f43f5e')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2)
+        .style('opacity', 0);
+
+      const speechLog = document.getElementById('a11y-speech-log');
+      const focusBadge = document.getElementById('a11y-focus-badge');
+      const a11yBox = document.getElementById('a11y-chart-box');
+
+      a11yBox.addEventListener('focus', () => {
+        focusBadge.innerText = "✓ Focused (Use Arrows)";
+        focusBadge.style.background = "#10b981";
+        focusBadge.style.color = "#030712";
+      });
+      a11yBox.addEventListener('blur', () => {
+        focusBadge.innerText = "Click to Focus";
+        focusBadge.style.background = "rgba(56,189,248,0.2)";
+        focusBadge.style.color = "var(--accent)";
+      });
+
+      const a11ySonifier = d3Audio.accessibleChart({
+        data: a11yDataset,
+        x: d => d.month,
+        y: d => d.val,
+        label: (d, i, total) => {
+          let extra = "";
+          if (d.val === 96) extra = " — 🔔 Peak Maximum High Chime!";
+          else if (d.val === 18) extra = " — ⚡ Lowest Minimum Low Thud!";
+          return `Point ${i + 1} of ${total}: ${d.month}, Value $${d.val}.00${extra}`;
+        },
+        onPoint: (d, i, note) => {
+          a11yCursor.style('opacity', 1)
+            .attr('cx', a11yX(d.month))
+            .attr('cy', a11yY(d.val));
+          let extra = "";
+          if (d.val === 96) extra = " [🔔 Peak Maximum Chime]";
+          else if (d.val === 18) extra = " [⚡ Lowest Minimum Thud]";
+          speechLog.innerText = `🔊 "${d.month}: $${d.val}.00 (Pitch ${note})${extra}"`;
+        }
+      });
+
+      d3.select(a11yBox).call(a11ySonifier);
+
+      document.getElementById('btn-a11y-prev').addEventListener('click', () => {
+        a11yBox.focus();
+        a11yBox.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+      });
+      document.getElementById('btn-a11y-next').addEventListener('click', () => {
+        a11yBox.focus();
+        a11yBox.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+      });
+      document.getElementById('btn-a11y-play').addEventListener('click', () => {
+        a11yBox.focus();
+        a11yBox.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
       });
 
       // ==========================================

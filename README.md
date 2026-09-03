@@ -570,6 +570,121 @@ tension.pitch(85); // Note string
 
 ---
 
+### `scaleUncertainty()` / `scaleCrush()`
+Maps statistical uncertainty, $p$-values, confidence interval widths, or data missingness to `Tone.BitCrusher` bit reduction ($16\text{ bits}$ down to $2\text{ bits}$) and lo-fi saturation grit.
+
+* **Pristine / High Confidence ($p \approx 0$)**: $16\text{ bits}$, pure acoustic tone with $0\%$ grit.
+* **Heavy Uncertainty / Noisy ($p \approx 1$)**: $2\text{ to } 4\text{ bits}$, heavily bit-crushed, lo-fi digital crunch.
+
+```javascript
+const uncertainty = d3Audio.scaleUncertainty()
+  .domain([0, 1])               // 0 = 0% error (certain), 1 = 100% error (uncertain)
+  .range([16, 2]);              // 16-bit pristine ➔ 2-bit heavy crunch
+
+const res = uncertainty(0.85);
+// res: { bits: 4, grit: 0.85, wet: 0.85, label: "Heavy Bit-Crushed (Uncertain)" }
+
+// Pass directly into synthVoice:
+synth.triggerAttackRelease("C4", "8n", undefined, 0.8, { crusher: res });
+```
+
+---
+
+### `scaleSpatial()` / `scaleReverb()`
+Maps 3D Z-depth, distance from camera, geographic distance from an epicenter, or cluster hierarchy to reverberant acoustic space (`Tone.Reverb` / `Tone.Freeverb`).
+
+* **Near / Foreground**: Dry, intimate, in-your-face ($5\%$ wet, $0.4\text{s}$ decay).
+* **Far / Background**: Cavernous, deeply reverberant ($95\%$ wet, $7.0\text{s}$ decay).
+
+```javascript
+const spatial = d3Audio.scaleSpatial()
+  .domain([0, 100])             // 0 = near, 100 = distant
+  .range([0.05, 0.95]);         // Wet mix
+
+const { wet, decay } = spatial(zDistance);
+```
+
+---
+
+### `scaleEcho()` / `scaleDelay()`
+Maps rolling moving-average windows, network latency, or memory inertia to `Tone.FeedbackDelay` parameters.
+
+```javascript
+const echo = d3Audio.scaleEcho()
+  .domain([0, 1000]);           // Ping / latency in ms
+
+const { delayTime, feedback } = echo(latencyMs);
+```
+
+---
+
+### `scaleChord()` / `scaleHarmony()`
+Multivariate harmonic scaler converting multidimensional data records into voiced chords (triads, 7ths, 9ths, suspended, diminished) with support for inversions, open voicings, and drop-2 arranging.
+
+```javascript
+const chord = d3Audio.scaleChord();
+
+// Evaluate tuple or object:
+const result = chord({
+  root: "C3",
+  quality: "maj7",
+  voicing: "open"
+});
+// result.notes: ["C3", "G3", "E4", "B4"]
+// result.frequencies: [130.8, 196.0, 329.6, 493.9]
+```
+
+---
+
+### `scaleRhythm()` & `euclideanRhythm()`
+Computes **Euclidean rhythms** using the **Bjorklund algorithm**, evenly distributing $k$ active pulses across $n$ subdivisions (e.g. $E(3, 8) = \text{Tresillo}$, $E(5, 16) = \text{Cinquillo}$). Maps continuous data density or event rates into grooving polyrhythms and Tone.js timing offsets.
+
+```javascript
+// Standalone Bjorklund algorithm:
+d3Audio.euclideanRhythm(3, 8);
+// -> [1, 0, 0, 1, 0, 0, 1, 0]
+
+// D3-idiomatic rhythm scaler:
+const rhythm = d3Audio.scaleRhythm()
+  .domain([0, 100])
+  .steps(16)
+  .range([1, 16]);
+
+const { pattern, density, events } = rhythm(activityLevel);
+```
+
+---
+
+## ♿ Universal Accessible Chart Sonifier (`accessibleChart`)
+
+A 1-line turn-key D3 component that equips any visualization with full accessibility (a11y) compliance:
+* **Keyboard Navigation**: `ArrowLeft` / `ArrowRight` step through data points, `Home` / `End` jump to edges, `Spacebar` plays the entire chart.
+* **Screen Reader Live Speech**: Injects an `aria-live="polite"` region announcing point coordinates, rank, and formatted values.
+* **Auditory Earcons**: Automatically triggers bright high chimes on **Peak Maximums** and deep low thuds on **Lowest Minimums**.
+
+```javascript
+import { accessibleChart } from "d3-audio";
+
+d3.select("#my-chart-box").call(accessibleChart({
+  data: dataset,
+  x: d => d.date,
+  y: d => d.price,
+  label: (d, i, total) => `Point ${i + 1} of ${total}: ${d.date}, $${d.price}`,
+  onPoint: (d, i, note) => updatePlayhead(d, i)
+}));
+```
+
+---
+
+## 🌍 World Musical Scales & Microtonality
+
+`d3-audio` includes authentic non-Western musical scale systems and quarter-tone microtonality ($\pm 50\text{ cents}$ / half-flats):
+* **Middle Eastern Maqams**: `maqamBayati` (with $E\sim$ quarter-tone), `maqamRast`, `maqamHijaz`, `maqamSaba`.
+* **Indian Classical Ragas**: `ragaBhairav` (Komal Re, Komal Dha), `ragaTodi` (Tivra Ma), `ragaYaman` (Lydian), `ragaKafi` (Dorian).
+* **Fractional Note Parsing**: `parseNote("E~4")` parses to exact fractional MIDI $63.5$ and exact $320.24\text{ Hz}$ frequency.
+
+---
+
 ## 🏷️ Interactive Audio Legend (`audioLegend`)
 
 Implements the foundational data sonification principle:

@@ -7,9 +7,15 @@ export { scaleFilter } from './scales/scaleFilter.js';
 export { scaleSample } from './scales/scaleSample.js';
 export { scaleTempo } from './scales/scaleTempo.js';
 export { scaleTension } from './scales/scaleTension.js';
+export { scaleUncertainty, scaleCrush } from './scales/scaleUncertainty.js';
+export { scaleSpatial, scaleReverb } from './scales/scaleSpatial.js';
+export { scaleEcho, scaleDelay } from './scales/scaleEcho.js';
+export { scaleChord, scaleHarmony } from './scales/scaleChord.js';
+export { scaleRhythm, euclideanRhythm } from './scales/scaleRhythm.js';
 
 // UI & Presentation
 export { audioLegend } from './ui/audioLegend.js';
+export { accessibleChart } from './ui/accessibleChart.js';
 
 // Timeline & Tracks
 export { Timeline, timeline } from './timeline/timeline.js';
@@ -29,7 +35,9 @@ export {
   shake,
   ripple,
   glow,
-  squash
+  squash,
+  audioTransition,
+  audioRamp
 } from './movements/index.js';
 
 // Audio & Synthesis
@@ -39,7 +47,9 @@ export {
   SynthVoice,
   createSynth,
   SamplePlayer,
-  createSamplePlayer
+  createSamplePlayer,
+  GranularScrubber,
+  createGranularScrubber
 } from './audio/index.js';
 
 // Musical Theory
@@ -73,6 +83,12 @@ if (typeof window !== 'undefined') {
     window.d3.scaleSample = d3AudioNamespace.scaleSample;
     window.d3.scaleTempo = d3AudioNamespace.scaleTempo;
     window.d3.scaleTension = d3AudioNamespace.scaleTension;
+    window.d3.scaleUncertainty = d3AudioNamespace.scaleUncertainty;
+    window.d3.scaleSpatial = d3AudioNamespace.scaleSpatial;
+    window.d3.scaleEcho = d3AudioNamespace.scaleEcho;
+    window.d3.scaleChord = d3AudioNamespace.scaleChord;
+    window.d3.scaleRhythm = d3AudioNamespace.scaleRhythm;
+    window.d3.accessibleChart = d3AudioNamespace.accessibleChart;
     window.d3.audioLegend = d3AudioNamespace.audioLegend;
     window.d3.choreography = d3AudioNamespace.choreography;
     window.d3.timeline = d3AudioNamespace.timeline;
@@ -80,3 +96,4 @@ if (typeof window !== 'undefined') {
 }
 
 export default d3AudioNamespace;
+

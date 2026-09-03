@@ -8,3 +8,5 @@ export { shake } from './presets/shake.js';
 export { ripple } from './presets/ripple.js';
 export { glow } from './presets/glow.js';
 export { squash } from './presets/squash.js';
+export { audioTransition, audioRamp } from './audioTransition.js';
+
