@@ -23,6 +23,7 @@ Think of a hospital heart monitor beeping in tempo with a pulse, a car's parking
 
 - [What is Data Sonification? (A Plain-English Intro)](#-what-is-data-sonification-a-plain-english-intro)
 - [Conceptual Model & Architecture](#-conceptual-model--architecture)
+- [Integration with the D3 Ecosystem & Core Principles](#-integration-with-the-d3-ecosystem--core-principles)
 - [Principles of Data Sonification](#-principles-of-data-sonification)
 - [Continuous, Ordinal, and Categorical Data Sonification](#-continuous-ordinal-and-categorical-data-sonification)
 - [Musical Tension, Release & Energy Dynamics](#-musical-tension-release--energy-dynamics)
@@ -126,6 +127,85 @@ flowchart TD
     TL -->|Audio Playback| Speakers
     TL -->|Visual Frame Lock| Screen
 ```
+
+---
+
+## 🧩 Integration with the D3 Ecosystem & Core Principles
+
+`d3-audio` was architected from the ground up as a **natural sibling module** to D3’s official family (`d3-scale`, `d3-selection`, `d3-axis`, `d3-transition`, `d3-ease`). It adopts Mike Bostock's foundational design philosophy of **Data-Driven Documents** and extends it into the auditory domain.
+
+### 1. Fundamental D3 Principles in `d3-audio`
+
+#### The Domain-to-Range Transformation (`domain ➔ range`)
+In D3, a scale is a mathematical function that maps an abstract dataset domain into a physical perceptual range:
+```javascript
+// Classic d3-scale: maps quantitative data to visual screen coordinates
+const yScale = d3.scaleLinear()
+  .domain([0, 100])
+  .range([0, 500]); // 0px to 500px on screen
+
+// d3-audio scalePitch: maps quantitative data to acoustic pitch coordinates
+const pitchScale = d3Audio.scalePitch()
+  .domain([0, 100])
+  .range(["C3", "C6"]); // 130.81 Hz to 1046.50 Hz in physical sound waves
+```
+`d3-audio` treats **Hertz, Decibels, Stereo Panning, and Note Durations** with the exact same mathematical rigor that D3 treats pixels, colors, and radians.
+
+#### Fluent Builder Pattern & Method Chaining
+All `d3-audio` scalers follow D3's standard fluent method-chaining conventions:
+* **Getters and Setters**: Calling `.domain([0, 100])` configures the domain and returns the scale instance for chaining; calling `.domain()` without arguments returns a copy of the current domain.
+* **Immutability & Cloning (`.copy()`)**: Every scale can be cloned with `.copy()`, allowing derived scales to branch safely without mutating parent state.
+* **Domain Ticks (`.ticks()`)**: Just as `d3.scaleLinear().ticks(5)` generates human-friendly tick values for axis labels, `scalePitch.ticks(5)` generates domain ticks bundled with `{ value, note, frequency, gain }` metadata.
+
+#### The Reusable Chart Pattern (`selection.call(component)`)
+In standard D3, complex visual components (like `d3.axisBottom`) are packaged as functions that accept a selection: `d3.select("g").call(axis)`. `d3-audio` strictly implements this exact pattern:
+```javascript
+// 1. Mount an accessible keyboard/screen-reader exploration layer
+d3.select("#my-chart")
+  .call(d3Audio.accessibleChart({
+    data: dataset,
+    x: d => d.date,
+    y: d => d.revenue
+  }));
+
+// 2. Mount an interactive auditionable Audio Legend
+d3.select("#legend-container")
+  .call(d3Audio.audioLegend()
+    .title("Market Anomaly Key")
+    .pitch(pitchScale, "Stock Price")
+    .tension(tensionScale, "Volatility Risk"));
+
+// 3. Apply kinetic choreography to SVG elements
+d3.selectAll("circle.data-point")
+  .call(d3Audio.pulse({ scale: 1.4, duration: 0.3 }))
+  .call(d3Audio.ripple({ color: "#38bdf8" }));
+```
+
+#### Composable Primitives, Not Rigid Black Boxes
+A core tenet of D3 is that it does not lock you into rigid, pre-canned charts (like a monolithic `<BarChart />`). Instead, it gives you atomic primitives (scales, shapes, selections) so you can construct any bespoke visualization.
+
+Similarly, `d3-audio` gives you atomic audio scalers (`scalePitch`, `scaleGain`, `scalePan`, `scaleFilter`, `scaleTension`, `scaleUncertainty`), kinetic presets (`wiggle`, `pulse`, `bounce`), and a multi-track timeline (`Timeline`, `Track`). You can sonify a scatterplot, an exoplanet orbit simulator, an SVG chord diagram, or a sorting algorithm using the exact same composable building blocks.
+
+### 2. D3 Core Modules vs. `d3-audio` Sibling Mapping
+
+| D3 Official Module | Visual Purpose | `d3-audio` Sibling | Auditory / Sonification Purpose |
+|---|---|---|---|
+| **`d3-scale`** (`scaleLinear`, `scaleLog`) | Data ➔ Pixels / Radii | **`scalePitch()`**, **`scaleGain()`**, **`scaleFilter()`** | Data ➔ Frequency (Hz), Decibels (dB), Filter cutoffs |
+| **`d3-scale`** (`scaleOrdinal`) | Categories ➔ Color hues | **`scaleSample()`** | Categories ➔ Instrument timbres / Drum soundbanks |
+| **`d3-axis`** | Visual ticks and axis labels | **`audioLegend()`** | Auditionable audio legend and reference keys |
+| **`d3-transition`** & **`d3-ease`** | Visual interpolation over time | **`audioTransition()`**, **`audioRamp()`**, **`adsrEnvelope()`** | Smooth parameter glides, attack-decay envelopes |
+| **`d3-selection`** | DOM / SVG element bindings | **`selection.call(pulse)`**, **`accessibleChart()`** | Kinetic choreography, screen-reader ARIA live binding |
+| **`d3-timer`** (`requestAnimationFrame`) | Visual animation loop | **`Timeline`** + **`Tone.Draw`** | Sub-millisecond hardware audio clock synchronized to screen frames |
+
+### 3. Bridging the Visual Clock and Hardware Audio Clock
+Visuals run on the browser's main thread via `requestAnimationFrame` (variable 16.6ms intervals affected by layout and garbage collection). Audio runs in a dedicated hardware thread via the Web Audio API (sub-millisecond precision).
+
+`d3-audio` bridges these two worlds using **`Tone.Draw.schedule()`**. When a scheduled timeline event fires in the audio hardware thread, `d3-audio` schedules the corresponding SVG DOM transformation (pulses, shockwaves, wiggles) to execute on the **exact display refresh frame** that the acoustic wave leaves the speakers:
+
+> **Data Point Event** → **Hardware Audio Wave** ↔ `Tone.Draw` ↔ **SVG Screen Render**
+
+### 4. Completing D3's Universal Accessibility Mission
+Mike Bostock and the visualization community created D3 to democratize data understanding. However, visual charts traditionally exclude blind and low-vision users. `d3-audio` fulfills the promise of universal access: a developer binds data once, producing both SVG graphics and an interactive auditory experience where keyboard arrows navigate points, `aria-live="polite"` speech announces coordinates, and earcons sound pitches and highlight peak extrema.
 
 ---
 

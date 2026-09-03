@@ -784,7 +784,7 @@
         <li><a href="#csv-sandbox">Drop & Sonify CSV</a></li>
         <li><a href="#ab-test">Ethical A/B Test</a></li>
         <li><a href="#accessible-chart">Accessible a11y</a></li>
-        <li><a href="#api-cheatsheet">API Cheat Sheet</a></li>
+        <li><a href="#d3-ecosystem">D3 Ecosystem</a></li>
         <li><a href="#principles">Principles</a></li>
         <li><a href="#quickstart">Quickstart</a></li>
         <li>
@@ -1175,6 +1175,116 @@
             <span id="csv-tempo-val" class="output-badge">120 BPM</span>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- SECTION: Integration with D3 Ecosystem & Core Principles -->
+    <section class="section-card" id="d3-ecosystem">
+      <h2 class="section-title">
+        <span>🧩</span>
+        <span>Integration with the D3 Ecosystem & Core Principles</span>
+      </h2>
+      <p class="section-desc">
+        <code>d3-audio</code> is engineered as a natural sibling module to D3's official family (<code>d3-scale</code>, <code>d3-selection</code>, <code>d3-axis</code>, <code>d3-transition</code>, <code>d3-ease</code>). It adopts Mike Bostock's foundational philosophy of <em>Data-Driven Documents</em> and extends it directly into the auditory domain.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin: 1.5rem 0;">
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="color: #38bdf8; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📐</span> <span>Domain ➔ Range Parity</span>
+          </h4>
+          <p style="font-size: 0.83rem; color: var(--text-muted); line-height: 1.5;">
+            Just as <code>d3.scaleLinear()</code> maps numerical values to screen pixels (<code>range([0, 500])</code>), <code>scalePitch()</code> and <code>scaleGain()</code> map continuous metrics to acoustic Hertz (<code>range(["C2", "C6"])</code>) and physical decibels with identical mathematical rigor.
+          </p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="color: #c084fc; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🔗</span> <span>Fluent Builder Pattern</span>
+          </h4>
+          <p style="font-size: 0.83rem; color: var(--text-muted); line-height: 1.5;">
+            Scalers implement standard D3 method chaining: getters/setters (<code>.domain()</code>, <code>.range()</code>), immutable cloning with <code>.copy()</code>, and smart tick generation via <code>.ticks(5)</code> returning bundled note, frequency, and gain metadata.
+          </p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="color: #34d399; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📞</span> <span>Reusable Chart Pattern</span>
+          </h4>
+          <p style="font-size: 0.83rem; color: var(--text-muted); line-height: 1.5;">
+            Following Mike Bostock's reusable component convention, widgets and motions hook directly into selections: <code>d3.select('#chart').call(accessibleChart)</code>, <code>d3.select('#legend').call(audioLegend)</code>, and <code>selection.call(pulse)</code>.
+          </p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="color: #fbbf24; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🧱</span> <span>Composable Primitives</span>
+          </h4>
+          <p style="font-size: 0.83rem; color: var(--text-muted); line-height: 1.5;">
+            No rigid black-box player widgets. You receive atomic building blocks (scalers, kinetic presets, multi-track timeline) so you can sonify scatterplots, orbital mechanics, treemaps, or sorting algorithms without design constraints.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sibling Modules Mapping Table -->
+      <div style="margin: 2rem 0; overflow-x: auto;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: #fff;">D3 Core Modules vs. d3-audio Sibling Mapping</h3>
+        <table class="doc-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+          <thead>
+            <tr>
+              <th style="text-align: left;">D3 Official Module</th>
+              <th style="text-align: left;">Visual Role</th>
+              <th style="text-align: left;">d3-audio Sibling</th>
+              <th style="text-align: left;">Auditory / Sonification Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>d3-scale</code> (linear, log)</td>
+              <td>Data ➔ Screen coordinates / Radii</td>
+              <td><strong><code>scalePitch()</code>, <code>scaleGain()</code>, <code>scaleFilter()</code></strong></td>
+              <td>Data ➔ Frequency (Hz), Decibels (dB), Filter cutoffs</td>
+            </tr>
+            <tr>
+              <td><code>d3-scale</code> (ordinal)</td>
+              <td>Categories ➔ Color hues</td>
+              <td><strong><code>scaleSample()</code></strong></td>
+              <td>Categories ➔ Instrument timbres / Drum soundbanks</td>
+            </tr>
+            <tr>
+              <td><code>d3-axis</code></td>
+              <td>Visual axis lines, ticks, and labels</td>
+              <td><strong><code>audioLegend()</code></strong></td>
+              <td>Auditionable audio reference key and pitch legend</td>
+            </tr>
+            <tr>
+              <td><code>d3-transition</code> &amp; <code>d3-ease</code></td>
+              <td>Visual interpolation over time</td>
+              <td><strong><code>audioTransition()</code>, <code>adsrEnvelope()</code></strong></td>
+              <td>Parameter frequency glides, physical attack-decay envelopes</td>
+            </tr>
+            <tr>
+              <td><code>d3-selection</code></td>
+              <td>DOM / SVG data bindings</td>
+              <td><strong><code>selection.call(pulse)</code>, <code>accessibleChart()</code></strong></td>
+              <td>Kinetic SVG choreography, ARIA live speech bindings</td>
+            </tr>
+            <tr>
+              <td><code>d3-timer</code></td>
+              <td>Main-thread animation frame loop</td>
+              <td><strong><code>Timeline</code> + <code>Tone.Draw</code></strong></td>
+              <td>Microsecond hardware audio clock locked to screen refresh</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Clock Bridge Callout -->
+      <div style="background: rgba(15, 23, 42, 0.6); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 1rem 1.25rem; margin-top: 1.25rem;">
+        <h4 style="color: #38bdf8; margin-bottom: 0.4rem; font-size: 0.95rem;">⏱️ Hardware Audio Clock vs. Visual Animation Loop</h4>
+        <p style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.5; margin: 0;">
+          Visual animations run on the browser's main thread via <code>requestAnimationFrame</code> (variable 16.6ms intervals prone to UI jitter). Audio synthesis runs on an isolated high-priority hardware thread via the Web Audio API (microsecond precision). <code>d3-audio</code> unifies both worlds using <strong><code>Tone.Draw.schedule()</code></strong>, ensuring DOM and SVG shockwaves render on the exact screen refresh frame that the acoustic wave emanates from the speakers.
+        </p>
       </div>
     </section>
 
